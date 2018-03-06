@@ -1,0 +1,4 @@
+加入新文件
+git add README.md
+git commit -m "first try"
+git push
