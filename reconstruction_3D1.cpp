@@ -10,7 +10,7 @@
 #include "eigen3/Eigen/Core"
 #include "eigen3/Eigen/Dense"
 
-//using namespace Eigen;
+// using namespace Eigen;
 using namespace std;
 
 //template <typename Derived>
@@ -21,65 +21,58 @@ int computeResiduals(int beforeX, int afterX, int beforeY, int afterY)
 }
 //template <typename DerivedA, typename DerivedB>
 
-Eigen::const Ref<const MatrixXf>  matchFeatures( Eigen::const Ref<const MatrixXf>& featurepoints_lastimage,
-   Eigen::const Ref<const MatrixXf>& featurepoints_currentimage, int row1, int row2  )
+void matchFeatures(Eigen::MatrixXi &matchedpair, Eigen::Matrix3i &featurepoints_lastimage,
+   Eigen::Matrix3i &featurepoints_currentimage)
 {
-  int threshold;
-  threshold = 5;
-  // featsize_last_col =featurepoints_lastimage.cols(); //column size of last image
-  // featsize_last_row =featurepoints_lastimage.rows();//row size
-  // featsize_current_col =featurepoints_currentimage.cols();//column size of current image
-  // featsize_current_row =featurepoints_currentimage.rows();
+  int threshold = 5;
+  int featsize_last_col =featurepoints_lastimage.cols(); //column size of last image
+  int featsize_last_row =featurepoints_lastimage.rows();//row size
+  int featsize_current_col =featurepoints_currentimage.cols();//column size of current image
+  int featsize_current_row =featurepoints_currentimage.rows();
   //Eigen::Matrix<int, featsize_last_row, 2> matchedpair; //featsize_last_row从这个函数进入，一直没有定义，然后这种<>的新参数的定义需要每个参数都是具体的值，而这个时候featsize_last_row并不是具体的值！
   //Eigen::MatrixXi matchedpair;
-  Eigen::MatrixXi matchedpair;
+  
   //typedef Eigen::Matrix<int,2,Dynamic> MatrixXd;
   //Eigen::Matrix <int, 2, Dynamic >matchedpair ; // 第二个参数填为5,作为测试
-  //int matchedpair[featsize_last_row][2]={0}; //define matchedpair, default values are zeros
-  // for(int i = 0; i < featsize_last_row; i=i+1) //check matchedpair one by one
-  // {
-  //   int x = featurepoints_lastimage (i,0); // x, y of the featurepoints
-  //   int y = featurepoints_lastimage (i,1);
-  //   //Eigen::Matrix<int, featsize_last_row, 2> matchedpair;
-  //   Eigen::matchedpair(i,0)= i;
-  //   Eigen::matchedpair(i,1)= 0; // first column is the feature in the first image
-  //   int color = featurepoints_lastimage(i,2);
-  //   //Eigen::residuals<int, featsize_current_row, 1> featurepoints_lastimage;   //错误1：同31行的错误一样！
-  //   //Eigen::residuals<int, 5, 1> featurepoints_lastimage;  // 第二个参数填为5,作为测试，错误2：Eigen::residuals ,因为类名Eigen加上作用域::后面为取这个类下面的函数。在Eigen这个库中是不存在这个residuals函数的。
-  //   //上面，我默认为你是创建一个新的矩阵
-  //   Eigen::Matrix<int, Dynamic, 2> featurepoints_lastimage;
-  //
-  //   Eigen::Matrix<int, Dynamic> residuals; //find color
-  //   for(int j=0; j < featsize_current_row; j=j+1)
-  //   {    if (color == featurepoints_currentimage(j,2))
-  //     //if (color == featurepoints_currentimage[j][2])// check if they are the same color
-  //     {
-  //       //residuals(j) = computeresiduals(x,featurepoints_currentimage(j,0),y, featurepoints_currentimage(j,1));//check residuals, find the smallest one, save it
-  //       //上面这句话有个问题，因为你之前在46行定义的residuals为一个数组，而C/C++中数组取下标是array[i]
-  //       residuals(j) = computeResiduals(x,featurepoints_currentimage(j,0),y, featurepoints_currentimage(j,1));//check residuals, find the smallest one, save it
-  //       int min_res;
-  //       min_res = threshold;
-  //       if (residuals[j]<min_res)
-  //       {
-  //         min_res = residuals[j];
-  //         matchedpair(i,1) = j;
-  //       }
-  //     }
-  //   }
-  // }
-  return matchedpair;   //此处是返回一个矩阵，而你之前是int
+  // matchedpair.cols() = 0; //define matchedpair, default values are zeros
+  for(int i = 0; i < featsize_last_row; i++) //check matchedpair one by one
+  {
+    int x = featurepoints_lastimage (i,0); // x, y of the featurepoints
+    int y = featurepoints_lastimage (i,1);
+    int color = featurepoints_lastimage(i,2);
+    //Eigen::Matrix<int, featsize_last_row, 2> matchedpair;
+    matchedpair(i,0)= i;
+    matchedpair(i,1)= 0; // first column is the feature in the first image
+    
+    //Eigen::residuals<int, featsize_current_row, 1> featurepoints_lastimage;   //错误1：同31行的错误一样！
+    //Eigen::residuals<int, 5, 1> featurepoints_lastimage;  // 第二个参数填为5,作为测试，错误2：Eigen::residuals ,因为类名Eigen加上作用域::后面为取这个类下面的函数。在Eigen这个库中是不存在这个residuals函数的。
+    //上面，我默认为你是创建一个新的矩阵
+  
+    Eigen::MatrixXi residuals; //find color
+    for(int j=0; j < featsize_current_row; j++)
+    {    if (color == featurepoints_currentimage(j,2))
+      //if (color == featurepoints_currentimage[j][2])// check if they are the same color
+      {
+        //residuals(j) = computeresiduals(x,featurepoints_currentimage(j,0),y, featurepoints_currentimage(j,1));//check residuals, find the smallest one, save it
+        //上面这句话有个问题，因为你之前在46行定义的residuals为一个数组，而C/C++中数组取下标是array[i]
+        residuals(j) = computeResiduals(x,featurepoints_currentimage(j,0),y, featurepoints_currentimage(j,1));//check residuals, find the smallest one, save it
+        int min_res = threshold;
+        if (residuals(j) <= min_res)
+        {
+          min_res = residuals(j);
+          matchedpair(i,1) = j;
+        }
+      }
+    }
+  }
 }
 
 
 int main( int argc, char** argv )
 {
-   //template <typename DerivedA, typename DerivedB>
-  // Eigen::Matrix<double, 10, 3> featurepoints_lastimage;
-  // Eigen::Matrix<double, 10, 3> featurepoints_currentimage;
-  const Eigen::MatrixXf featurepoints_lastimage;
-  const Eigen::MatrixXf featurepoints_currentimage;
-  // const Eigen::DenseBase<DerivedB>& matchedpair;
-  Eigen::MatrixXf matchedpair;
+  Eigen::Matrix3i featurepoints_lastimage;
+  Eigen::Matrix3i featurepoints_currentimage;
+  
   featurepoints_lastimage << 299,198,1,
                                 688,199,1,
                                 143,201,1,
@@ -101,14 +94,11 @@ int main( int argc, char** argv )
                                     324,181,2,
                                     538,241,3,
                                     209,228,3;
-  int featsize_last_col, featsize_last_row, featsize_current_col, featsize_current_row;
-  featsize_last_col =featurepoints_lastimage.cols(); //column size of last image
-  featsize_last_row =featurepoints_lastimage.rows();//row size
-  featsize_current_col =featurepoints_currentimage.cols();//column size of current image
-  featsize_current_row =featurepoints_currentimage.rows();
-//int matchedpair;
-matchedpair = matchFeatures(featurepoints_lastimage, featurepoints_currentimage, featsize_last_row, featsize_current_row);
-std::cout << matchedpair<<std::endl;
-return 0;
+
+  Eigen::MatrixXi matchedpair;
+  matchedpair.setZero();
+  matchFeatures(matchedpair, featurepoints_lastimage, featurepoints_currentimage);
+  std::cout << matchedpair<<std::endl;
+  return 0;
 
 }

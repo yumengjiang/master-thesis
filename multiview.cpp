@@ -20,7 +20,6 @@
 #include <ceres/ceres.h>
 #include <Eigen/Core>
 #include <iostream>
-#include "glog/logging.h"
 #include <utility>
 #include <string>
 #include <vector>
