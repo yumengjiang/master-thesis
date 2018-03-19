@@ -13,7 +13,7 @@
 //using namespace Eigen;
 using namespace std;
 
-template <typename Derived>
+//template <typename Derived>
 //compute residuals
 int computeResiduals(int beforeX, int afterX, int beforeY, int afterY)
 {
@@ -21,8 +21,8 @@ int computeResiduals(int beforeX, int afterX, int beforeY, int afterY)
 }
 //template <typename DerivedA, typename DerivedB>
 
-Eigen::MatrixXi& matchFeatures( const Eigen::MatrixXi& featurepoints_lastimage,
-   const Eigen::MatrixXi& featurepoints_currentimage, int row1, int row2  )
+Eigen::const Ref<const MatrixXf>  matchFeatures( Eigen::const Ref<const MatrixXf>& featurepoints_lastimage,
+   Eigen::const Ref<const MatrixXf>& featurepoints_currentimage, int row1, int row2  )
 {
   int threshold;
   threshold = 5;
