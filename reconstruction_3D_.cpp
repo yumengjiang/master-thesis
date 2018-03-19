@@ -13,6 +13,8 @@
 using namespace Eigen;
 using namespace std;
 
+template <typename Derived>
+
 //compute residuals
 int computeResiduals(int beforeX, int afterX, int beforeY, int afterY)
 {
@@ -43,7 +45,7 @@ Matrix<double, 10, 2> matchFeatures( Matrix<double, 10, 2> featurepoints_lastima
     //上面，我默认为你是创建一个新的矩阵
     Eigen::Matrix<int, 5, 1> featurepoints_lastimage;
 
-    int residuals[featsize_current_row]; //find color  
+    int residuals[featsize_current_row]; //find color
     for(int j=0; j < featsize_current_row; j=j+1)
     {    if (color == featurepoints_currentimage(j,2))
       //if (color == featurepoints_currentimage[j][2])// check if they are the same color
