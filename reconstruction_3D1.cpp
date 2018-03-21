@@ -1,8 +1,8 @@
 //this function is used to match feature points between two images
-//first, check the labels of two points, choose the feature points with the same color
+//first, check the labels of two points, choose the feature points with the same label
 //afterwards, calculate the residuals, choose the point with the least residuals which is the feature point
-//featurepoints_lastimage is the central point of the cone, colorflag is the color of the corresponding cone
-//featurepoints_lastimage size: N X 3 currentimage size: M x 3
+//featureLast is the central point of the cone, labelflag is the label of the corresponding cone
+//featureLast size: N X 3 currentimage size: M x 3
 #include <iostream>
 #include <string>
 #include "math.h"
@@ -10,95 +10,115 @@
 #include "eigen3/Eigen/Core"
 #include "eigen3/Eigen/Dense"
 
-// using namespace Eigen;
 using namespace std;
 
-//template <typename Derived>
-//compute residuals
-int computeResiduals(int beforeX, int afterX, int beforeY, int afterY)
-{
-  return pow((pow ((afterX-beforeX),2) + pow ((afterY-beforeY),2)),2);
-}
-//template <typename DerivedA, typename DerivedB>
+double threshold = 50;
 
-void matchFeatures(Eigen::MatrixXi &matchedpair, Eigen::Matrix3i &featurepoints_lastimage,
-   Eigen::Matrix3i &featurepoints_currentimage)
-{
-  int threshold = 5;
-  int featsize_last_col =featurepoints_lastimage.cols(); //column size of last image
-  int featsize_last_row =featurepoints_lastimage.rows();//row size
-  int featsize_current_col =featurepoints_currentimage.cols();//column size of current image
-  int featsize_current_row =featurepoints_currentimage.rows();
-  //Eigen::Matrix<int, featsize_last_row, 2> matchedpair; //featsize_last_row从这个函数进入，一直没有定义，然后这种<>的新参数的定义需要每个参数都是具体的值，而这个时候featsize_last_row并不是具体的值！
-  //Eigen::MatrixXi matchedpair;
-  
-  //typedef Eigen::Matrix<int,2,Dynamic> MatrixXd;
-  //Eigen::Matrix <int, 2, Dynamic >matchedpair ; // 第二个参数填为5,作为测试
-  // matchedpair.cols() = 0; //define matchedpair, default values are zeros
-  for(int i = 0; i < featsize_last_row; i++) //check matchedpair one by one
-  {
-    int x = featurepoints_lastimage (i,0); // x, y of the featurepoints
-    int y = featurepoints_lastimage (i,1);
-    int color = featurepoints_lastimage(i,2);
-    //Eigen::Matrix<int, featsize_last_row, 2> matchedpair;
-    matchedpair(i,0)= i;
-    matchedpair(i,1)= 0; // first column is the feature in the first image
-    
-    //Eigen::residuals<int, featsize_current_row, 1> featurepoints_lastimage;   //错误1：同31行的错误一样！
-    //Eigen::residuals<int, 5, 1> featurepoints_lastimage;  // 第二个参数填为5,作为测试，错误2：Eigen::residuals ,因为类名Eigen加上作用域::后面为取这个类下面的函数。在Eigen这个库中是不存在这个residuals函数的。
-    //上面，我默认为你是创建一个新的矩阵
-  
-    Eigen::MatrixXi residuals; //find color
-    for(int j=0; j < featsize_current_row; j++)
-    {    if (color == featurepoints_currentimage(j,2))
-      //if (color == featurepoints_currentimage[j][2])// check if they are the same color
-      {
-        //residuals(j) = computeresiduals(x,featurepoints_currentimage(j,0),y, featurepoints_currentimage(j,1));//check residuals, find the smallest one, save it
-        //上面这句话有个问题，因为你之前在46行定义的residuals为一个数组，而C/C++中数组取下标是array[i]
-        residuals(j) = computeResiduals(x,featurepoints_currentimage(j,0),y, featurepoints_currentimage(j,1));//check residuals, find the smallest one, save it
-        int min_res = threshold;
-        if (residuals(j) <= min_res)
-        {
-          min_res = residuals(j);
-          matchedpair(i,1) = j;
+double computeResiduals(int beforeX, int afterX, int beforeY, int afterY){
+  return pow((pow ((afterX-beforeX),2) + pow ((afterY-beforeY),2)),0.5);
+}
+
+Eigen::MatrixXi matchFeatures(Eigen::MatrixXi matchedLast, 
+                  Eigen::MatrixXi featureLast, Eigen::MatrixXi featureNext){
+  double res, minRes;
+  int featureLastRow = featureLast.rows();
+  int featureNextRow = featureNext.rows();
+  int matchedLastRow = matchedLast.rows();
+  int matchedLastCol = matchedLast.cols();
+  int count = matchedLastRow;
+  int index, indexCandidate;
+  Eigen::MatrixXi matchedNextTmp(matchedLastRow+featureNextRow, matchedLastCol+1);
+  for(int i = 0; i < matchedLastRow; i++)
+    for(int j = 0; j < matchedLastCol; j++)
+      matchedNextTmp(i, j) = matchedLast(i, j);
+
+  for(int i = 0; i < featureNextRow; i++){
+    minRes = threshold;
+    for(int j = 0; j < featureLastRow; j++){
+      if(featureNext(i,2) == featureLast(j,2)){
+        res = computeResiduals(featureNext(i,0), featureLast(j,0), featureNext(i,1), featureLast(j,1));//check residuals, find the smallest one, save it
+        if(res < minRes){
+          minRes = res;
+          index = j;
+        }
+      }
+    }
+    if(minRes == threshold){
+      matchedNextTmp(count++, matchedLastCol) = i+1;
+    } 
+    else{
+      indexCandidate = matchedNextTmp(index, matchedLastCol)-1;
+      if(indexCandidate+1 == 0){
+        matchedNextTmp(index, matchedLastCol) = i+1;
+      }
+      else{
+        res = computeResiduals(featureNext(i,0), featureLast(indexCandidate,0), featureNext(i,1), featureLast(indexCandidate,1));//check residuals, find the smallest one, save it
+        if(res < minRes){
+          matchedNextTmp(count++, matchedLastCol) = i+1;
+        }
+        else{
+          matchedNextTmp(index, matchedLastCol) = i+1;
+          matchedNextTmp(count++, matchedLastCol) = indexCandidate+1;
         }
       }
     }
   }
+  Eigen::MatrixXi matchedNext(count, matchedLastCol+1);
+  for(int i = 0; i < count; i++)
+    for(int j = 0; j < matchedLastCol+1; j++)
+      matchedNext(i, j) = matchedNextTmp(i, j);
+  return matchedNext;
 }
 
 
 int main( int argc, char** argv )
 {
-  Eigen::Matrix3i featurepoints_lastimage;
-  Eigen::Matrix3i featurepoints_currentimage;
-  
-  featurepoints_lastimage << 299,198,1,
-                                688,199,1,
-                                143,201,1,
-                                455,187,1,
-                                455,195,2,
-                                276,180,2,
-                                161,183,2,
-                                612,208,2,
-                                234,211,3,
-                                510,223,3;
+  Eigen::MatrixXi featureLast(10, 3);
+  Eigen::MatrixXi featureNext(10, 3);
 
-  featurepoints_currentimage << 280,209,1,
-                                    624,207,1,
-                                    457,194,1,
-                                    113,214,1,
-                                    268,188,2,
-                                    462,204,2,
-                                    142,192,2,
-                                    324,181,2,
-                                    538,241,3,
-                                    209,228,3;
+  featureLast << 299,198,1,
+                  688,199,1,
+                  143,201,1,
+                  455,187,1,
+                  455,195,2,
+                  276,180,2,
+                  161,183,2,
+                  612,208,2,
+                  234,211,3,
+                  510,223,3;
 
-  Eigen::MatrixXi matchedpair;
-  matchedpair.setZero();
-  matchFeatures(matchedpair, featurepoints_lastimage, featurepoints_currentimage);
-  std::cout << matchedpair<<std::endl;
+  featureNext << 280,209,1,
+                  624,207,1,
+                  457,194,1,
+                  113,214,1,
+                  268,188,2,
+                  462,204,2,
+                  142,192,2,
+                  324,181,2,
+                  538,241,3,
+                  209,228,3;
+
+  // featureNext << 299,198,1,
+  //                 688,199,1,
+  //                 143,201,1,
+  //                 455,187,1,
+  //                 455,195,2,
+  //                 276,180,2,
+  //                 161,183,2,
+  //                 612,208,2,
+  //                 234,211,3,
+  //                 1,1,1,
+  //                 1,1,1,
+  //                 510,223,3;
+
+  int featureLastRow = featureLast.rows();
+  Eigen::MatrixXi matchedNext, matchedLast(featureLastRow, 1);
+  for(int i = 0; i < featureLastRow; i++){
+    matchedLast(i, 0) = i+1;
+  }
+
+  matchedNext = matchFeatures(matchedLast, featureLast, featureNext);
+  std::cout << matchedNext << std::endl;
   return 0;
 
 }
