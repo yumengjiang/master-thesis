@@ -53,9 +53,11 @@ void matchFeatures(int imageId, vector<cv::KeyPoint> featureLast,
 
 int main( int argc, char** argv )
 {
+  string imgIdLast = argv[1];
+  string imgIdNext = argv[2];
   vector<cv::KeyPoint> featureLast, featureNext;
 
-  ifstream fileLast ( "result/1.csv" );
+  ifstream fileLast ( "result/"+imgIdLast+".csv" );
   string line, x, y, label;  
   while (getline(fileLast, line)) {  
       stringstream liness(line);  
@@ -63,23 +65,23 @@ int main( int argc, char** argv )
       getline(liness, y, ','); 
       getline(liness, label);
       featureLast.push_back(cv::KeyPoint(stof(x),stof(y),3,-1,0,0,stof(label)));
-      cout << x << " " << y << " " << label << endl;
+      // cout << x << " " << y << " " << label << endl;
   } 
 
-  ifstream fileNext ( "result/2.csv" ); 
+  ifstream fileNext ( "result/"+imgIdNext+".csv" ); 
   while (getline(fileNext, line)) {  
       stringstream liness(line);  
       getline(liness, x, ',');  
       getline(liness, y, ','); 
       getline(liness, label);
       featureNext.push_back(cv::KeyPoint(stof(x),stof(y),3,-1,0,0,stof(label)));
-      cout << x << " " << y << " " << label << endl;
+      // cout << x << " " << y << " " << label << endl;
   }  
 
   vector<cv::DMatch> matched;
-  matchFeatures(1, featureLast, featureNext, matched);
-  cv::Mat imgLast = cv::imread("result/1.png");
-  cv::Mat imgNext = cv::imread("result/2.png");
+  matchFeatures(stoi(imgIdNext), featureLast, featureNext, matched);
+  cv::Mat imgLast = cv::imread("result/"+imgIdLast+".png");
+  cv::Mat imgNext = cv::imread("result/"+imgIdNext+".png");
   cv::Mat outImg;
   cv::drawMatches(imgLast, featureLast, imgNext, featureNext, matched, outImg);
   cv::namedWindow("MatchSIFT", cv::WINDOW_NORMAL);
