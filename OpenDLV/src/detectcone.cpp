@@ -26,7 +26,10 @@
 
 int32_t main() {
     DetectCone detector;
-    detector.forwardDetection();
+    tiny_dnn::network<tiny_dnn::sequential> nn;
+    detector.efficientSlidingWindow("efficientSlidingWindow", nn, 320, 60);
+    while(1)
+        detector.forwardDetection(nn);
 
     
 

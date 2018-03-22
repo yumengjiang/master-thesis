@@ -20,7 +20,7 @@
 
 using namespace std;
 
-float threshold = 50;
+float threshold = 40;
 
 float computeResiduals(cv::Point2f pt1, cv::Point2f pt2){
   return pow((pow ((pt1.x-pt2.x),2) + pow ((pt1.y-pt2.y),2)),0.5);
@@ -55,29 +55,34 @@ int main( int argc, char** argv )
 {
   vector<cv::KeyPoint> featureLast, featureNext;
 
-  featureLast.push_back(cv::KeyPoint(299,198,3,-1,0,0,1));
-  featureLast.push_back(cv::KeyPoint(688,199,3,-1,0,0,1));
-  featureLast.push_back(cv::KeyPoint(143,201,3,-1,0,0,1));
-  featureLast.push_back(cv::KeyPoint(455,187,3,-1,0,0,1));
-  featureLast.push_back(cv::KeyPoint(455,195,3,-1,0,0,2));
-  featureLast.push_back(cv::KeyPoint(276,180,3,-1,0,0,2));
-  featureLast.push_back(cv::KeyPoint(161,183,3,-1,0,0,2));
-  featureLast.push_back(cv::KeyPoint(612,208,3,-1,0,0,2));
-  featureLast.push_back(cv::KeyPoint(234,211,3,-1,0,0,3));
-  featureLast.push_back(cv::KeyPoint(510,223,3,-1,0,0,3));
+  ifstream fileLast ( "result/1.csv" );
+  string line, x, y, label;  
+  while (getline(fileLast, line)) {  
+      stringstream liness(line);  
+      getline(liness, x, ',');  
+      getline(liness, y, ','); 
+      getline(liness, label);
+      featureLast.push_back(cv::KeyPoint(stof(x),stof(y),3,-1,0,0,stof(label)));
+      cout << x << " " << y << " " << label << endl;
+  } 
 
-  featureNext.push_back(cv::KeyPoint(280,209,3,-1,0,0,1));
-  featureNext.push_back(cv::KeyPoint(624,207,3,-1,0,0,1));
-  featureNext.push_back(cv::KeyPoint(457,194,3,-1,0,0,1));
-  featureNext.push_back(cv::KeyPoint(113,214,3,-1,0,0,1));
-  featureNext.push_back(cv::KeyPoint(268,188,3,-1,0,0,2));
-  featureNext.push_back(cv::KeyPoint(462,204,3,-1,0,0,2));
-  featureNext.push_back(cv::KeyPoint(142,192,3,-1,0,0,2));
-  featureNext.push_back(cv::KeyPoint(324,181,3,-1,0,0,2));
-  featureNext.push_back(cv::KeyPoint(538,241,3,-1,0,0,3));
-  featureNext.push_back(cv::KeyPoint(209,228,3,-1,0,0,3));
+  ifstream fileNext ( "result/2.csv" ); 
+  while (getline(fileNext, line)) {  
+      stringstream liness(line);  
+      getline(liness, x, ',');  
+      getline(liness, y, ','); 
+      getline(liness, label);
+      featureNext.push_back(cv::KeyPoint(stof(x),stof(y),3,-1,0,0,stof(label)));
+      cout << x << " " << y << " " << label << endl;
+  }  
 
   vector<cv::DMatch> matched;
   matchFeatures(1, featureLast, featureNext, matched);
-
+  cv::Mat imgLast = cv::imread("result/1.png");
+  cv::Mat imgNext = cv::imread("result/2.png");
+  cv::Mat outImg;
+  cv::drawMatches(imgLast, featureLast, imgNext, featureNext, matched, outImg);
+  cv::namedWindow("MatchSIFT", cv::WINDOW_NORMAL);
+  cv::imshow("MatchSIFT",outImg);
+  cv::waitKey(0);
 }

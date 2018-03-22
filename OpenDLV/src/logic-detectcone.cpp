@@ -110,7 +110,7 @@ std::vector <cv::Point> DetectCone::imRegionalMax(cv::Mat input, int nLocMax, do
     return locations;
 }
 
-void DetectCone::forwardDetection() {
+void DetectCone::forwardDetection(tiny_dnn::network<tiny_dnn::sequential> nn) {
   double threshold = 0.7;
   int patchSize = 25;
   int patchRadius = int((patchSize-1)/2);
@@ -139,18 +139,12 @@ void DetectCone::forwardDetection() {
   cv::resize(imgL, rectified, cv::Size (320, 180));
 
   auto patchImg = rectified(roi);
-  // cv::namedWindow("roi", cv::WINDOW_NORMAL);
-  // cv::imshow("roi", patchImg);
-  // cv::waitKey(0);
 
   // convert imagefile to vec_t
   tiny_dnn::vec_t data;
   convertImage(patchImg, inputWidth, inputHeight, data);
 
   // recognize
-  tiny_dnn::network<tiny_dnn::sequential> nn;
-  efficientSlidingWindow("efficientSlidingWindow", nn, 320, 60);
-
   auto startTime = std::chrono::system_clock::now();
   auto prob = nn.predict(data);
   auto endTime = std::chrono::system_clock::now();
@@ -187,19 +181,22 @@ void DetectCone::forwardDetection() {
       label = probMapIndex.at<int>(cone[i]);
       if (label == 1){
         cv::circle(rectified, position, 1, {0, 255, 255}, -1);
-        std::cout << "Find one yellow cone, xy position: " << position << "pixel, certainty: " 
+        std::cout << "Find one yellow cone, xy position: " << position << " pixel, certainty: " 
         << probMapSoftmax.at<double>(cone[i]) << std::endl;
       }
       if (label == 2){
         cv::circle(rectified, position, 1, {255, 0, 0}, -1);
-        std::cout << "Find one blue cone, xy position: " << position << "pixel, certainty: " 
+        std::cout << "Find one blue cone, xy position: " << position << " pixel, certainty: " 
         << probMapSoftmax.at<double>(cone[i]) << std::endl;
       }
       if (label == 3){
         cv::circle(rectified, position, 1, {0, 0, 255}, -1);
-        std::cout << "Find one orange cone, xy position: " << position << "pixel, certainty: " 
+        std::cout << "Find one orange cone, xy position: " << position << " pixel, certainty: " 
         << probMapSoftmax.at<double>(cone[i]) << std::endl;
       }
     }
   }
+//   cv::namedWindow("result", cv::WINDOW_NORMAL);
+//   cv::imshow("result", rectified);
+//   cv::waitKey(0);
 }

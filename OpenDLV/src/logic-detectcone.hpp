@@ -56,7 +56,7 @@ class DetectCone {
     void efficientSlidingWindow(const std::string &, tiny_dnn::network<tiny_dnn::sequential> &, int, int);
     void softmax(cv::Vec4d, cv::Vec4d &);
     std::vector <cv::Point> imRegionalMax(cv::Mat, int, double, int);
-    void forwardDetection();
+    void forwardDetection(tiny_dnn::network<tiny_dnn::sequential>);
 };
 
 #endif
