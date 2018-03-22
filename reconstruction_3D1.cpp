@@ -37,7 +37,7 @@ void matchFeatures(int imageId, vector<cv::KeyPoint> featureLast,
     minRes = threshold;
     for(int j = 0; j < featureLastRow; j++){
       if(featureNext[i].class_id == featureLast[j].class_id){
-        res = computeResiduals(featureNext[i].pt, featureLast[j].pt);//check residuals, find the smallest one, save it
+        res = computeResiduals(featureNext[i].pt, featureLast[j].pt);
         if(res < minRes){
           minRes = res;
           index = j;
