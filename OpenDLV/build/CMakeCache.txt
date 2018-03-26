@@ -199,12 +199,6 @@ TinyDNN_DIR:PATH=/usr/local/share/TinyDNN
 USE_OpenMP:BOOL=ON
 
 //Value Computed by CMake
-beaglebone_BINARY_DIR:STATIC=/home/weiming/ubuntu-project/master-thesis/OpenDLV/build
-
-//Value Computed by CMake
-beaglebone_SOURCE_DIR:STATIC=/home/weiming/ubuntu-project/master-thesis/OpenDLV
-
-//Value Computed by CMake
 detectcone_BINARY_DIR:STATIC=/home/weiming/ubuntu-project/master-thesis/OpenDLV/build
 
 //Value Computed by CMake

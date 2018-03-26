@@ -80,7 +80,6 @@ find_package(TinyDNN REQUIRED)
 
 ###############################################################################
 #TBB
-list(APPEND CMAKE_MODULE_PATH /home/weiming/ubuntu-project/FindTBB/)
 find_package(TBB REQUIRED)
 include_directories(${TBB_INCLUDE_DIRS})
 add_definitions(${TBB_DEFINITIONS})

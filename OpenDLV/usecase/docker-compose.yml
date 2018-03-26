@@ -1,7 +1,7 @@
 version: '2'
 
 services:
-    beaglebone:
+    detectcone:
         image: ${IMAGE}
         network_mode: "host"
-        command: "beaglebone --port=${PORT} --cid=${CID} --id=1 --verbose=1"
+        command: "detectcone"

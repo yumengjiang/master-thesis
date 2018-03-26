@@ -30,6 +30,8 @@ RUN apk update && \
         icu \
         opencv-dev \
         opencv-libs \
+        #libopenmp-dev \
+        libtbb-dev \
         opencv 
 
 WORKDIR /tmp
