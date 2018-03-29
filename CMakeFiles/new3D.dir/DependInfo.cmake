@@ -4,7 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/home/yumeng/project/master-thesis/new3D.cpp" "/home/yumeng/project/master-thesis/CMakeFiles/new3D.dir/new3D.cpp.o"
+  "/media/weiming/Ny volym/ubuntu-project/master-thesis/Masterthesis/new3D.cpp" "/media/weiming/Ny volym/ubuntu-project/master-thesis/Masterthesis/CMakeFiles/new3D.dir/new3D.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 

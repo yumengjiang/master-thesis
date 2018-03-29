@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/home/yumeng/project/master-thesis/new3D.cpp
+/media/weiming/Ny volym/ubuntu-project/master-thesis/Masterthesis/new3D.cpp
 iostream
 -
 string
@@ -16,37 +16,37 @@ vector
 utility
 -
 math.h
-/home/yumeng/project/master-thesis/math.h
+/media/weiming/Ny volym/ubuntu-project/master-thesis/Masterthesis/math.h
 limits.h
-/home/yumeng/project/master-thesis/limits.h
+/media/weiming/Ny volym/ubuntu-project/master-thesis/Masterthesis/limits.h
 eigen3/Eigen/Core
-/home/yumeng/project/master-thesis/eigen3/Eigen/Core
+/media/weiming/Ny volym/ubuntu-project/master-thesis/Masterthesis/eigen3/Eigen/Core
 eigen3/Eigen/Dense
-/home/yumeng/project/master-thesis/eigen3/Eigen/Dense
+/media/weiming/Ny volym/ubuntu-project/master-thesis/Masterthesis/eigen3/Eigen/Dense
 opencv2/features2d.hpp
 -
 opencv2/core/core.hpp
-/home/yumeng/project/master-thesis/opencv2/core/core.hpp
+/media/weiming/Ny volym/ubuntu-project/master-thesis/Masterthesis/opencv2/core/core.hpp
 opencv2/imgproc/imgproc.hpp
-/home/yumeng/project/master-thesis/opencv2/imgproc/imgproc.hpp
+/media/weiming/Ny volym/ubuntu-project/master-thesis/Masterthesis/opencv2/imgproc/imgproc.hpp
 opencv2/highgui/highgui.hpp
-/home/yumeng/project/master-thesis/opencv2/highgui/highgui.hpp
+/media/weiming/Ny volym/ubuntu-project/master-thesis/Masterthesis/opencv2/highgui/highgui.hpp
 opencv2/opencv.hpp
 -
 opencv2/xfeatures2d.hpp
-/home/yumeng/project/master-thesis/opencv2/xfeatures2d.hpp
+/media/weiming/Ny volym/ubuntu-project/master-thesis/Masterthesis/opencv2/xfeatures2d.hpp
 opencv2/highgui.hpp
 -
 opencv2/imgproc/imgproc.hpp
-/home/yumeng/project/master-thesis/opencv2/imgproc/imgproc.hpp
+/media/weiming/Ny volym/ubuntu-project/master-thesis/Masterthesis/opencv2/imgproc/imgproc.hpp
 opencv2/features2d.hpp
 -
 opencv2/core/core.hpp
-/home/yumeng/project/master-thesis/opencv2/core/core.hpp
+/media/weiming/Ny volym/ubuntu-project/master-thesis/Masterthesis/opencv2/core/core.hpp
 gflags/gflags.h
-/home/yumeng/project/master-thesis/gflags/gflags.h
+/media/weiming/Ny volym/ubuntu-project/master-thesis/Masterthesis/gflags/gflags.h
 glog/logging.h
-/home/yumeng/project/master-thesis/glog/logging.h
+/media/weiming/Ny volym/ubuntu-project/master-thesis/Masterthesis/glog/logging.h
 ceres/ceres.h
 -
 ceres/rotation.h

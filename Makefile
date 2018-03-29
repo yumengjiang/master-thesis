@@ -48,10 +48,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/yumeng/project/master-thesis
+CMAKE_SOURCE_DIR = "/media/weiming/Ny volym/ubuntu-project/master-thesis"
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/yumeng/project/master-thesis
+CMAKE_BINARY_DIR = "/media/weiming/Ny volym/ubuntu-project/master-thesis"
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -80,9 +80,9 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/yumeng/project/master-thesis/CMakeFiles /home/yumeng/project/master-thesis/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start "/media/weiming/Ny volym/ubuntu-project/master-thesis/CMakeFiles" "/media/weiming/Ny volym/ubuntu-project/master-thesis/CMakeFiles/progress.marks"
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/yumeng/project/master-thesis/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start "/media/weiming/Ny volym/ubuntu-project/master-thesis/CMakeFiles" 0
 .PHONY : all
 
 # The main clean target
@@ -111,44 +111,44 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named new3D
+# Target rules for targets named sfm
 
 # Build rule for target.
-new3D: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 new3D
-.PHONY : new3D
+sfm: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 sfm
+.PHONY : sfm
 
 # fast build rule for target.
-new3D/fast:
-	$(MAKE) -f CMakeFiles/new3D.dir/build.make CMakeFiles/new3D.dir/build
-.PHONY : new3D/fast
+sfm/fast:
+	$(MAKE) -f CMakeFiles/sfm.dir/build.make CMakeFiles/sfm.dir/build
+.PHONY : sfm/fast
 
-new3D.o: new3D.cpp.o
+sfm.o: sfm.cpp.o
 
-.PHONY : new3D.o
+.PHONY : sfm.o
 
 # target to build an object file
-new3D.cpp.o:
-	$(MAKE) -f CMakeFiles/new3D.dir/build.make CMakeFiles/new3D.dir/new3D.cpp.o
-.PHONY : new3D.cpp.o
+sfm.cpp.o:
+	$(MAKE) -f CMakeFiles/sfm.dir/build.make CMakeFiles/sfm.dir/sfm.cpp.o
+.PHONY : sfm.cpp.o
 
-new3D.i: new3D.cpp.i
+sfm.i: sfm.cpp.i
 
-.PHONY : new3D.i
+.PHONY : sfm.i
 
 # target to preprocess a source file
-new3D.cpp.i:
-	$(MAKE) -f CMakeFiles/new3D.dir/build.make CMakeFiles/new3D.dir/new3D.cpp.i
-.PHONY : new3D.cpp.i
+sfm.cpp.i:
+	$(MAKE) -f CMakeFiles/sfm.dir/build.make CMakeFiles/sfm.dir/sfm.cpp.i
+.PHONY : sfm.cpp.i
 
-new3D.s: new3D.cpp.s
+sfm.s: sfm.cpp.s
 
-.PHONY : new3D.s
+.PHONY : sfm.s
 
 # target to generate assembly for a file
-new3D.cpp.s:
-	$(MAKE) -f CMakeFiles/new3D.dir/build.make CMakeFiles/new3D.dir/new3D.cpp.s
-.PHONY : new3D.cpp.s
+sfm.cpp.s:
+	$(MAKE) -f CMakeFiles/sfm.dir/build.make CMakeFiles/sfm.dir/sfm.cpp.s
+.PHONY : sfm.cpp.s
 
 # Help Target
 help:
@@ -158,10 +158,10 @@ help:
 	@echo "... depend"
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
-	@echo "... new3D"
-	@echo "... new3D.o"
-	@echo "... new3D.i"
-	@echo "... new3D.s"
+	@echo "... sfm"
+	@echo "... sfm.o"
+	@echo "... sfm.i"
+	@echo "... sfm.s"
 .PHONY : help
 
 

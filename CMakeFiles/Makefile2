@@ -54,45 +54,45 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/yumeng/project/master-thesis
+CMAKE_SOURCE_DIR = "/media/weiming/Ny volym/ubuntu-project/master-thesis"
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/yumeng/project/master-thesis
+CMAKE_BINARY_DIR = "/media/weiming/Ny volym/ubuntu-project/master-thesis"
 
 #=============================================================================
-# Target rules for target CMakeFiles/new3D.dir
+# Target rules for target CMakeFiles/sfm.dir
 
 # All Build rule for target.
-CMakeFiles/new3D.dir/all:
-	$(MAKE) -f CMakeFiles/new3D.dir/build.make CMakeFiles/new3D.dir/depend
-	$(MAKE) -f CMakeFiles/new3D.dir/build.make CMakeFiles/new3D.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/yumeng/project/master-thesis/CMakeFiles --progress-num=1,2 "Built target new3D"
-.PHONY : CMakeFiles/new3D.dir/all
+CMakeFiles/sfm.dir/all:
+	$(MAKE) -f CMakeFiles/sfm.dir/build.make CMakeFiles/sfm.dir/depend
+	$(MAKE) -f CMakeFiles/sfm.dir/build.make CMakeFiles/sfm.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir="/media/weiming/Ny volym/ubuntu-project/master-thesis/CMakeFiles" --progress-num=1,2 "Built target sfm"
+.PHONY : CMakeFiles/sfm.dir/all
 
 # Include target in all.
-all: CMakeFiles/new3D.dir/all
+all: CMakeFiles/sfm.dir/all
 
 .PHONY : all
 
 # Build rule for subdir invocation for target.
-CMakeFiles/new3D.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/yumeng/project/master-thesis/CMakeFiles 2
-	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/new3D.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/yumeng/project/master-thesis/CMakeFiles 0
-.PHONY : CMakeFiles/new3D.dir/rule
+CMakeFiles/sfm.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start "/media/weiming/Ny volym/ubuntu-project/master-thesis/CMakeFiles" 2
+	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/sfm.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start "/media/weiming/Ny volym/ubuntu-project/master-thesis/CMakeFiles" 0
+.PHONY : CMakeFiles/sfm.dir/rule
 
 # Convenience name for target.
-new3D: CMakeFiles/new3D.dir/rule
+sfm: CMakeFiles/sfm.dir/rule
 
-.PHONY : new3D
-
-# clean rule for target.
-CMakeFiles/new3D.dir/clean:
-	$(MAKE) -f CMakeFiles/new3D.dir/build.make CMakeFiles/new3D.dir/clean
-.PHONY : CMakeFiles/new3D.dir/clean
+.PHONY : sfm
 
 # clean rule for target.
-clean: CMakeFiles/new3D.dir/clean
+CMakeFiles/sfm.dir/clean:
+	$(MAKE) -f CMakeFiles/sfm.dir/build.make CMakeFiles/sfm.dir/clean
+.PHONY : CMakeFiles/sfm.dir/clean
+
+# clean rule for target.
+clean: CMakeFiles/sfm.dir/clean
 
 .PHONY : clean
 

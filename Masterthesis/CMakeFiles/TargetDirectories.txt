@@ -1,3 +1,0 @@
-/home/yumeng/project/master-thesis/Masterthesis/CMakeFiles/rebuild_cache.dir
-/home/yumeng/project/master-thesis/Masterthesis/CMakeFiles/edit_cache.dir
-/home/yumeng/project/master-thesis/Masterthesis/CMakeFiles/new3D.dir
