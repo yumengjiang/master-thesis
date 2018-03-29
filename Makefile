@@ -48,10 +48,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = "/media/weiming/Ny volym/ubuntu-project/master-thesis"
+CMAKE_SOURCE_DIR = /home/yumeng/project/master-thesis
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = "/media/weiming/Ny volym/ubuntu-project/master-thesis"
+CMAKE_BINARY_DIR = /home/yumeng/project/master-thesis
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -80,9 +80,9 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start "/media/weiming/Ny volym/ubuntu-project/master-thesis/CMakeFiles" "/media/weiming/Ny volym/ubuntu-project/master-thesis/CMakeFiles/progress.marks"
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/yumeng/project/master-thesis/CMakeFiles /home/yumeng/project/master-thesis/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start "/media/weiming/Ny volym/ubuntu-project/master-thesis/CMakeFiles" 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/yumeng/project/master-thesis/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -111,44 +111,44 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named sfm
+# Target rules for targets named main
 
 # Build rule for target.
-sfm: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 sfm
-.PHONY : sfm
+main: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 main
+.PHONY : main
 
 # fast build rule for target.
-sfm/fast:
-	$(MAKE) -f CMakeFiles/sfm.dir/build.make CMakeFiles/sfm.dir/build
-.PHONY : sfm/fast
+main/fast:
+	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/build
+.PHONY : main/fast
 
-sfm.o: sfm.cpp.o
+main.o: main.cpp.o
 
-.PHONY : sfm.o
+.PHONY : main.o
 
 # target to build an object file
-sfm.cpp.o:
-	$(MAKE) -f CMakeFiles/sfm.dir/build.make CMakeFiles/sfm.dir/sfm.cpp.o
-.PHONY : sfm.cpp.o
+main.cpp.o:
+	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/main.cpp.o
+.PHONY : main.cpp.o
 
-sfm.i: sfm.cpp.i
+main.i: main.cpp.i
 
-.PHONY : sfm.i
+.PHONY : main.i
 
 # target to preprocess a source file
-sfm.cpp.i:
-	$(MAKE) -f CMakeFiles/sfm.dir/build.make CMakeFiles/sfm.dir/sfm.cpp.i
-.PHONY : sfm.cpp.i
+main.cpp.i:
+	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/main.cpp.i
+.PHONY : main.cpp.i
 
-sfm.s: sfm.cpp.s
+main.s: main.cpp.s
 
-.PHONY : sfm.s
+.PHONY : main.s
 
 # target to generate assembly for a file
-sfm.cpp.s:
-	$(MAKE) -f CMakeFiles/sfm.dir/build.make CMakeFiles/sfm.dir/sfm.cpp.s
-.PHONY : sfm.cpp.s
+main.cpp.s:
+	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/main.cpp.s
+.PHONY : main.cpp.s
 
 # Help Target
 help:
@@ -158,10 +158,10 @@ help:
 	@echo "... depend"
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
-	@echo "... sfm"
-	@echo "... sfm.o"
-	@echo "... sfm.i"
-	@echo "... sfm.s"
+	@echo "... main"
+	@echo "... main.o"
+	@echo "... main.i"
+	@echo "... main.s"
 .PHONY : help
 
 
