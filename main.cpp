@@ -244,7 +244,7 @@ void get_matched_colors(
 	}
 }
 
-void reconstruct(Mat& K, Mat& R1, Mat& T1, Mat& R2, Mat& T2, vector<Point2f>& p1, vector<Point2f>& p2, vector<Point3f>& structure)//与双目的不同，有修改
+void reconstruct(Mat& K, Mat& R1, Mat& T1, Mat& R2, Mat& T2, vector<Point2f>& p1, vector<Point2f>& p2, vector<Point3d>& structure)//与双目的不同，有修改
 {
 	//����������ͶӰ����[R T]��triangulatePointsֻ֧��float��
 	Mat proj1(3, 4, CV_32FC1);
@@ -299,7 +299,7 @@ void maskout_colors(vector<Vec3b>& p1, Mat& mask)
 	}
 }
 
-void save_structure(string file_name, vector<Mat>& rotations, vector<Mat>& motions, vector<Point3f>& structure, vector<Vec3b>& colors)
+void save_structure(string file_name, vector<Mat>& rotations, vector<Mat>& motions, vector<Point3d>& structure, vector<Vec3b>& colors)
 {
 	int n = (int)rotations.size();
 
@@ -334,6 +334,8 @@ void save_structure(string file_name, vector<Mat>& rotations, vector<Mat>& motio
 		fs << colors[i];
 	}
 	fs << "]";
+	
+
 
 	fs.release();
 }
@@ -348,7 +350,7 @@ void save_structure(string file_name, vector<Mat>& rotations, vector<Mat>& motio
 void get_objpoints_and_imgpoints(
 	vector<DMatch>& matches,//从第二张图开始，每两张图的matches，其中包含很多个match_features
 	vector<int>& struct_indices,
-	vector<Point3f>& structure,
+	vector<Point3d>& structure,
 	vector<KeyPoint>& key_points,//后一张图的key points
 	vector<Point3f>& object_points,
 	vector<Point2f>& image_points)
@@ -381,8 +383,8 @@ void fusion_structure(
 	vector<DMatch>& matches,
 	vector<int>& struct_indices,
 	vector<int>& next_struct_indices,
-	vector<Point3f>& structure,
-	vector<Point3f>& next_structure,
+	vector<Point3d>& structure,
+	vector<Point3d>& next_structure,
 	vector<Vec3b>& colors,
 	vector<Vec3b>& next_colors
 	)
@@ -409,11 +411,12 @@ void init_structure(//初始化
 	vector<vector<KeyPoint>>& key_points_for_all,
 	vector<vector<Vec3b>>& colors_for_all,
 	vector<vector<DMatch>>& matches_for_all,
-	vector<Point3f>& structure,
+	vector<Point3d>& structure,
 	vector<vector<int>>& correspond_struct_idx,
 	vector<Vec3b>& colors,
 	vector<Mat>& rotations,
-	vector<Mat>& motions
+	vector<Mat>& motions,
+	vector<Mat>& camera_cor
 	)
 {
 	//����ͷ����ͼ��֮���ı任����
@@ -435,6 +438,10 @@ void init_structure(//初始化
 	reconstruct(K, R0, T0, R, T, p1, p2, structure);
 	rotations = { R0, R };
 	motions = { T0, T };
+	Mat camera_cor01 = (Mat_<double>(3, 1) << 0,0,0);
+	Mat camera_cor02 = R*camera_cor01+T;
+	camera_cor.push_back(camera_cor01);
+  	camera_cor.push_back(camera_cor02);
 
 	//将correspond_struct_idx变为key_points_for_all的形式
 	correspond_struct_idx.clear();
@@ -456,6 +463,135 @@ void init_structure(//初始化
 		correspond_struct_idx[1][matches[i].trainIdx] = idx;
 		++idx;
 	}
+}
+/////////////////////////////////////////////////////////////////////////
+//////////////// Bundle Adjustment-Google ceres//////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+
+//定义代价函数
+struct ReprojectCost
+{
+    cv::Point2d observation;
+
+    ReprojectCost(cv::Point2d& observation)
+        : observation(observation)
+    {
+    }
+   //使用模板的目的就是能够让程序员编写与类型无关的代码
+  //AutoDiffCostFunction<ReprojectCost, 2, 4, 6, 3>
+    template <typename T>
+    bool operator()(const T* const intrinsic, const T* const extrinsic, const T* const pos3d, T* residuals) const//pos3d:对应的3D点；observation:相应的图片的坐标，
+   //通过对3D点来计算2D坐标值与实际值比较，检查R，T的正确性
+    {
+        const T* r = extrinsic;//外参 R
+        const T* t = &extrinsic[3];//T
+
+        T pos_proj[3];//定义一个长度为4的pos_proj
+
+       AngleAxisRotatePoint(r, pos3d, pos_proj);//y=r(angle_axis)pos3d,根据R进行旋转变化
+
+        // Apply the camera translation
+        pos_proj[0] += t[0];//平移变化
+        pos_proj[1] += t[1];
+        pos_proj[2] += t[2];
+
+        const T x = pos_proj[0] / pos_proj[2];//求x和y
+        const T y = pos_proj[1] / pos_proj[2];
+
+        const T fx = intrinsic[0];//读取内参矩阵
+        const T fy = intrinsic[1];
+        const T cx = intrinsic[2];
+        const T cy = intrinsic[3];
+
+        // Apply intrinsic
+        const T u = fx * x + cx;//这是啥？
+        const T v = fy * y + cy;
+
+        residuals[0] = u - T(observation.x);//反向投影误差
+        residuals[1] = v - T(observation.y);
+
+        return true;
+    }
+};
+//使用
+ //Solver求解BA，其中使用了Ceres提供的Huber函数作为损失函数
+void bundle_adjustment(
+    cv::Mat& intrinsic,
+    vector<cv::Mat>& extrinsics,
+    vector<vector<int> >& correspond_struct_idx,
+    vector<vector<cv::KeyPoint> >& key_points_for_all,
+    vector<cv::Point3d>& structure
+)
+{
+    Problem problem;
+
+    // load extrinsics (rotations and motions)
+    for (size_t i = 0; i < extrinsics.size(); ++i)
+    {
+        problem.AddParameterBlock(extrinsics[i].ptr<double>(), 6);//Add a parameter block with appropriate size and parameterization to the problem.
+       //Repeated calls with the same arguments are ignored. Repeated calls with the same double pointer but a different size results in undefined behavior.
+    }
+    // fix the first camera.
+    problem.SetParameterBlockConstant(extrinsics[0].ptr<double>());//Hold the indicated parameter block constant during optimization.保持第一个外惨矩阵不变
+
+    // load intrinsic
+    problem.AddParameterBlock(intrinsic.ptr<double>(), 4); // fx, fy, cx, cy
+
+    // load points
+    LossFunction* loss_function = new HuberLoss(4);   // loss function make bundle adjustment robuster.
+    for (size_t img_idx = 0; img_idx < correspond_struct_idx.size(); ++img_idx)
+    {
+        vector<int>& point3d_ids = correspond_struct_idx[img_idx];
+        vector<cv::KeyPoint>& key_points = key_points_for_all[img_idx];
+        for (size_t point_idx = 0; point_idx < point3d_ids.size(); ++point_idx)
+        {
+            int point3d_id = point3d_ids[point_idx];
+            if (point3d_id < 0)
+                continue;
+
+            cv::Point2d observed = key_points[point_idx].pt;//corresponding 2D points coordinates with feasible 3D point
+            // 模板参数中，第一个为代价函数的类型，第二个为代价的维度，剩下三个分别为代价函数第一第二还有第三个参数的维度
+            CostFunction* cost_function = new AutoDiffCostFunction<ReprojectCost, 2, 4, 6, 3>(new ReprojectCost(observed));
+            //向问题中添加误差项
+            problem.AddResidualBlock(//adds a residual block to the problem,implicitly adds the parameter blocks(This causes additional correctness checking) if they are not present
+                cost_function,
+                loss_function,
+                intrinsic.ptr<double>(),            // Intrinsic
+                extrinsics[img_idx].ptr<double>(),  // View Rotation and Translation
+                &(structure[point3d_id].x)          // Point in 3D space
+            );
+        }
+    }
+
+    // Solve BA
+    Solver::Options ceres_config_options;
+    ceres_config_options.minimizer_progress_to_stdout = false;
+    ceres_config_options.logging_type = SILENT;
+    ceres_config_options.num_threads = 1;//Number of threads to be used for evaluating the Jacobian and estimation of covariance.
+    ceres_config_options.preconditioner_type = JACOBI;
+   ceres_config_options.linear_solver_type = DENSE_SCHUR;
+    // ceres_config_options.linear_solver_type = ceres::SPARSE_SCHUR;//ype of linear solver used to compute the solution to the linear least squares problem in each iteration of the Levenberg-Marquardt algorithm
+    // ceres_config_options.sparse_linear_algebra_library_type = ceres::EIGEN_SPARSE;
+
+    Solver::Summary summary;
+    Solve(ceres_config_options, &problem, &summary);
+
+    if (!summary.IsSolutionUsable())
+    {
+        std::cout << "Bundle Adjustment failed." << std::endl;
+    }
+    else
+    {
+        // Display statistics about the minimization
+        std::cout << std::endl
+            << "Bundle Adjustment statistics (approximated RMSE):\n"
+            << " #views: " << extrinsics.size() << "\n"
+            << " #residuals: " << summary.num_residuals << "\n"
+            << " Initial RMSE: " << std::sqrt(summary.initial_cost / summary.num_residuals) << "\n"
+            << " Final RMSE: " << std::sqrt(summary.final_cost / summary.num_residuals) << "\n"
+            << " Time (s): " << summary.total_time_in_seconds << "\n"
+            << std::endl;
+    }
 }
 
 // void get_file_names(string dir_name, vector<string> & names)//读取文件列表的库，最后得到文件列表
@@ -503,82 +639,83 @@ int main( int argc, char** argv )
 	// vector<Mat> motions;
 
 	//初始化structure
-	  int start = stoi(argv[1]);
-  int end = stoi(argv[2]);
-  Mat K(Matx33d(
-    350.6847, 0, 332.4661,
-    0, 350.0606, 163.7461,
-    0, 0, 1));
-  Mat yellow = (Mat_<double>(1, 3) << 0,255,255);
-  Mat blue = (Mat_<double>(1, 3) << 255,0,0);
-  Mat orange = (Mat_<double>(1, 3) << 0,0,255);
+	int start = stoi(argv[1]);
+	int end = stoi(argv[2]);
+	Mat K(Matx33d(
+	350.6847, 0, 332.4661,
+	0, 350.0606, 163.7461,
+	0, 0, 1));
+	Mat yellow = (Mat_<double>(1, 3) << 0,255,255);
+	Mat blue = (Mat_<double>(1, 3) << 255,0,0);
+	Mat orange = (Mat_<double>(1, 3) << 0,0,255);
 
-  vector<vector<KeyPoint> > key_points_for_all;
-  vector<vector<Vec3b> > colors_for_all;
-  vector<vector<DMatch> > matches_for_all;
+	vector<vector<KeyPoint> > key_points_for_all;
+	vector<vector<Vec3b> > colors_for_all;
+	vector<vector<DMatch> > matches_for_all;
+	vector<Mat> camera_cor;
 
-  int imgId = 0;
-  for(int i = start; i <= end; i++)
-  {
-    vector<KeyPoint> feature;
-    vector<Vec3b> colors;
-    ifstream csvPath ( "result/"+to_string(i)+".csv" );
-    string line, x, y, label; 
-    int labelId;
-    Mat imgLast, imgNext, outImg;
-    // Mat img = imread("result/"+to_string(i)+".png"); 
-    while (getline(csvPath, line)) 
-    {  
-        stringstream liness(line);  
-        getline(liness, x, ',');  
-        getline(liness, y, ','); 
-        getline(liness, label, ',');
-        
-        // circle(img, Point (stoi(x),stoi(y)), 3, Scalar (0,0,0), CV_FILLED);
-        if(label == "blue"){
-          labelId = 0;
-          colors.push_back(blue);
-        }
-        if(label == "yellow"){
-          labelId = 1;
-          colors.push_back(yellow);
-        }
-        if(label == "orange"){
-          labelId = 2;
-          colors.push_back(orange);
-        }
-        feature.push_back(KeyPoint(stof(x),stof(y),3,-1,0,0,labelId));
-    }
-    // namedWindow("img", WINDOW_NORMAL);
-    // imshow("img", img);
-    // waitKey(0);
-    key_points_for_all.push_back(feature);
-    colors_for_all.push_back(colors);
-    if (imgId > 0){
-      vector<DMatch> matched;
-      matchFeatures(imgId, key_points_for_all[imgId-1], key_points_for_all[imgId], matched);
-      matches_for_all.push_back(matched);
+	int imgId = 0;
+	for(int i = start; i <= end; i++)
+	{
+		vector<KeyPoint> feature;
+		vector<Vec3b> colors;
+		ifstream csvPath ( "result/"+to_string(i)+".csv" );
+		string line, x, y, label; 
+		int labelId;
+		Mat imgLast, imgNext, outImg;
+		// Mat img = imread("result/"+to_string(i)+".png"); 
+		while (getline(csvPath, line)) 
+		{  
+			stringstream liness(line);  
+			getline(liness, x, ',');  
+			getline(liness, y, ','); 
+			getline(liness, label, ',');
 
-      // imgLast = imread("result/"+to_string(imgId-1)+".png");
-      // imgNext = imread("result/"+to_string(imgId)+".png");
-      // resize(imgLast, imgLast, Size(320, 180));
-      // resize(imgNext, imgNext, Size(320, 180));
-      // drawMatches(imgLast, key_points_for_all[imgId-1], imgNext, key_points_for_all[imgId], matched, outImg);
-      // namedWindow("MatchSIFT", WINDOW_NORMAL);
-      // imshow("MatchSIFT",outImg);
-      // waitKey(0);
-    }
-    imgId++;
-  }      
-  // matchFeaturesForAll(key_points_for_all, matches_for_all);
-  //cout<<matches_for_all[0][0].queryIdx;
-  // vector<Point2f> p1;
-  // vector<Point2f> p2;
-  vector<Point3f> structure;
-  vector<vector<int> > correspond_struct_idx;
-  vector<Vec3b> colors;
-  vector<Mat> rotations;
-  vector<Mat> motions;
+			// circle(img, Point (stoi(x),stoi(y)), 3, Scalar (0,0,0), CV_FILLED);
+			if(label == "blue"){
+				labelId = 0;
+				colors.push_back(blue);
+			}
+			if(label == "yellow"){
+				labelId = 1;
+				colors.push_back(yellow);
+			}
+			if(label == "orange"){
+				labelId = 2;
+				colors.push_back(orange);
+			}
+			feature.push_back(KeyPoint(stof(x),stof(y),3,-1,0,0,labelId));
+		}
+		// namedWindow("img", WINDOW_NORMAL);
+		// imshow("img", img);
+		// waitKey(0);
+		key_points_for_all.push_back(feature);
+		colors_for_all.push_back(colors);
+		if (imgId > 0){
+			vector<DMatch> matched;
+			matchFeatures(imgId, key_points_for_all[imgId-1], key_points_for_all[imgId], matched);
+			matches_for_all.push_back(matched);
+
+		// imgLast = imread("result/"+to_string(imgId-1)+".png");
+		// imgNext = imread("result/"+to_string(imgId)+".png");
+		// resize(imgLast, imgLast, Size(320, 180));
+		// resize(imgNext, imgNext, Size(320, 180));
+		// drawMatches(imgLast, key_points_for_all[imgId-1], imgNext, key_points_for_all[imgId], matched, outImg);
+		// namedWindow("MatchSIFT", WINDOW_NORMAL);
+		// imshow("MatchSIFT",outImg);
+		// waitKey(0);
+		}
+		imgId++;
+	}      
+	// matchFeaturesForAll(key_points_for_all, matches_for_all);
+	//cout<<matches_for_all[0][0].queryIdx;
+	// vector<Point2f> p1;
+	// vector<Point2f> p2;
+	vector<Point3d> structure;
+	vector<vector<int> > correspond_struct_idx;
+	vector<Vec3b> colors;
+	vector<Mat> rotations;
+	vector<Mat> motions;
 	init_structure(//此时已做完第一张图和第二张图的重建，rotations和motions里放了两张图的R和T
 		K,
 		key_points_for_all,
@@ -588,8 +725,8 @@ int main( int argc, char** argv )
 		correspond_struct_idx,
 		colors,
 		rotations,
-		motions
-		);
+		motions,
+		camera_cor);
 
 
 	for (int i = 1; i < matches_for_all.size(); ++i)//遍历，从第二张图和第三张图开始，每次两张图的match
@@ -606,18 +743,19 @@ int main( int argc, char** argv )
 			structure,
 			key_points_for_all[i+1],
 			object_points,
-			image_points
-			);
+			image_points);
 
 		//bool solvePnPRansac(InputArray objectPoints, InputArray imagePoints, InputArray cameraMatrix, InputArray distCoeffs, OutputArray rvec, OutputArray tvec,
 		// bool useExtrinsicGuess=false, int iterationsCount=100, float reprojectionError=8.0, double confidence=0.99, OutputArray inliers=noArray(), int flags=SOLVEPNP_ITERATIVE )
 		//rvec – Output rotation vector (see Rodrigues() ) that, together with tvec , brings points from the model coordinate system to the camera coordinate system.
-    //tvec – Output translation vector.
+		//tvec – Output translation vector.
 		solvePnPRansac(object_points, image_points, K, noArray(), r, T);
 		Rodrigues(r, R);//Converts a rotation matrix to a rotation vector or vice versa.
 		//得到最新一张图的R和T
 		rotations.push_back(R);
 		motions.push_back(T);
+		Mat camera_cor02 = R*camera_cor.back()+T;
+		camera_cor.push_back(camera_cor02);
 
 		vector<Point2f> p1, p2;
 		vector<Vec3b> c1, c2;
@@ -625,7 +763,7 @@ int main( int argc, char** argv )
 		get_matched_colors(colors_for_all[i], colors_for_all[i + 1], matches_for_all[i], c1, c2);
 
 		//求3D点
-		vector<Point3f> next_structure;
+		vector<Point3d> next_structure;
 		reconstruct(K, rotations[i], motions[i], R, T, p1, p2, next_structure);//重建新的图
 		fusion_structure(
 			matches_for_all[i],
@@ -634,32 +772,54 @@ int main( int argc, char** argv )
 			structure,
 			next_structure,
 			colors,
-			c1
-			);
+			c1);
 	}
 
-  int resultSize = 1000;
-  float resultResize = 10;
-  cv::Mat result = cv::Mat::zeros(resultSize, resultSize, CV_8UC3);
-  // for(int u=0; u<structure.size(); u++){
-  //   cout << correspond_struct_idx[u][0] << " " << correspond_struct_idx[u][1] << endl;
-  // }
-  for(int u=0; u<structure.size(); u++){
-    cout<<structure[u]<<colors[u]<<endl;
-    int x = int(structure[u].x * resultResize+resultSize/2);
-    int y = int(structure[u].z * resultResize);
-    if (x >= 0 && x <= resultSize && y>= 0 && y <= resultSize){
-      cv::circle(result, cv::Point (x,y), 3, cv::Scalar (colors[u]), CV_FILLED);
-    }
-    
-    // result.at<cv::Vec3b>(x, y) = colors[u];
-    // structure[u].z = 0;
-    // 
-  };
-  cv::flip(result, result, 0);
-  cv::namedWindow("result", cv::WINDOW_NORMAL);
-  cv::imshow("result", result);
-  cv::waitKey(0);
-  save_structure("structure444.yml", rotations, motions, structure, colors);
-  cout<<"done"<<endl;
+    google::InitGoogleLogging(argv[0]);
+	cv::Mat intrinsic(cv::Matx41d(K.at<double>(0, 0), K.at<double>(1, 1), K.at<double>(0, 2), K.at<double>(1, 2)));
+	vector<cv::Mat> extrinsics;
+	for (size_t i = 0; i < rotations.size(); ++i)
+	{
+	  cv::Mat extrinsic(6, 1, CV_64FC1);
+	  cv::Mat r;
+	  Rodrigues(rotations[i], r);
+
+	  r.copyTo(extrinsic.rowRange(0, 3));
+	  motions[i].copyTo(extrinsic.rowRange(3, 6));
+
+	  extrinsics.push_back(extrinsic);
+	}
+
+	bundle_adjustment(intrinsic, extrinsics, correspond_struct_idx, key_points_for_all, structure);
+	int resultSize = 1000;
+	float resultResize = 10;
+	Mat result = Mat::zeros(resultSize, resultSize, CV_8UC3);
+	// for(int u=0; u<structure.size(); u++){
+	//   cout << correspond_struct_idx[u][0] << " " << correspond_struct_idx[u][1] << endl;
+	// }
+	for(int u=0; u<structure.size(); u++){
+		cout<<structure[u]<<colors[u]<<endl;
+		int x = int(structure[u].x * resultResize+resultSize/2);
+		int y = int(structure[u].z * resultResize);
+		if (x >= 0 && x <= resultSize && y>= 0 && y <= resultSize){
+		circle(result, Point (x,y), 3, Scalar (colors[u]), CV_FILLED);
+		}
+	}
+	for(int u=0; u<camera_cor.size(); u++){
+		cout<<camera_cor[u]<<endl;
+		int x = int(camera_cor[u].at<double>(0,0) * resultResize+resultSize/2);
+		int y = int(camera_cor[u].at<double>(2,0) * resultResize);
+		if (x >= 0 && x <= resultSize && y>= 0 && y <= resultSize){
+		circle(result, Point (x,y), 5, Scalar (255,255,255), CV_FILLED);
+		}
+	}
+	// result.at<Vec3b>(x, y) = colors[u];
+	// structure[u].z = 0;
+	// s
+	flip(result, result, 0);
+	namedWindow("result", WINDOW_NORMAL);
+	imshow("result", result);
+	waitKey(0);
+	save_structure("structure444.yml", rotations, motions, structure, colors);
+	cout<<"done"<<endl;
 }
