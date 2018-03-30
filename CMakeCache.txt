@@ -174,6 +174,9 @@ make1_BINARY_DIR:STATIC=/home/yumeng/project/master-thesis
 //Value Computed by CMake
 make1_SOURCE_DIR:STATIC=/home/yumeng/project/master-thesis
 
+//The directory containing a CMake configuration file for tinydir.
+tinydir_DIR:PATH=tinydir_DIR-NOTFOUND
+
 
 ########################
 # INTERNAL cache entries

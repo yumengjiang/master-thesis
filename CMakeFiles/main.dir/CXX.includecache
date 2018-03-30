@@ -43,6 +43,8 @@ opencv2/features2d.hpp
 -
 opencv2/core/core.hpp
 /home/yumeng/project/master-thesis/opencv2/core/core.hpp
+tinydir.h
+-
 gflags/gflags.h
 /home/yumeng/project/master-thesis/gflags/gflags.h
 glog/logging.h
