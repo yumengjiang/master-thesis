@@ -168,6 +168,9 @@ main_BINARY_DIR:STATIC=/media/weiming/Ny volym/ubuntu-project/master-thesis
 //Value Computed by CMake
 main_SOURCE_DIR:STATIC=/media/weiming/Ny volym/ubuntu-project/master-thesis
 
+//The directory containing a CMake configuration file for tinydir.
+tinydir_DIR:PATH=tinydir_DIR-NOTFOUND
+
 
 ########################
 # INTERNAL cache entries
