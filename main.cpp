@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <utility>
+#include <typeinfo>
 #include "math.h"
 #include "limits.h"
 #include "eigen3/Eigen/Core"
@@ -138,7 +139,7 @@ using ceres::Solve;
 // 		matches_for_all.push_back(matches);
 // 	}
 // }
-float mThreshold = 70;
+float mThreshold = 50;
 
 float computeResiduals(Point2f pt1, Point2f pt2){
   return pow((pow ((pt1.x-pt2.x),2) + pow ((pt1.y-pt2.y),2)),0.5f);
@@ -164,8 +165,11 @@ void matchFeatures(int imageId, vector<KeyPoint> featureLast,
     }
     if(minRes < mThreshold){
       matched.push_back(DMatch(index,i,imageId,minRes));
-     // cout << index << " " << i << " " << imageId << " " << minRes << endl;
+      cout << index << " " << i << " " << imageId << " " << minRes << endl;
     } 
+  	// minRes = computeResiduals(featureNext[i].pt, featureLast[i].pt);
+   //  matched.push_back(DMatch(i,i,imageId,minRes));
+   //  cout << i << " " << imageId << " " << minRes << endl;
   }
 
  //cout<<matched[0].trainIdx<<endl;
@@ -423,23 +427,37 @@ void init_structure(//初始化
 	vector<Point2f> p1, p2;
 	vector<Vec3b> c2;
 	Mat R, T;	//��ת������ƽ������
+	// Mat R = Mat::eye(3, 3, CV_64FC1);//第一张图的P
+	// Mat T = Mat::zeros(3, 1, CV_64FC1);
 	Mat mask;	//mask�д������ĵ�����ƥ���㣬����������ʧ����
 	get_matched_points(key_points_for_all[0], key_points_for_all[1], matches_for_all[0], p1, p2);
 	get_matched_colors(colors_for_all[0], colors_for_all[1], matches_for_all[0], colors, c2);
 	find_transform(K, p1, p2, R, T, mask);//求得第二张图的P
 
-	//��ͷ����ͼ��������ά�ؽ�
-	maskout_points(p1, mask);
-	maskout_points(p2, mask);
-	maskout_colors(colors, mask);
+	// cout << typeid(R).name() << endl;
 
-	Mat R0 = Mat::eye(3, 3, CV_64FC1);//第一张图的P
-	Mat T0 = Mat::zeros(3, 1, CV_64FC1);
+	// R = (Mat_<double>(3, 3) << 
+	// 	  9.9560424249063695e-01, 2.2065093399261937e-03,
+ //          -9.3633987692387607e-02, -3.2942530503443368e-03,
+ //          9.9992885978103663e-01, -1.1463999033329241e-02,
+ //          9.3602031129060376e-02, 1.1722060123062601e-02,
+ //          9.9554068378694860e-01);
+	// T = (Mat_<double>(3, 1) << 9.5221429224789178e-01, 2.1503065105397159e-01,
+ //          2.1690956812955897e-01);
+
+	//��ͷ����ͼ��������ά�ؽ�
+	// maskout_points(p1, mask);
+	// maskout_points(p2, mask);
+	// maskout_colors(colors, mask);
+
+	Mat R0 = Mat::eye(3, 3, CV_32FC1);//第一张图的P
+	Mat T0 = Mat::zeros(3, 1, CV_32FC1);
 	reconstruct(K, R0, T0, R, T, p1, p2, structure);
 	rotations = { R0, R };
 	motions = { T0, T };
 	Mat camera_cor01 = (Mat_<double>(3, 1) << 0,0,0);
 	Mat camera_cor02 = R*camera_cor01+T;
+
 	camera_cor.push_back(camera_cor01);
   	camera_cor.push_back(camera_cor02);
 
@@ -642,9 +660,13 @@ int main( int argc, char** argv )
 	int start = stoi(argv[1]);
 	int end = stoi(argv[2]);
 	Mat K(Matx33d(
-	350.6847, 0, 332.4661,
-	0, 350.0606, 163.7461,
-	0, 0, 1));
+		350.6847, 0, 332.4661,
+		0, 350.0606, 163.7461,
+		0, 0, 1));
+	// Mat K(Matx33d(
+	// 	349.891, 0, 318.852,
+	// 	0, 349.891, 180.437,
+	// 	0, 0, 1));
 	Mat yellow = (Mat_<double>(1, 3) << 0,255,255);
 	Mat blue = (Mat_<double>(1, 3) << 255,0,0);
 	Mat orange = (Mat_<double>(1, 3) << 0,0,255);
@@ -659,7 +681,7 @@ int main( int argc, char** argv )
 	{
 		vector<KeyPoint> feature;
 		vector<Vec3b> colors;
-		ifstream csvPath ( "result/"+to_string(i)+".csv" );
+		ifstream csvPath ( "result/"+to_string(i)+"_triangle.csv" );
 		string line, x, y, label; 
 		int labelId;
 		Mat imgLast, imgNext, outImg;
@@ -670,21 +692,19 @@ int main( int argc, char** argv )
 			getline(liness, x, ',');  
 			getline(liness, y, ','); 
 			getline(liness, label, ',');
+			labelId = stoi(label);
 
 			// circle(img, Point (stoi(x),stoi(y)), 3, Scalar (0,0,0), CV_FILLED);
-			if(label == "blue"){
-				labelId = 0;
+			if(labelId >= 0 && labelId <= 2){
 				colors.push_back(blue);
 			}
-			if(label == "yellow"){
-				labelId = 1;
+			if(labelId >= 3 && labelId <= 5){
 				colors.push_back(yellow);
 			}
-			if(label == "orange"){
-				labelId = 2;
+			if(labelId >= 6 && labelId <= 8){
 				colors.push_back(orange);
 			}
-			feature.push_back(KeyPoint(stof(x),stof(y),3,-1,0,0,labelId));
+			feature.push_back(KeyPoint(stof(x)*2,stof(y)*2,3,-1,0,0,labelId));
 		}
 		// namedWindow("img", WINDOW_NORMAL);
 		// imshow("img", img);
@@ -696,14 +716,14 @@ int main( int argc, char** argv )
 			matchFeatures(imgId, key_points_for_all[imgId-1], key_points_for_all[imgId], matched);
 			matches_for_all.push_back(matched);
 
-		// imgLast = imread("result/"+to_string(imgId-1)+".png");
-		// imgNext = imread("result/"+to_string(imgId)+".png");
-		// resize(imgLast, imgLast, Size(320, 180));
-		// resize(imgNext, imgNext, Size(320, 180));
-		// drawMatches(imgLast, key_points_for_all[imgId-1], imgNext, key_points_for_all[imgId], matched, outImg);
-		// namedWindow("MatchSIFT", WINDOW_NORMAL);
-		// imshow("MatchSIFT",outImg);
-		// waitKey(0);
+			// imgLast = imread("result/"+to_string(imgId-1)+".png");
+			// imgNext = imread("result/"+to_string(imgId)+".png");
+			// // resize(imgLast, imgLast, Size(320, 180));
+			// // resize(imgNext, imgNext, Size(320, 180));
+			// drawMatches(imgLast, key_points_for_all[imgId-1], imgNext, key_points_for_all[imgId], matched, outImg);
+			// namedWindow("MatchSIFT", WINDOW_NORMAL);
+			// imshow("MatchSIFT",outImg);
+			// waitKey(0);
 		}
 		imgId++;
 	}      
@@ -775,24 +795,24 @@ int main( int argc, char** argv )
 			c1);
 	}
 
-    google::InitGoogleLogging(argv[0]);
-	cv::Mat intrinsic(cv::Matx41d(K.at<double>(0, 0), K.at<double>(1, 1), K.at<double>(0, 2), K.at<double>(1, 2)));
-	vector<cv::Mat> extrinsics;
-	for (size_t i = 0; i < rotations.size(); ++i)
-	{
-	  cv::Mat extrinsic(6, 1, CV_64FC1);
-	  cv::Mat r;
-	  Rodrigues(rotations[i], r);
+ //    google::InitGoogleLogging(argv[0]);
+	// cv::Mat intrinsic(cv::Matx41d(K.at<double>(0, 0), K.at<double>(1, 1), K.at<double>(0, 2), K.at<double>(1, 2)));
+	// vector<cv::Mat> extrinsics;
+	// for (size_t i = 0; i < rotations.size(); ++i)
+	// {
+	//   cv::Mat extrinsic(6, 1, CV_64FC1);
+	//   cv::Mat r;
+	//   Rodrigues(rotations[i], r);
 
-	  r.copyTo(extrinsic.rowRange(0, 3));
-	  motions[i].copyTo(extrinsic.rowRange(3, 6));
+	//   r.copyTo(extrinsic.rowRange(0, 3));
+	//   motions[i].copyTo(extrinsic.rowRange(3, 6));
 
-	  extrinsics.push_back(extrinsic);
-	}
-
-	bundle_adjustment(intrinsic, extrinsics, correspond_struct_idx, key_points_for_all, structure);
+	//   extrinsics.push_back(extrinsic);
+	// }
+	// bundle_adjustment(intrinsic, extrinsics, correspond_struct_idx, key_points_for_all, structure);
+	
 	int resultSize = 1000;
-	float resultResize = 10;
+	float resultResize = 100;
 	Mat result = Mat::zeros(resultSize, resultSize, CV_8UC3);
 	// for(int u=0; u<structure.size(); u++){
 	//   cout << correspond_struct_idx[u][0] << " " << correspond_struct_idx[u][1] << endl;
@@ -808,14 +828,12 @@ int main( int argc, char** argv )
 	for(int u=0; u<camera_cor.size(); u++){
 		cout<<camera_cor[u]<<endl;
 		int x = int(camera_cor[u].at<double>(0,0) * resultResize+resultSize/2);
-		int y = int(camera_cor[u].at<double>(2,0) * resultResize);
+		int y = int(camera_cor[u].at<double>(2,0) * resultResize+resultSize/2);
 		if (x >= 0 && x <= resultSize && y>= 0 && y <= resultSize){
 		circle(result, Point (x,y), 5, Scalar (255,255,255), CV_FILLED);
 		}
 	}
-	// result.at<Vec3b>(x, y) = colors[u];
-	// structure[u].z = 0;
-	// s
+	
 	flip(result, result, 0);
 	namedWindow("result", WINDOW_NORMAL);
 	imshow("result", result);

@@ -1,3 +1,4 @@
-/home/yumeng/project/master-thesis/CMakeFiles/rebuild_cache.dir
-/home/yumeng/project/master-thesis/CMakeFiles/edit_cache.dir
-/home/yumeng/project/master-thesis/CMakeFiles/main.dir
+/media/weiming/Ny volym/ubuntu-project/master-thesis/CMakeFiles/rebuild_cache.dir
+/media/weiming/Ny volym/ubuntu-project/master-thesis/CMakeFiles/reconstruction.dir
+/media/weiming/Ny volym/ubuntu-project/master-thesis/CMakeFiles/edit_cache.dir
+/media/weiming/Ny volym/ubuntu-project/master-thesis/CMakeFiles/main.dir
