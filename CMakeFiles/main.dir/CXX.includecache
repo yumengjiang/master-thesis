@@ -44,7 +44,13 @@ opencv2/imgproc/imgproc.hpp
 opencv2/features2d.hpp
 -
 opencv2/core/core.hpp
+<<<<<<< HEAD
 /media/weiming/Ny volym/ubuntu-project/master-thesis/opencv2/core/core.hpp
+=======
+/home/yumeng/project/master-thesis/opencv2/core/core.hpp
+tinydir.h
+-
+>>>>>>> 45635cf3747d9bba2562ca39089ff15af5270ded
 gflags/gflags.h
 /media/weiming/Ny volym/ubuntu-project/master-thesis/gflags/gflags.h
 glog/logging.h
