@@ -48,10 +48,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = "/media/weiming/Ny volym/ubuntu-project/master-thesis"
+CMAKE_SOURCE_DIR = /home/yumeng/project/master-thesis
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = "/media/weiming/Ny volym/ubuntu-project/master-thesis"
+CMAKE_BINARY_DIR = /home/yumeng/project/master-thesis
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -80,9 +80,9 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start "/media/weiming/Ny volym/ubuntu-project/master-thesis/CMakeFiles" "/media/weiming/Ny volym/ubuntu-project/master-thesis/CMakeFiles/progress.marks"
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/yumeng/project/master-thesis/CMakeFiles /home/yumeng/project/master-thesis/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start "/media/weiming/Ny volym/ubuntu-project/master-thesis/CMakeFiles" 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/yumeng/project/master-thesis/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -109,19 +109,6 @@ preinstall/fast:
 depend:
 	$(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
-
-#=============================================================================
-# Target rules for targets named reconstruction
-
-# Build rule for target.
-reconstruction: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 reconstruction
-.PHONY : reconstruction
-
-# fast build rule for target.
-reconstruction/fast:
-	$(MAKE) -f CMakeFiles/reconstruction.dir/build.make CMakeFiles/reconstruction.dir/build
-.PHONY : reconstruction/fast
 
 #=============================================================================
 # Target rules for targets named main
@@ -163,33 +150,6 @@ main.cpp.s:
 	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/main.cpp.s
 .PHONY : main.cpp.s
 
-reconstruction.o: reconstruction.cpp.o
-
-.PHONY : reconstruction.o
-
-# target to build an object file
-reconstruction.cpp.o:
-	$(MAKE) -f CMakeFiles/reconstruction.dir/build.make CMakeFiles/reconstruction.dir/reconstruction.cpp.o
-.PHONY : reconstruction.cpp.o
-
-reconstruction.i: reconstruction.cpp.i
-
-.PHONY : reconstruction.i
-
-# target to preprocess a source file
-reconstruction.cpp.i:
-	$(MAKE) -f CMakeFiles/reconstruction.dir/build.make CMakeFiles/reconstruction.dir/reconstruction.cpp.i
-.PHONY : reconstruction.cpp.i
-
-reconstruction.s: reconstruction.cpp.s
-
-.PHONY : reconstruction.s
-
-# target to generate assembly for a file
-reconstruction.cpp.s:
-	$(MAKE) -f CMakeFiles/reconstruction.dir/build.make CMakeFiles/reconstruction.dir/reconstruction.cpp.s
-.PHONY : reconstruction.cpp.s
-
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -197,15 +157,11 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... rebuild_cache"
-	@echo "... reconstruction"
 	@echo "... edit_cache"
 	@echo "... main"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
-	@echo "... reconstruction.o"
-	@echo "... reconstruction.i"
-	@echo "... reconstruction.s"
 .PHONY : help
 
 
