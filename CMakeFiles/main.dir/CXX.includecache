@@ -17,6 +17,8 @@ utility
 -
 typeinfo
 -
+algorithm
+-
 math.h
 /home/yumeng/project/master-thesis/math.h
 limits.h
@@ -56,6 +58,16 @@ string
 ceres/rotation.h
 -
 ceres/problem.h
+-
+fstream
+-
+algorithm
+-
+cmath
+-
+cstdio
+-
+cstdlib
 -
 
 /usr/local/include/ceres/autodiff_cost_function.h
