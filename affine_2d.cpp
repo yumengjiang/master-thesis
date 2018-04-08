@@ -134,7 +134,7 @@ void init_structure(//初始化
 
 	Mat affine(Matx33d(0,0,0,0,0,0,0,0,1)), affine_tmp;
 	Mat mask;
-	affine_tmp = estimateAffine2D(p1, p2, mask);
+	affine_tmp = estimateAffine2D(p1, p2, mask, RANSAC, 0.05);
 	if (affine_tmp.rows == 0){
     	cout << "Fail to estimate affine transformation" << endl;
     	return;
@@ -362,7 +362,7 @@ int main( int argc, char** argv )
 		
 		Mat affine(Matx33d(0,0,0,0,0,0,0,0,1)), affine_tmp;
 		Mat mask;
-		affine_tmp = estimateAffine2D(p1, p2, mask);
+		affine_tmp = estimateAffine2D(p1, p2, mask, RANSAC, 0.02);
 		if (affine_tmp.rows == 0){
 	    	cout << "Fail to estimate affine transformation" << endl;
 	    	return 0;
@@ -371,6 +371,11 @@ int main( int argc, char** argv )
 	    affine = affine*affines.back();
 
 		affines.push_back(affine);
+
+
+		maskout_points(p1, mask);
+		maskout_points(p2, mask);
+		maskout_colors(c1, mask);
 
 		vector<Point2d> next_structure;
 		for(int j = 0; j < p2.size(); j++){
@@ -390,19 +395,19 @@ int main( int argc, char** argv )
 			);
 	}
 	
-	for (int i = 0; i < correspond_struct_idx.size(); ++i){
-		for (int j = 0; j < correspond_struct_idx[i].size(); ++j){
-			cout << correspond_struct_idx[i][j] << " ";
-		}
-		cout << "\n";
-	}
+	// for (int i = 0; i < correspond_struct_idx.size(); ++i){
+	// 	for (int j = 0; j < correspond_struct_idx[i].size(); ++j){
+	// 		cout << correspond_struct_idx[i][j] << " ";
+	// 	}
+	// 	cout << "\n";
+	// }
 
 	int resultSize = 1000;
 	double resultResize = 100;
 	Mat result = Mat::zeros(resultSize, resultSize, CV_8UC3);
 	vector<Point2d> path;
 	for(int i = 0; i < structure.size(); i++){
-		cout << structure[i] << colors[i] << endl;
+		// cout << structure[i] << colors[i] << endl;
 		int x = int(structure[i].x * resultResize + resultSize/2);
 		int y = int(structure[i].y * resultResize + resultSize/2);
 		if (x >= 0 && x <= resultSize && y >= 0 && y <= resultSize){
@@ -412,8 +417,8 @@ int main( int argc, char** argv )
 
 	for(int i = 0; i < affines.size(); i++){
 		Mat camera_cor(Matx31d(0,0,1));
-		camera_cor = affines[i] * camera_cor;
-		cout << camera_cor << endl;
+		camera_cor = affines[i].inv() * camera_cor;
+		// cout << camera_cor << endl;
 		int x = int(camera_cor.at<double>(0,0) * resultResize + resultSize/2);
 		int y = int(camera_cor.at<double>(1,0) * resultResize + resultSize/2);
 		if (x >= 0 && x <= resultSize && y >= 0 && y <= resultSize){
