@@ -37,12 +37,6 @@ opencv2/opencv.hpp
 -
 opencv2/xfeatures2d.hpp
 /media/weiming/Ny volym/ubuntu-project/master-thesis/opencv2/xfeatures2d.hpp
-opencv2/highgui.hpp
--
-opencv2/imgproc/imgproc.hpp
-/media/weiming/Ny volym/ubuntu-project/master-thesis/opencv2/imgproc/imgproc.hpp
-opencv2/features2d.hpp
--
 opencv2/core/core.hpp
 /media/weiming/Ny volym/ubuntu-project/master-thesis/opencv2/core/core.hpp
 gflags/gflags.h
