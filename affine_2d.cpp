@@ -53,62 +53,64 @@ struct KP
 	int id;
 };
 
-float mThreshold = 0.1;
+
 
 float computeResidual(Point3d pt1, Point3d pt2){
-  return pow((pow ((pt1.x-pt2.x),2) + pow ((pt1.y-pt2.y),2)),0.5);
+	return pow((pow ((pt1.x-pt2.x),2) + pow ((pt1.y-pt2.y),2)),0.5);
 }
 
 void matchFeatures(int imageId, vector<KP> featureLast, 
                   vector<KP> featureNext, vector<DMatch> &matched){
-  float res, minRes;
-  int featureLastRow = featureLast.size();
-  int featureNextRow = featureNext.size();
-  int index;
+	float mThreshold = 0.1;
+	float res, minRes;
+	int featureLastRow = featureLast.size();
+	int featureNextRow = featureNext.size();
+	int index;
 
-  for(int i = 0; i < featureNextRow; i++){
-    minRes = mThreshold;
-    for(int j = 0; j < featureLastRow; j++){
-      if(featureNext[i].id == featureLast[j].id){
-        res = computeResidual(featureNext[i].pt, featureLast[j].pt);//check residuals, find the smallest one, save it
-        if(res < minRes){
-          minRes = res;
-          index = j;
-        }
-      }
-    }
-    if(minRes < mThreshold){
-      matched.push_back(DMatch(index,i,imageId,minRes));
-      // cout << index << " " << i << " " << imageId << " " << minRes << endl;
-    } 
-  }
+	for(int i = 0; i < featureNextRow; i++){
+		minRes = mThreshold;
+		for(int j = 0; j < featureLastRow; j++){
+		    if(featureNext[i].id == featureLast[j].id){
+		        res = computeResidual(featureNext[i].pt, featureLast[j].pt);//check residuals, find the smallest one, save it
+				if(res < minRes){
+				    minRes = res;
+				    index = j;
+		    	}
+			}
+		}
+		if(minRes < mThreshold){
+			matched.push_back(DMatch(index,i,imageId,minRes));
+			cout << index << " " << i << " " << imageId << " " << minRes << endl;
+		} 
+	}
 }
 
 void matchFeaturesAffine(int imageId, Mat affine, vector<KP> featureLast, 
                   vector<KP> featureNext, vector<DMatch> &matched){
-  float res, minRes;
-  int featureLastRow = featureLast.size();
-  int featureNextRow = featureNext.size();
-  int index;
-  matched.clear();
+	float mThreshold = 0.1;
+	float res, minRes;
+	int featureLastRow = featureLast.size();
+	int featureNextRow = featureNext.size();
+	int index;
+	matched.clear();
 
-  for(int i = 0; i < featureNextRow; i++){
-    minRes = mThreshold;
-    for(int j = 0; j < featureLastRow; j++){
-      if(featureNext[i].id == featureLast[j].id){
-      	Point3d affine_pt(Mat(affine*Mat(featureLast[j].pt))); 
-        res = computeResidual(featureNext[i].pt, affine_pt);//check residuals, find the smallest one, save it
-        if(res < minRes){
-          minRes = res;
-          index = j;
-        }
-      }
-    }
-    if(minRes < mThreshold){
-      matched.push_back(DMatch(index,i,imageId,minRes));
-      cout << index << " " << i << " " << imageId << " " << minRes << endl;
-    } 
-  }
+	for(int i = 0; i < featureNextRow; i++){
+		minRes = mThreshold;
+		for(int j = 0; j < featureLastRow; j++){
+		    if(featureNext[i].id == featureLast[j].id){
+		  	    Point3d affine_pt(Mat(affine*Mat(featureLast[j].pt))); 
+		        res = computeResidual(featureNext[i].pt, affine_pt);//check residuals, find the smallest one, save it
+		        if(res < minRes){
+		            minRes = res;
+		            index = j;
+		        }
+		    }
+		}
+		if(minRes < mThreshold){
+		    matched.push_back(DMatch(index,i,imageId,minRes));
+		    // cout << index << " " << i << " " << imageId << " " << minRes << endl;
+		} 
+	}
 }
 
 void get_matched_points(//根据matches,返回匹配时两张图分别的坐标
@@ -167,7 +169,7 @@ void reconstruct(//初始化
 	vector<Vec3b>& next_colors,
 	vector<DMatch>& matches,
 	vector<Vec3b>& c1,
-	vector<Point3d> p2,
+	vector<Point3d>& p2,
 	Mat& affine
 	)
 {
@@ -175,16 +177,22 @@ void reconstruct(//初始化
 	vector<Point2d> p3, p4;
 	vector<double> res;
 	vector<Vec3b> c2;
+	Mat affine_tmp;
 	get_matched_points(last_keypoints, next_keypoints, last_colors, next_colors, matches, p1, p2, c1, c2);
 
 	// Mat mask;
-	convertPointsHomogeneous(p1, p3);
-	convertPointsHomogeneous(p2, p4);
-	affine = estimateRigidTransform(p3, p4, false);
-	if (affine.rows == 0){
+
+	for(int i = 0; i < p1.size(); i++){
+		p3.push_back(Point2d(p1[i].x,p1[i].y));
+		p4.push_back(Point2d(p2[i].x,p2[i].y));
+	}
+	
+	affine_tmp = estimateRigidTransform(p3, p4, false);
+	if (affine_tmp.rows == 0){
     	cout << "Fail to estimate affine transformation" << endl;
     }
-    affine /= pow(pow(affine.at<double>(0,0),2)+pow(affine.at<double>(0,1),2),0.5);
+    affine_tmp /= pow(pow(affine_tmp.at<double>(0,0),2)+pow(affine_tmp.at<double>(0,1),2),0.5);
+    affine_tmp.convertTo(affine.rowRange(0,2),CV_64F);
 }
 
 void init_structure(//初始化
@@ -197,14 +205,17 @@ void init_structure(//初始化
 	vector<Mat>& affines
 	)
 {
-	Mat affine(Matx33d(0,0,0,0,0,0,0,0,1)), affine_tmp;
+	Mat affine(Matx33d(0,0,0,0,0,0,0,0,1));
 	vector<Point3d> p2;
-	reconstruct(keypoints_for_all[0], keypoints_for_all[1], colors_for_all[0], colors_for_all[1], matches_for_all[0], colors, p2, affine_tmp);
+	reconstruct(keypoints_for_all[0], keypoints_for_all[1], colors_for_all[0], colors_for_all[1], matches_for_all[0], colors, p2, affine);
 
     matchFeaturesAffine(1, affine, keypoints_for_all[0], keypoints_for_all[1], matches_for_all[0]);
-    reconstruct(keypoints_for_all[0], keypoints_for_all[1], colors_for_all[0], colors_for_all[1], matches_for_all[0], colors, p2, affine_tmp);
+    reconstruct(keypoints_for_all[0], keypoints_for_all[1], colors_for_all[0], colors_for_all[1], matches_for_all[0], colors, p2, affine);
 
-    affine_tmp.convertTo(affine.rowRange(0,2),CV_64F);
+    // for (int i = 0; i < matches_for_all.size(); ++i)
+    // 	for (int j = 0; j < matches_for_all[i].size(); ++j)
+    // 		cout << matches_for_all[i][j].distance << endl;
+
     affine = affine*affines.back();
 	affines.push_back(affine);
 
@@ -639,32 +650,20 @@ int main( int argc, char** argv )
 			image_points
 			);
 
-		vector<Point3d> p1, p2;
-		vector<Vec3b> c1, c2;
-		get_matched_points(keypoints_for_all[i], keypoints_for_all[i + 1], colors_for_all[i], colors_for_all[i+1], matches_for_all[i], p1, p2, c1, c2);//返回p1,p2，即两张图在匹配时的对应的坐标
-		
-		Mat affine(Matx33d(0,0,0,0,0,0,0,0,1)), affine_tmp;
-		// Mat mask;
-		affine_tmp = estimateRigidTransform(p1, p2, false);
-		affine_tmp /= pow(pow(affine_tmp.at<double>(0,0),2)+pow(affine_tmp.at<double>(0,1),2),0.5);
-		if (affine_tmp.rows == 0){
-	    	cout << "Fail to estimate affine transformation" << endl;
-	    	return 0;
-	    }
-	    affine_tmp.convertTo(affine.rowRange(0,2),CV_64F);
-	    affine = affine*affines.back();
+		Mat affine(Matx33d(0,0,0,0,0,0,0,0,1));
+		vector<Point3d> p2;
+		vector<Vec3b> c1;
+		reconstruct(keypoints_for_all[i], keypoints_for_all[i+1], colors_for_all[i], colors_for_all[i+1], matches_for_all[i], c1, p2, affine);
 
+	    matchFeaturesAffine(i+1, affine, keypoints_for_all[i], keypoints_for_all[i+1], matches_for_all[i]);
+	    reconstruct(keypoints_for_all[i], keypoints_for_all[i+1], colors_for_all[i], colors_for_all[i+1], matches_for_all[i], c1, p2, affine);
+
+	    affine = affine*affines.back();
 		affines.push_back(affine);
 
-	// 	maskout_points(p1, mask);
-	// 	maskout_points(p2, mask);
-	// 	maskout_colors(c1, mask);
-
 		vector<Point3d> next_structure;
-		for(int j = 0; j < p2.size(); j++){
-			Mat pt(Matx31d(p2[j].x,p2[j].y,1));
-			pt = affine.inv() * pt;
-			next_structure.push_back(Point3d(pt.rowRange(0,2)));
+		for(int i = 0; i < p2.size(); i++){
+			next_structure.push_back(Point3d(Mat(affine.inv()*Mat(p2[i]))));
 		}
 
 		fusion_structure(
@@ -709,10 +708,12 @@ int main( int argc, char** argv )
 	Mat result = Mat::zeros(resultSize, resultSize, CV_8UC3);
 	vector<Point2d> path;
 	
+	int count = 0;
 	for(int i = 0; i < structure.size(); i++){
 		// cout << count_same_structure[i] << endl;
 		// cout << structure[i] << colors[i] << endl;
 		if(count_same_structure[i] > 2){
+			count++;
 			int x = int(structure[i].x * resultResize + resultSize/2);
 			int y = int(structure[i].y * resultResize + resultSize/2);
 			if (x >= 0 && x <= resultSize && y >= 0 && y <= resultSize){
@@ -720,11 +721,11 @@ int main( int argc, char** argv )
 			}
 		}
 	}
+	cout << "Number of structure: " << count << endl;
 
 	for(int i = 0; i < affines.size(); i++){
 		Mat camera_cor(Matx31d(0,0,1));
 		camera_cor = affines[i].inv() * camera_cor;
-		cout << affines[i] << endl;
 		int x = int(camera_cor.at<double>(0,0) * resultResize + resultSize/2);
 		int y = int(camera_cor.at<double>(1,0) * resultResize + resultSize/2);
 		if (x >= 0 && x <= resultSize && y >= 0 && y <= resultSize){
