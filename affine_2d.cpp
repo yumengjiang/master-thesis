@@ -61,7 +61,7 @@ float computeResidual(Point3d pt1, Point3d pt2){
 
 void matchFeatures(int imageId, vector<KP> featureLast, 
                   vector<KP> featureNext, vector<DMatch> &matched){
-	float mThreshold = 0.1;
+	float mThreshold = 0.2;
 	float res, minRes;
 	int featureLastRow = featureLast.size();
 	int featureNextRow = featureNext.size();
@@ -80,7 +80,7 @@ void matchFeatures(int imageId, vector<KP> featureLast,
 		}
 		if(minRes < mThreshold){
 			matched.push_back(DMatch(index,i,imageId,minRes));
-			cout << index << " " << i << " " << imageId << " " << minRes << endl;
+			// cout << index << " " << i << " " << imageId << " " << minRes << endl;
 		} 
 	}
 }
@@ -162,6 +162,24 @@ void maskout_colors(vector<Vec3b>& p, Mat& mask)
 	}
 }
 
+void estimateTransform2D(vector<Point2d> p1, vector<Point2d> p2, Mat& affine){
+	if(p1.size()<2){
+		cout << "Too few points to estimate transformation!" << endl;
+		return;
+	}
+	Mat M(2*p1.size(),4,CV_64F), B(2*p1.size(),1,CV_64F);
+	for(int i = 0; i < p1.size(); i++){
+		Mat m = (Mat_<double>(2,4) << p1[i].x, -p1[i].y, 1, 0, p1[i].y, p1[i].x, 0, 1);
+		m.copyTo(M.rowRange(2*i,2*i+2));
+		B.at<double>(2*i,0) = p2[i].x;
+		B.at<double>(2*i+1,0) = p2[i].y;
+	} 
+	Mat theta = (M.t()*M).inv()*(M.t())*B;
+	double a = theta.at<double>(0,0), b = theta.at<double>(1,0), tx = theta.at<double>(2,0), ty = theta.at<double>(3,0);
+	affine = (Mat_<double>(2,3) << a,-b,tx,b,a,ty);
+	// cout << affine << endl;
+}
+
 void reconstruct(//初始化
 	vector<KP>& last_keypoints,
 	vector<KP>& next_keypoints,
@@ -187,9 +205,10 @@ void reconstruct(//初始化
 		p4.push_back(Point2d(p2[i].x,p2[i].y));
 	}
 	
-	affine_tmp = estimateRigidTransform(p3, p4, false);
+	estimateTransform2D(p3, p4, affine_tmp);
+	// affine_tmp = estimateRigidTransform(p3, p4, false);
 	if (affine_tmp.rows == 0){
-    	cout << "Fail to estimate affine transformation" << endl;
+    	cout << "Fail to estimate affine transformation, number of points: " << p3.size() << endl;
     }
     affine_tmp /= pow(pow(affine_tmp.at<double>(0,0),2)+pow(affine_tmp.at<double>(0,1),2),0.5);
     affine_tmp.convertTo(affine.rowRange(0,2),CV_64F);
@@ -211,10 +230,6 @@ void init_structure(//初始化
 
     matchFeaturesAffine(1, affine, keypoints_for_all[0], keypoints_for_all[1], matches_for_all[0]);
     reconstruct(keypoints_for_all[0], keypoints_for_all[1], colors_for_all[0], colors_for_all[1], matches_for_all[0], colors, p2, affine);
-
-    // for (int i = 0; i < matches_for_all.size(); ++i)
-    // 	for (int j = 0; j < matches_for_all[i].size(); ++j)
-    // 		cout << matches_for_all[i][j].distance << endl;
 
     affine = affine*affines.back();
 	affines.push_back(affine);
@@ -295,257 +310,6 @@ void fusion_structure(
 	}
 }
 
-// struct ReprojectCost
-// {
-//     cv::Point3d observation;
-
-//     ReprojectCost(cv::Point3d& observation)
-//         : observation(observation)
-//     {
-//     }
-//    //使用模板的目的就是能够让程序员编写与类型无关的代码
-//   //AutoDiffCostFunction<ReprojectCost, 2, 4, 6, 3>
-//     template <typename T>
-//     bool operator()(const T* const intrinsic, const T* const extrinsic, const T* const pos3d, T* residuals) const//pos3d:对应的3D点；observation:相应的图片的坐标，
-//    //通过对3D点来计算2D坐标值与实际值比较，检查R，T的正确性
-//     {
-//         const T* r = extrinsic;//外参 R
-//         const T* t = &extrinsic[3];//T
-
-//         T pos_proj[3];//定义一个长度为4的pos_proj
-
-//        AngleAxisRotatePoint(r, pos3d, pos_proj);//y=r(angle_axis)pos3d,根据R进行旋转变化
-
-//         // Apply the camera translation
-//         pos_proj[0] += t[0];//平移变化
-//         pos_proj[1] += t[1];
-//         pos_proj[2] += t[2];
-
-//         const T x = pos_proj[0] / pos_proj[2];//求x和y
-//         const T y = pos_proj[1] / pos_proj[2];
-
-//         const T fx = intrinsic[0];//读取内参矩阵
-//         const T fy = intrinsic[1];
-//         const T cx = intrinsic[2];
-//         const T cy = intrinsic[3];
-
-//         // Apply intrinsic
-//         const T u = fx * x + cx;//这是啥？
-//         const T v = fy * y + cy;
-
-//         residuals[0] = u - T(observation.x);//反向投影误差
-//         residuals[1] = v - T(observation.y);
-
-//         return true;
-//     }
-// };
-
-// void bundle_adjustment(
-//     cv::Mat& intrinsic,
-//     vector<cv::Mat>& extrinsics,
-//     vector<vector<int> >& correspond_struct_idx,
-//     vector<vector<keypoint> >& keypoints_for_all,
-//     vector<cv::Point3d>& structure
-// )
-// {
-//     Problem problem;
-
-//     // load extrinsics (rotations and motions)
-//     for (size_t i = 0; i < extrinsics.size(); ++i)
-//     {
-//         problem.AddParameterBlock(extrinsics[i].ptr<double>(), 6);//Add a parameter block with appropriate size and parameterization to the problem.
-//        //Repeated calls with the same arguments are ignored. Repeated calls with the same double pointer but a different size results in undefined behavior.
-//     }
-//     // fix the first camera.
-//     problem.SetParameterBlockConstant(extrinsics[0].ptr<double>());//Hold the indicated parameter block constant during optimization.保持第一个外惨矩阵不变
-
-//     // load intrinsic
-//     problem.AddParameterBlock(intrinsic.ptr<double>(), 4); // fx, fy, cx, cy
-
-//     // load points
-//     LossFunction* loss_function = new HuberLoss(4);   // loss function make bundle adjustment robuster.
-//     for (size_t img_idx = 0; img_idx < correspond_struct_idx.size(); ++img_idx)
-//     {
-//         vector<int>& point3d_ids = correspond_struct_idx[img_idx];
-//         vector<keypoint>& keypoints = keypoints_for_all[img_idx];
-//         for (size_t point_idx = 0; point_idx < point3d_ids.size(); ++point_idx)
-//         {
-//             int point3d_id = point3d_ids[point_idx];
-//             if (point3d_id < 0)
-//                 continue;
-
-//             cv::Point3d observed = keypoints[point_idx].pt;//corresponding 2D points coordinates with feasible 3D point
-//             // 模板参数中，第一个为代价函数的类型，第二个为代价的维度，剩下三个分别为代价函数第一第二还有第三个参数的维度
-//             CostFunction* cost_function = new AutoDiffCostFunction<ReprojectCost, 2, 4, 6, 3>(new ReprojectCost(observed));
-//             //向问题中添加误差项
-//             problem.AddResidualBlock(//adds a residual block to the problem,implicitly adds the parameter blocks(This causes additional correctness checking) if they are not present
-//                 cost_function,
-//                 loss_function,
-//                 intrinsic.ptr<double>(),            // Intrinsic
-//                 extrinsics[img_idx].ptr<double>(),  // View Rotation and Translation
-//                 &(structure[point3d_id].x)          // Point in 3D space
-//             );
-//         }
-//     }
-
-//     // Solve BA
-//     Solver::Options ceres_config_options;
-//     ceres_config_options.minimizer_progress_to_stdout = false;
-//     ceres_config_options.logging_type = SILENT;
-//     ceres_config_options.num_threads = 1;//Number of threads to be used for evaluating the Jacobian and estimation of covariance.
-//     ceres_config_options.preconditioner_type = JACOBI;
-//     ceres_config_options.linear_solver_type = DENSE_SCHUR;
-//     // ceres_config_options.linear_solver_type = ceres::SPARSE_SCHUR;//ype of linear solver used to compute the solution to the linear least squares problem in each iteration of the Levenberg-Marquardt algorithm
-//     // ceres_config_options.sparse_linear_algebra_library_type = ceres::EIGEN_SPARSE;
-
-//     Solver::Summary summary;
-//     Solve(ceres_config_options, &problem, &summary);
-
-//     if (!summary.IsSolutionUsable())
-//     {
-//         std::cout << "Bundle Adjustment failed." << std::endl;
-//     }
-//     else
-//     {
-//         // Display statistics about the minimization
-//         std::cout << std::endl
-//         << "Bundle Adjustment statistics (approximated RMSE):\n"
-//         << " #views: " << extrinsics.size() << "\n"
-//         << " #residuals: " << summary.num_residuals << "\n"
-//         << " Initial RMSE: " << std::sqrt(summary.initial_cost / summary.num_residuals) << "\n"
-//         << " Final RMSE: " << std::sqrt(summary.final_cost / summary.num_residuals) << "\n"
-//         << " Time (s): " << summary.total_time_in_seconds << "\n"
-//         << std::endl;
-//     }
-// }
-
-
-
-
-
-// struct ReprojectCost
-// {
-//     cv::Point3d observation;
-
-//     ReprojectCost(cv::Point3d& observation)
-//         : observation(observation)
-//     {
-//     }
-//    //使用模板的目的就是能够让程序员编写与类型无关的代码
-//   //AutoDiffCostFunction<ReprojectCost, 2, 4, 6, 3>
-//     template <typename T>
-//     bool operator()(const T* const intrinsic, const T* const extrinsic, const T* const pos3d, T* residuals) const//pos3d:对应的3D点；observation:相应的图片的坐标，
-//    //通过对3D点来计算2D坐标值与实际值比较，检查R，T的正确性
-//     {
-//         const T* r = extrinsic;//外参 R
-//         const T* t = &extrinsic[3];//T
-
-//         T pos_proj[3];//定义一个长度为4的pos_proj
-
-//        AngleAxisRotatePoint(r, pos3d, pos_proj);//y=r(angle_axis)pos3d,根据R进行旋转变化
-
-//         // Apply the camera translation
-//         pos_proj[0] += t[0];//平移变化
-//         pos_proj[1] += t[1];
-//         pos_proj[2] += t[2];
-
-//         const T x = pos_proj[0] / pos_proj[2];//求x和y
-//         const T y = pos_proj[1] / pos_proj[2];
-
-//         const T fx = intrinsic[0];//读取内参矩阵
-//         const T fy = intrinsic[1];
-//         const T cx = intrinsic[2];
-//         const T cy = intrinsic[3];
-
-//         // Apply intrinsic
-//         const T u = fx * x + cx;//这是啥？
-//         const T v = fy * y + cy;
-
-//         residuals[0] = u - T(observation.x);//反向投影误差
-//         residuals[1] = v - T(observation.y);
-
-//         return true;
-//     }
-// };
-
-// void bundle_adjustment(
-//     cv::Mat& intrinsic,
-//     vector<cv::Mat>& extrinsics,
-//     vector<vector<int> >& correspond_struct_idx,
-//     vector<vector<keypoint> >& keypoints_for_all,
-//     vector<cv::Point3d>& structure
-// )
-// {
-//     Problem problem;
-
-//     // load extrinsics (rotations and motions)
-//     for (size_t i = 0; i < extrinsics.size(); ++i)
-//     {
-//         problem.AddParameterBlock(extrinsics[i].ptr<double>(), 6);//Add a parameter block with appropriate size and parameterization to the problem.
-//        //Repeated calls with the same arguments are ignored. Repeated calls with the same double pointer but a different size results in undefined behavior.
-//     }
-//     // fix the first camera.
-//     problem.SetParameterBlockConstant(extrinsics[0].ptr<double>());//Hold the indicated parameter block constant during optimization.保持第一个外惨矩阵不变
-
-//     // load intrinsic
-//     problem.AddParameterBlock(intrinsic.ptr<double>(), 4); // fx, fy, cx, cy
-
-//     // load points
-//     LossFunction* loss_function = new HuberLoss(4);   // loss function make bundle adjustment robuster.
-//     for (size_t img_idx = 0; img_idx < correspond_struct_idx.size(); ++img_idx)
-//     {
-//         vector<int>& point3d_ids = correspond_struct_idx[img_idx];
-//         vector<keypoint>& keypoints = keypoints_for_all[img_idx];
-//         for (size_t point_idx = 0; point_idx < point3d_ids.size(); ++point_idx)
-//         {
-//             int point3d_id = point3d_ids[point_idx];
-//             if (point3d_id < 0)
-//                 continue;
-
-//             cv::Point3d observed = keypoints[point_idx].pt;//corresponding 2D points coordinates with feasible 3D point
-//             // 模板参数中，第一个为代价函数的类型，第二个为代价的维度，剩下三个分别为代价函数第一第二还有第三个参数的维度
-//             CostFunction* cost_function = new AutoDiffCostFunction<ReprojectCost, 2, 4, 6, 3>(new ReprojectCost(observed));
-//             //向问题中添加误差项
-//             problem.AddResidualBlock(//adds a residual block to the problem,implicitly adds the parameter blocks(This causes additional correctness checking) if they are not present
-//                 cost_function,
-//                 loss_function,
-//                 intrinsic.ptr<double>(),            // Intrinsic
-//                 extrinsics[img_idx].ptr<double>(),  // View Rotation and Translation
-//                 &(structure[point3d_id].x)          // Point in 3D space
-//             );
-//         }
-//     }
-
-//     // Solve BA
-//     Solver::Options ceres_config_options;
-//     ceres_config_options.minimizer_progress_to_stdout = false;
-//     ceres_config_options.logging_type = SILENT;
-//     ceres_config_options.num_threads = 1;//Number of threads to be used for evaluating the Jacobian and estimation of covariance.
-//     ceres_config_options.preconditioner_type = JACOBI;
-//     ceres_config_options.linear_solver_type = DENSE_SCHUR;
-//     // ceres_config_options.linear_solver_type = ceres::SPARSE_SCHUR;//ype of linear solver used to compute the solution to the linear least squares problem in each iteration of the Levenberg-Marquardt algorithm
-//     // ceres_config_options.sparse_linear_algebra_library_type = ceres::EIGEN_SPARSE;
-
-//     Solver::Summary summary;
-//     Solve(ceres_config_options, &problem, &summary);
-
-//     if (!summary.IsSolutionUsable())
-//     {
-//         std::cout << "Bundle Adjustment failed." << std::endl;
-//     }
-//     else
-//     {
-//         // Display statistics about the minimization
-//         std::cout << std::endl
-//         << "Bundle Adjustment statistics (approximated RMSE):\n"
-//         << " #views: " << extrinsics.size() << "\n"
-//         << " #residuals: " << summary.num_residuals << "\n"
-//         << " Initial RMSE: " << std::sqrt(summary.initial_cost / summary.num_residuals) << "\n"
-//         << " Final RMSE: " << std::sqrt(summary.final_cost / summary.num_residuals) << "\n"
-//         << " Time (s): " << summary.total_time_in_seconds << "\n"
-//         << std::endl;
-//     }
-// }
 
 int main( int argc, char** argv )
 {
@@ -587,21 +351,29 @@ int main( int argc, char** argv )
 	        getline(liness, Z, ','); 
 	        
 	        // circle(img, Point (stoi(x),stoi(y)), 3, Scalar (0,0,0), CV_FILLED);
-	        if(label == "blue"){
-	          id = 0;
-	          colors.push_back(blue);
+	        // cout << stod(Z) << endl;
+	        if(stod(Z)<2){
+	        	if(label == "blue"){
+		            id = 0;
+		            colors.push_back(blue);
+		        }
+		        if(label == "yellow"){
+		            id = 1;
+		            colors.push_back(yellow);
+		        }
+		        if(label == "orange"){
+		            id = 2;
+		            colors.push_back(orange);
+		        }
+	            Point3d pt(stod(X),stod(Z),1);
+	        	KP keypoint = {pt, id};
+	        	keypoints.push_back(keypoint);
 	        }
-	        if(label == "yellow"){
-	          id = 1;
-	          colors.push_back(yellow);
-	        }
-	        if(label == "orange"){
-	          id = 2;
-	          colors.push_back(orange);
-	        }
-            Point3d pt(stod(X),stod(Z),1);
-        	KP keypoint = {pt, id};
-        	keypoints.push_back(keypoint);
+	        
+    	}
+    	if(keypoints.size()<2){
+    		cout << "Too few keypoint!" << endl;
+    		return 0;
     	}
 		keypoints_for_all.push_back(keypoints);
 		colors_for_all.push_back(colors);
@@ -690,19 +462,6 @@ int main( int argc, char** argv )
 		cout << "\n";
 	}
 
-	// google::InitGoogleLogging(argv[0]);
-	// vector<cv::Mat> extrinsics;
-	// for (size_t i = 0; i < affines.size(); ++i)
-	// {
-	// 	cv::Mat extrinsic(6, 1, CV_64F);
-
-	// 	r.copyTo(extrinsic.rowRange(0, 3));
-	// 	motions[i].copyTo(extrinsic.rowRange(3, 6));
-
-	// 	extrinsics.push_back(extrinsic);
-	// }
-	// bundle_adjustment(intrinsic, extrinsics, correspond_struct_idx, keypoints_for_all, structure);
-
 	int resultSize = 1000;
 	double resultResize = 100;
 	Mat result = Mat::zeros(resultSize, resultSize, CV_8UC3);
@@ -714,8 +473,8 @@ int main( int argc, char** argv )
 		// cout << structure[i] << colors[i] << endl;
 		if(count_same_structure[i] > 2){
 			count++;
-			int x = int(structure[i].x * resultResize + resultSize/2);
-			int y = int(structure[i].y * resultResize + resultSize/2);
+			int x = int(structure[i].x * resultResize + resultSize/4);
+			int y = int(structure[i].y * resultResize + resultSize/4);
 			if (x >= 0 && x <= resultSize && y >= 0 && y <= resultSize){
 				circle(result, Point (x,y), 3, colors[i], CV_FILLED);
 			}
@@ -726,8 +485,8 @@ int main( int argc, char** argv )
 	for(int i = 0; i < affines.size(); i++){
 		Mat camera_cor(Matx31d(0,0,1));
 		camera_cor = affines[i].inv() * camera_cor;
-		int x = int(camera_cor.at<double>(0,0) * resultResize + resultSize/2);
-		int y = int(camera_cor.at<double>(1,0) * resultResize + resultSize/2);
+		int x = int(camera_cor.at<double>(0,0) * resultResize + resultSize/4);
+		int y = int(camera_cor.at<double>(1,0) * resultResize + resultSize/4);
 		if (x >= 0 && x <= resultSize && y >= 0 && y <= resultSize){
 			circle(result, Point (x,y), 3, Scalar (255,255,255), CV_FILLED);
 		}
