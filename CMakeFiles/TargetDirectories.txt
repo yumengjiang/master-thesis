@@ -1,4 +1,4 @@
 /media/weiming/Ny volym/ubuntu-project/master-thesis/CMakeFiles/rebuild_cache.dir
+/media/weiming/Ny volym/ubuntu-project/master-thesis/CMakeFiles/affine_2d_iteration.dir
 /media/weiming/Ny volym/ubuntu-project/master-thesis/CMakeFiles/edit_cache.dir
-/media/weiming/Ny volym/ubuntu-project/master-thesis/CMakeFiles/affine_2d.dir
 /media/weiming/Ny volym/ubuntu-project/master-thesis/CMakeFiles/main.dir

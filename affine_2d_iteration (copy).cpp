@@ -59,7 +59,7 @@ float computeResidual(Point3d pt1, Point3d pt2){
 	return pow((pow ((pt1.x-pt2.x),2) + pow ((pt1.y-pt2.y),2)),0.5);
 }
 
-void matchFeatures(vector<KP> featureLast, 
+void matchFeatures(int imageId, vector<KP> featureLast, 
                   vector<KP> featureNext, vector<DMatch> &matched){
 	float mThreshold = 0.2;
 	float res, minRes;
@@ -79,7 +79,7 @@ void matchFeatures(vector<KP> featureLast,
 			}
 		}
 		if(minRes < mThreshold){
-			matched.push_back(DMatch(index,i,minRes));
+			matched.push_back(DMatch(index,i,imageId,minRes));
 			// cout << index << " " << i << " " << imageId << " " << minRes << endl;
 		} 
 	}
@@ -92,6 +92,7 @@ void matchFeaturesAffine(Mat affine, vector<KP> featureLast,
 	int featureLastRow = featureLast.size();
 	int featureNextRow = featureNext.size();
 	int index;
+	int imageId = matched[0].imgIdx;
 	matched.clear();
 
 	for(int i = 0; i < featureNextRow; i++){
@@ -107,34 +108,34 @@ void matchFeaturesAffine(Mat affine, vector<KP> featureLast,
 		    }
 		}
 		if(minRes < mThreshold){
-		    matched.push_back(DMatch(index,i,minRes));
+		    matched.push_back(DMatch(index,i,imageId,minRes));
 		    // cout << index << " " << i << " " << imageId << " " << minRes << endl;
 		} 
 	}
 }
 
 void get_matched_points(//根据matches,返回匹配时两张图分别的坐标
-	vector<KP>& p1,
-	vector<KP>& p2,
-	vector<Vec3b>& c1,
-	vector<Vec3b>& c2,
+	vector<KP>& last_keypoints,
+	vector<KP>& next_keypoints,
+	vector<Vec3b>& last_colors,
+	vector<Vec3b>& next_colors,
 	vector<DMatch>& matches,
-	vector<Point3d>& out_p1,
-	vector<Point3d>& out_p2,
-	vector<Vec3b>& out_c1,
-	vector<Vec3b>& out_c2
+	vector<Point3d>& p1,
+	vector<Point3d>& p2,
+	vector<Vec3b>& c1,
+	vector<Vec3b>& c2
 	)
 {
-	out_p1.clear();
-	out_p2.clear();
-	out_c1.clear();
-	out_c2.clear();
+	p1.clear();
+	p2.clear();
+	c1.clear();
+	c2.clear();
 	for (int i = 0; i < matches.size(); ++i)
 	{
-		out_p1.push_back(p1[matches[i].queryIdx].pt);
-		out_p2.push_back(p2[matches[i].trainIdx].pt);
-		out_c1.push_back(c1[matches[i].queryIdx]);
-		out_c2.push_back(c2[matches[i].trainIdx]);
+		p1.push_back(last_keypoints[matches[i].queryIdx].pt);
+		p2.push_back(next_keypoints[matches[i].trainIdx].pt);
+		c1.push_back(last_colors[matches[i].queryIdx]);
+		c2.push_back(next_colors[matches[i].trainIdx]);
 	}
 }
 
@@ -180,15 +181,14 @@ void estimateTransform2D(vector<Point2d> p1, vector<Point2d> p2, Mat& affine){
 	// cout << affine << endl;
 }
 
-void reconstruct(//初始化
+Mat reconstruct(//初始化
 	vector<KP>& last_keypoints,
 	vector<KP>& next_keypoints,
 	vector<Vec3b>& last_colors,
 	vector<Vec3b>& next_colors,
 	vector<DMatch>& matches,
 	vector<Vec3b>& c1,
-	vector<Point3d>& p2,
-	Mat& affine
+	vector<Point3d>& p2
 	)
 {
 	vector<Point3d> p1;
@@ -196,14 +196,8 @@ void reconstruct(//初始化
 	vector<double> res;
 	vector<Vec3b> c2;
 	Mat affine_tmp;
+	Mat affine(Matx33d(0,0,0,0,0,0,0,0,1));
 	get_matched_points(last_keypoints, next_keypoints, last_colors, next_colors, matches, p1, p2, c1, c2);
-
-	// Mat mask;
-
-	for(int i = 0; i < p1.size(); i++){
-		p3.push_back(Point2d(p1[i].x,p1[i].y));
-		p4.push_back(Point2d(p2[i].x,p2[i].y));
-	}
 	
 	estimateTransform2D(p3, p4, affine_tmp);
 	// affine_tmp = estimateRigidTransform(p3, p4, false);
@@ -212,6 +206,17 @@ void reconstruct(//初始化
     }
     affine_tmp /= pow(pow(affine_tmp.at<double>(0,0),2)+pow(affine_tmp.at<double>(0,1),2),0.5);
     affine_tmp.convertTo(affine.rowRange(0,2),CV_64F);
+
+    // matchFeaturesAffine(affine, last_keypoints, next_keypoints, matches);
+
+
+    //adjustment
+    for(int i = 0; i < p1.size(); i++){
+		last_keypoints[matches[i].queryIdx].pt = (p1[i]+Point3d(Mat(affine.inv()*Mat(p2[i]))))/2;
+		cout << "p1: " << p1[i] << ", after adjustment: " << last_keypoints[matches[i].queryIdx].pt;
+	}
+
+	return affine;
 }
 
 void init_structure(//初始化
@@ -221,16 +226,17 @@ void init_structure(//初始化
 	vector<Point3d>& structure,
 	vector<Vec3b>& colors,
 	vector<vector<int>>& correspond_struct_idx,
+	// vector<Mat>& relative_affines,
 	vector<Mat>& affines
 	)
 {
-	Mat affine(Matx33d(0,0,0,0,0,0,0,0,1));
 	vector<Point3d> p2;
-	reconstruct(keypoints_for_all[0], keypoints_for_all[1], colors_for_all[0], colors_for_all[1], matches_for_all[0], colors, p2, affine);
+	Mat affine = reconstruct(keypoints_for_all[0], keypoints_for_all[1], colors_for_all[0], colors_for_all[1], matches_for_all[0], colors, p2);
 
     // matchFeaturesAffine(affine, keypoints_for_all[0], keypoints_for_all[1], matches_for_all[0]);
     // reconstruct(keypoints_for_all[0], keypoints_for_all[1], colors_for_all[0], colors_for_all[1], matches_for_all[0], colors, p2, affine);
 
+    // relative_affines.push_back(affine);
     affine = affine*affines.back();
 	affines.push_back(affine);
 
@@ -259,6 +265,30 @@ void init_structure(//初始化
 	}	
 }
 
+void get_objpoints_and_imgpoints(
+	vector<DMatch>& matches,//从第二张图开始，每两张图的matches，其中包含很多个match_features
+	vector<int>& struct_indices,
+	vector<Point3d>& structure,
+	vector<KP>& keypoints,//后一张图的key points
+	vector<Point3d>& object_points,
+	vector<Point3d>& image_points)
+{
+	object_points.clear();
+	image_points.clear();
+
+	for (int i = 0; i < matches.size(); ++i)
+	{
+		int query_idx = matches[i].queryIdx;//在相应的图中是第几个feature point
+		int train_idx = matches[i].trainIdx;
+
+		int struct_idx = struct_indices[query_idx];//访问对应列，输出为第几个有用的match，一个有用的match能组成一个U
+		if (struct_idx < 0) continue;
+
+		object_points.push_back(structure[struct_idx]);//输出该次匹配有用的match的3D坐标
+		image_points.push_back(keypoints[train_idx].pt);//输出有用的match在最新的图上match的坐标
+	}
+}
+
 void fusion_structure(
 	vector<DMatch>& matches,
 	vector<int>& struct_indices,
@@ -278,6 +308,7 @@ void fusion_structure(
 		if (struct_idx >= 0)
 		{
 			next_struct_indices[train_idx] = struct_idx;
+			structure[struct_idx] = next_structure[i];
 			continue;
 		}
 		structure.push_back(next_structure[i]);
@@ -285,7 +316,6 @@ void fusion_structure(
 		struct_indices[query_idx] = next_struct_indices[train_idx] = structure.size() - 1;
 	}
 }
-
 
 int main( int argc, char** argv )
 {
@@ -302,8 +332,9 @@ int main( int argc, char** argv )
 	vector<vector<KP>> keypoints_for_all;
 	vector<vector<Vec3b>> colors_for_all;
 	vector<vector<DMatch>> matches_for_all;
-	vector<Mat> affines;
+	vector<Mat> relative_affines, affines;
 	Mat affine = Mat::eye(3,3,CV_64F);
+	// relative_affines.push_back(affine);
 	affines.push_back(affine);
 
 	int imgId = 0;
@@ -355,7 +386,7 @@ int main( int argc, char** argv )
 		colors_for_all.push_back(colors);
 		if (imgId > 0){
 			vector<DMatch> matched;
-			matchFeatures(keypoints_for_all[imgId-1], keypoints_for_all[imgId], matched);
+			matchFeatures(imgId, keypoints_for_all[imgId-1], keypoints_for_all[imgId], matched);
 			matches_for_all.push_back(matched);
 
 			// imgLast = imread("result/"+to_string(imgId-1)+".png");
@@ -381,19 +412,20 @@ int main( int argc, char** argv )
 		structure,
 		colors,
 		correspond_struct_idx,
+		// relative_affines,
 		affines
 		);
 
 	for (int i = 1; i < matches_for_all.size(); ++i)//遍历，从第二张图和第三张图开始，每次两张图的match
 	{
-		Mat affine(Matx33d(0,0,0,0,0,0,0,0,1));
 		vector<Point3d> p2;
 		vector<Vec3b> c1;
-		reconstruct(keypoints_for_all[i], keypoints_for_all[i+1], colors_for_all[i], colors_for_all[i+1], matches_for_all[i], c1, p2, affine);
+		Mat affine = reconstruct(keypoints_for_all[i], keypoints_for_all[i+1], colors_for_all[i], colors_for_all[i+1], matches_for_all[i], c1, p2);
 
 	    // matchFeaturesAffine(affine, keypoints_for_all[i], keypoints_for_all[i+1], matches_for_all[i]);
 	    // reconstruct(keypoints_for_all[i], keypoints_for_all[i+1], colors_for_all[i], colors_for_all[i+1], matches_for_all[i], c1, p2, affine);
 
+	    // relative_affines.push_back(affine);
 	    affine = affine*affines.back();
 		affines.push_back(affine);
 
@@ -411,8 +443,41 @@ int main( int argc, char** argv )
 			colors,
 			c1
 			);
+
+	}
+
+
+
+	for (int i = 0; i < matches_for_all.size(); ++i)//遍历，从第二张图和第三张图开始，每次两张图的match
+	{
+		vector<Point3d> p2;
+		vector<Vec3b> c1;
+		Mat affine = reconstruct(keypoints_for_all[i], keypoints_for_all[i+1], colors_for_all[i], colors_for_all[i+1], matches_for_all[i], c1, p2);
+
+		if(i == 0)
+			affines[i] = affine;
+		else
+			affines[i] = affines[i-1]*affine;
+
+		vector<Point3d> next_structure;
+		for(int i = 0; i < p2.size(); i++){
+			next_structure.push_back(Point3d(Mat(affine.inv()*Mat(p2[i]))));
+		}
+
+		// fusion_structure(
+		// 	matches_for_all[i],
+		// 	correspond_struct_idx[i],
+		// 	correspond_struct_idx[i+1],
+		// 	structure,
+		// 	next_structure,
+		// 	colors,
+		// 	c1
+		// 	);
+
 	}
 	
+
+
 	vector<int> count_same_structure;
 	count_same_structure.resize(structure.size());
 	for (int i = 0; i < correspond_struct_idx.size(); ++i){
