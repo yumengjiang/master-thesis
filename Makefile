@@ -48,10 +48,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = "/media/weiming/Ny volym/ubuntu-project/master-thesis"
+CMAKE_SOURCE_DIR = /home/yumeng/project/master-thesis
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = "/media/weiming/Ny volym/ubuntu-project/master-thesis"
+CMAKE_BINARY_DIR = /home/yumeng/project/master-thesis
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -80,9 +80,9 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start "/media/weiming/Ny volym/ubuntu-project/master-thesis/CMakeFiles" "/media/weiming/Ny volym/ubuntu-project/master-thesis/CMakeFiles/progress.marks"
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/yumeng/project/master-thesis/CMakeFiles /home/yumeng/project/master-thesis/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start "/media/weiming/Ny volym/ubuntu-project/master-thesis/CMakeFiles" 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/yumeng/project/master-thesis/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -124,17 +124,44 @@ affine_2d_iteration/fast:
 .PHONY : affine_2d_iteration/fast
 
 #=============================================================================
-# Target rules for targets named main
+# Target rules for targets named affine_2d
 
 # Build rule for target.
-main: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 main
-.PHONY : main
+affine_2d: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 affine_2d
+.PHONY : affine_2d
 
 # fast build rule for target.
-main/fast:
-	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/build
-.PHONY : main/fast
+affine_2d/fast:
+	$(MAKE) -f CMakeFiles/affine_2d.dir/build.make CMakeFiles/affine_2d.dir/build
+.PHONY : affine_2d/fast
+
+affine_2d.o: affine_2d.cpp.o
+
+.PHONY : affine_2d.o
+
+# target to build an object file
+affine_2d.cpp.o:
+	$(MAKE) -f CMakeFiles/affine_2d.dir/build.make CMakeFiles/affine_2d.dir/affine_2d.cpp.o
+.PHONY : affine_2d.cpp.o
+
+affine_2d.i: affine_2d.cpp.i
+
+.PHONY : affine_2d.i
+
+# target to preprocess a source file
+affine_2d.cpp.i:
+	$(MAKE) -f CMakeFiles/affine_2d.dir/build.make CMakeFiles/affine_2d.dir/affine_2d.cpp.i
+.PHONY : affine_2d.cpp.i
+
+affine_2d.s: affine_2d.cpp.s
+
+.PHONY : affine_2d.s
+
+# target to generate assembly for a file
+affine_2d.cpp.s:
+	$(MAKE) -f CMakeFiles/affine_2d.dir/build.make CMakeFiles/affine_2d.dir/affine_2d.cpp.s
+.PHONY : affine_2d.cpp.s
 
 affine_2d_iteration.o: affine_2d_iteration.cpp.o
 
@@ -163,33 +190,6 @@ affine_2d_iteration.cpp.s:
 	$(MAKE) -f CMakeFiles/affine_2d_iteration.dir/build.make CMakeFiles/affine_2d_iteration.dir/affine_2d_iteration.cpp.s
 .PHONY : affine_2d_iteration.cpp.s
 
-main.o: main.cpp.o
-
-.PHONY : main.o
-
-# target to build an object file
-main.cpp.o:
-	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/main.cpp.o
-.PHONY : main.cpp.o
-
-main.i: main.cpp.i
-
-.PHONY : main.i
-
-# target to preprocess a source file
-main.cpp.i:
-	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/main.cpp.i
-.PHONY : main.cpp.i
-
-main.s: main.cpp.s
-
-.PHONY : main.s
-
-# target to generate assembly for a file
-main.cpp.s:
-	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/main.cpp.s
-.PHONY : main.cpp.s
-
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -199,13 +199,13 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... affine_2d_iteration"
 	@echo "... edit_cache"
-	@echo "... main"
+	@echo "... affine_2d"
+	@echo "... affine_2d.o"
+	@echo "... affine_2d.i"
+	@echo "... affine_2d.s"
 	@echo "... affine_2d_iteration.o"
 	@echo "... affine_2d_iteration.i"
 	@echo "... affine_2d_iteration.s"
-	@echo "... main.o"
-	@echo "... main.i"
-	@echo "... main.s"
 .PHONY : help
 
 

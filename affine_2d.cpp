@@ -80,7 +80,7 @@ void matchFeatures(vector<KP> featureLast,
 		}
 		if(minRes < mThreshold){
 			matched.push_back(DMatch(index,i,minRes));
-			// cout << index << " " << i << " " << imageId << " " << minRes << endl;
+			// cout << index << " " << i << " " << minRes << endl;
 		} 
 	}
 }
@@ -161,24 +161,87 @@ void maskout_colors(vector<Vec3b>& p, Mat& mask)
 			p.push_back(p_copy[i]);
 	}
 }
+void reprojectionErrors(Mat affine_homo, vector<Point2d> p1, vector<Point2d> p2, double& errors){
+	vector<Point3d> p2homo;
+	convertPointsToHomogeneous(p2, p2homo);
 
-void estimateTransform2D(vector<Point2d> p1, vector<Point2d> p2, Mat& affine){
+    errors = 0;
+	for(int i=0; i<p1.size();i++){
+		Mat p1est;
+		p1est=affine_homo.inv()*Mat(p2homo[i]);
+		errors += pow(pow(p1est.at<double>(0,0)-p1[i].x,2)+pow(p1est.at<double>(1,0)-p1[i].y,2),0.5f);
+	}
+	
+}
+bool m_compare(double error)
+{
+    return error<0.08;
+}
+void estimateTransform2D(vector<Point2d> p1, vector<Point2d> p2, Mat& best_affine){
 	if(p1.size()<2){
 		cout << "Too few points to estimate transformation!" << endl;
 		return;
 	}
-	Mat M(2*p1.size(),4,CV_64F), B(2*p1.size(),1,CV_64F);
-	for(int i = 0; i < p1.size(); i++){
-		Mat m = (Mat_<double>(2,4) << p1[i].x, -p1[i].y, 1, 0, p1[i].y, p1[i].x, 0, 1);
-		m.copyTo(M.rowRange(2*i,2*i+2));
-		B.at<double>(2*i,0) = p2[i].x;
-		B.at<double>(2*i+1,0) = p2[i].y;
-	} 
-	Mat theta = (M.t()*M).inv()*(M.t())*B;
-	double a = theta.at<double>(0,0), b = theta.at<double>(1,0), tx = theta.at<double>(2,0), ty = theta.at<double>(3,0);
-	affine = (Mat_<double>(2,3) << a,-b,tx,b,a,ty);
-	// cout << affine << endl;
+	best_affine.release();
+	//x1:p1[i].x
+	//y1:p1[i].y
+	//p1:p2[i].x
+	//q1:p2[i].y 
+	//x2:p1[i+1].x
+	//y2:p1[i+1].y
+	//p2"p2[i+1].x
+	//Mat M(2*p1.size(),4,CV_64F), B(2*p1.size(),1,CV_64F);
+	// double most_inliers=0;
+	double min_errors = 1000;
+
+	for(int i = 0; i < p1.size()-1; i++){
+		for(int k = i+1; k<p1.size();k++){
+		vector<double> sina;
+		//vector<Mat>affine_forransac-temp;
+		double a= pow(p1[k].x-p1[i].x,2)+pow(p1[i].y-p1[k].y,2);
+		double b=2*(p2[i].x-p2[k].x)*(p1[i].y-p1[k].y);
+		double c= pow(p2[k].x-p2[i].x,2)-pow(p1[k].x-p1[i].x,2);
+		sina.push_back((-b+pow(pow(b,2)-4*a*c,0.5f))/(2*a));
+		sina.push_back((-b-pow(pow(b,2)-4*a*c,0.5f))/(2*a));
+		for(int j=0; j<2;j++){
+			if(sina[j]>1||sina[j]<-1||isnan(sina[j])){continue;}
+			// Mat affine_single;
+			vector<double> cosa;
+			cosa.push_back(pow(1-pow(sina[j],2),0.5f));
+			cosa.push_back(-pow(1-pow(sina[j],2),0.5f));
+			for(int r=0; r<2;r++){
+				double errors;
+				double tx=p2[i].x-cosa[r]*p1[i].x+sina[j]*p1[i].y;
+				double ty=p2[i].y-sina[j]*p1[i].x-cosa[r]*p1[i].y;
+				Mat affine_single(Matx33d(cosa[r],-sina[j],tx,sina[j],cosa[r],ty,0,0,1));
+				// affine_single.at<double>(0,1)=-sina[j];
+				// affine_single.at<double>(0,2)=tx;
+				// affine_single.at<double>(1,0)=sina[j];
+				// affine_single.at<double>(1,1)=cosa;
+				// affine_single.at<double>(1,2)=ty;
+
+				//cout<<"starts p"<<i<<"loop"<<j<<endl;
+				reprojectionErrors(affine_single, p1, p2, errors);
+				// cout<<"done p"<<i<<"loop"<<j<<endl;
+				// int inliers=count_if(errors.begin(),errors.end(),m_compare);
+				// cout<<"inliers size"<<inliers<<endl;
+				// if (inliers>most_inliers){
+				// 	most_inliers=inliers;
+				// 	best_affine=affine_single;
+				// }
+				if (errors<min_errors){
+					min_errors=errors;
+					best_affine=affine_single;
+				}
+			}
+		}
+	}
 }
+}
+		
+	 
+
+
 
 void reconstruct(//初始化
 	vector<KP>& last_keypoints,
@@ -188,14 +251,13 @@ void reconstruct(//初始化
 	vector<DMatch>& matches,
 	vector<Vec3b>& c1,
 	vector<Point3d>& p2,
-	Mat& affine
+	Mat& affine_tmp
 	)
-{
+{   
 	vector<Point3d> p1;
 	vector<Point2d> p3, p4;
 	vector<double> res;
 	vector<Vec3b> c2;
-	Mat affine_tmp;
 	get_matched_points(last_keypoints, next_keypoints, last_colors, next_colors, matches, p1, p2, c1, c2);
 
 	// Mat mask;
@@ -206,12 +268,13 @@ void reconstruct(//初始化
 	}
 	
 	estimateTransform2D(p3, p4, affine_tmp);
+	cout << "affine: " << affine_tmp << endl;
 	// affine_tmp = estimateRigidTransform(p3, p4, false);
 	if (affine_tmp.rows == 0){
     	cout << "Fail to estimate affine transformation, number of points: " << p3.size() << endl;
     }
-    affine_tmp /= pow(pow(affine_tmp.at<double>(0,0),2)+pow(affine_tmp.at<double>(0,1),2),0.5);
-    affine_tmp.convertTo(affine.rowRange(0,2),CV_64F);
+ //    affine_tmp /= pow(pow(affine_tmp.at<double>(0,0),2)+pow(affine_tmp.at<double>(0,1),2),0.5);
+ //    affine_tmp.convertTo(affine.rowRange(0,2),CV_64F);
 }
 
 void init_structure(//初始化
@@ -226,10 +289,9 @@ void init_structure(//初始化
 {
 	Mat affine(Matx33d(0,0,0,0,0,0,0,0,1));
 	vector<Point3d> p2;
-	reconstruct(keypoints_for_all[0], keypoints_for_all[1], colors_for_all[0], colors_for_all[1], matches_for_all[0], colors, p2, affine);
-
+	//reconstruct(keypoints_for_all[0], keypoints_for_all[1], colors_for_all[0], colors_for_all[1], matches_for_all[0], colors, p2);
     // matchFeaturesAffine(affine, keypoints_for_all[0], keypoints_for_all[1], matches_for_all[0]);
-    // reconstruct(keypoints_for_all[0], keypoints_for_all[1], colors_for_all[0], colors_for_all[1], matches_for_all[0], colors, p2, affine);
+    reconstruct(keypoints_for_all[0], keypoints_for_all[1], colors_for_all[0], colors_for_all[1], matches_for_all[0], colors, p2, affine);
 
     affine = affine*affines.back();
 	affines.push_back(affine);
@@ -449,6 +511,7 @@ int main( int argc, char** argv )
 	for(int i = 0; i < affines.size(); i++){
 		Mat camera_cor(Matx31d(0,0,1));
 		camera_cor = affines[i].inv() * camera_cor;
+		cout << camera_cor << endl;
 		int x = int(camera_cor.at<double>(0,0) * resultResize + resultSize/4);
 		int y = int(camera_cor.at<double>(1,0) * resultResize + resultSize/4);
 		if (x >= 0 && x <= resultSize && y >= 0 && y <= resultSize){
