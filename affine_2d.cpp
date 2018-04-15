@@ -48,7 +48,10 @@ using namespace cv;
 using namespace std;
 
 #define PI 3.14159265
-double error_threshold = 0.4;
+double error_threshold = 0.5;
+double match_threshold = 1;
+double alpha_threshold = 1;
+int rm_cone_threshold = 7;
 
 struct KP
 {
@@ -56,21 +59,20 @@ struct KP
 	int id;
 };
 
-float computeResidual(Point3d pt1, Point3d pt2){
+double computeResidual(Point3d pt1, Point3d pt2){
 	return pow((pow ((pt1.x-pt2.x),2) + pow ((pt1.y-pt2.y),2)),0.5);
 }
 
 void matchFeatures(vector<KP> featureLast, 
                   vector<KP> featureNext, vector<DMatch> &matched){
 	matched.clear();
-	float mThreshold = 1;
-	float res, minRes;
+	double res, minRes;
 	int featureLastRow = featureLast.size();
 	int featureNextRow = featureNext.size();
 	int index;
 
 	for(int i = 0; i < featureNextRow; i++){
-		minRes = mThreshold;
+		minRes = match_threshold;
 		for(int j = 0; j < featureLastRow; j++){
 		    if(featureNext[i].id == featureLast[j].id){
 		        res = computeResidual(featureNext[i].pt, featureLast[j].pt);//check residuals, find the smallest one, save it
@@ -80,7 +82,7 @@ void matchFeatures(vector<KP> featureLast,
 		    	}
 			}
 		}
-		if(minRes < mThreshold){
+		if(minRes < match_threshold){
 			matched.push_back(DMatch(index,i,minRes));
 			// cout << index << " " << i << " " << minRes << endl;
 		} 
@@ -89,15 +91,15 @@ void matchFeatures(vector<KP> featureLast,
 
 // void matchFeaturesAffine(Mat affine, vector<KP> featureLast, 
 //                   vector<KP> featureNext, vector<DMatch> &matched){
-// 	float mThreshold = 0.1;
-// 	float res, minRes;
+// 	double match_threshold = 0.1;
+// 	double res, minRes;
 // 	int featureLastRow = featureLast.size();
 // 	int featureNextRow = featureNext.size();
 // 	int index;
 // 	matched.clear();
 
 // 	for(int i = 0; i < featureNextRow; i++){
-// 		minRes = mThreshold;
+// 		minRes = match_threshold;
 // 		for(int j = 0; j < featureLastRow; j++){
 // 		    if(featureNext[i].id == featureLast[j].id){
 // 		  	    Point3d affine_pt(Mat(affine*Mat(featureLast[j].pt))); 
@@ -108,7 +110,7 @@ void matchFeatures(vector<KP> featureLast,
 // 		        }
 // 		    }
 // 		}
-// 		if(minRes < mThreshold){
+// 		if(minRes < match_threshold){
 // 		    matched.push_back(DMatch(index,i,minRes));
 // 		    // cout << index << " " << i << " " << imageId << " " << minRes << endl;
 // 		} 
@@ -158,8 +160,7 @@ void estimateTransform2D(vector<Point3d> p1, vector<Point3d> p2, Mat& best_affin
 		return;
 	}
 	best_affine.release();
-	min_error = 10;
-	double alpha_threshold = 1;
+	min_error = 100;
 
 	for(int i = 0; i < p1.size()-1; i++){
 		for(int k = i+1; k<p1.size();k++){
@@ -319,8 +320,9 @@ void fusion_structure(
 
 int main( int argc, char** argv )
 {
-	int start = stoi(argv[1]);
-	int end = stoi(argv[2]);
+	string data_path = argv[1];
+	int start = stoi(argv[2]);
+	int end = stoi(argv[3]);
 	Mat K(Matx33d(
 		350.6847, 0, 332.4661,
 		0, 350.0606, 163.7461,
@@ -341,7 +343,7 @@ int main( int argc, char** argv )
 	{
 		vector<KP> keypoints;
 		vector<Vec3b> colors;
-		ifstream csvPath ( "results_3d/"+to_string(i)+".csv" );
+		ifstream csvPath ( data_path+"/"+to_string(i)+".csv" );
 		string line, x, y, label, X, Y, Z; 
 		int id;
 		// Mat imgLast, imgNext, outImg;
@@ -426,8 +428,8 @@ int main( int argc, char** argv )
 			int next_img_id;
 			double min_error1, min_error2;
 			reconstruct(keypoints_for_all[i], keypoints_for_all[i+1], colors_for_all[i], colors_for_all[i+1], matched, c1, p2, affine, min_error1);
-			
 	    	next_img_id = i+1;
+
 			if (min_error1 > error_threshold){
 		    	reconstruct(keypoints_for_all[i], keypoints_for_all[i+2], colors_for_all[i], colors_for_all[i+2], matched_tmp, c1_tmp, p2_tmp, affine_tmp, min_error2);
 		    	if (min_error2 < min_error1){
@@ -485,7 +487,7 @@ int main( int argc, char** argv )
 	for(int i = 0; i < structure.size(); i++){
 		// cout << count_same_structure[i] << endl;
 		// cout << structure[i] << colors[i] << endl;
-		if(count_same_structure[i] > 6){
+		if(count_same_structure[i] > rm_cone_threshold){
 			count++;
 			int x = int(structure[i].x * resultResize + resultSize/4);
 			int y = int(structure[i].y * resultResize + resultSize/4);
