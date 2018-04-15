@@ -47,6 +47,8 @@
 using namespace cv;
 using namespace std;
 
+#define PI 3.14159265
+
 struct KP
 {
 	Point3d pt;
@@ -61,7 +63,8 @@ float computeResidual(Point3d pt1, Point3d pt2){
 
 void matchFeatures(vector<KP> featureLast, 
                   vector<KP> featureNext, vector<DMatch> &matched){
-	float mThreshold = 0.2;
+	matched.clear();
+	float mThreshold = 1;
 	float res, minRes;
 	int featureLastRow = featureLast.size();
 	int featureNextRow = featureNext.size();
@@ -80,14 +83,14 @@ void matchFeatures(vector<KP> featureLast,
 		}
 		if(minRes < mThreshold){
 			matched.push_back(DMatch(index,i,minRes));
-			// cout << index << " " << i << " " << minRes << endl;
+			cout << index << " " << i << " " << minRes << endl;
 		} 
 	}
 }
 
 void matchFeaturesAffine(Mat affine, vector<KP> featureLast, 
                   vector<KP> featureNext, vector<DMatch> &matched){
-	float mThreshold = 0.1;
+	float mThreshold = 0.2;
 	float res, minRes;
 	int featureLastRow = featureLast.size();
 	int featureNextRow = featureNext.size();
@@ -177,7 +180,7 @@ bool m_compare(double error)
 {
     return error<0.08;
 }
-void estimateTransform2D(vector<Point2d> p1, vector<Point2d> p2, Mat& best_affine){
+void estimateTransform2D(vector<Point2d> p1, vector<Point2d> p2, Mat& best_affine, double& final_error){
 	if(p1.size()<2){
 		cout << "Too few points to estimate transformation!" << endl;
 		return;
@@ -192,28 +195,28 @@ void estimateTransform2D(vector<Point2d> p1, vector<Point2d> p2, Mat& best_affin
 	//p2"p2[i+1].x
 	//Mat M(2*p1.size(),4,CV_64F), B(2*p1.size(),1,CV_64F);
 	// double most_inliers=0;
-	double min_errors = 1000;
+	double min_errors = 100000;
+	double alphathreshold = 0.088886;
 
 	for(int i = 0; i < p1.size()-1; i++){
 		for(int k = i+1; k<p1.size();k++){
-		vector<double> sina;
+		vector<double> alpha;
 		//vector<Mat>affine_forransac-temp;
 		double a= pow(p1[k].x-p1[i].x,2)+pow(p1[i].y-p1[k].y,2);
 		double b=2*(p2[i].x-p2[k].x)*(p1[i].y-p1[k].y);
 		double c= pow(p2[k].x-p2[i].x,2)-pow(p1[k].x-p1[i].x,2);
-		sina.push_back((-b+pow(pow(b,2)-4*a*c,0.5f))/(2*a));
-		sina.push_back((-b-pow(pow(b,2)-4*a*c,0.5f))/(2*a));
+		alpha.push_back(asin((-b+pow(pow(b,2)-4*a*c,0.5f))/(2*a)));
+		alpha.push_back(asin((-b-pow(pow(b,2)-4*a*c,0.5f))/(2*a)));
 		for(int j=0; j<2;j++){
-			if(sina[j]>1||sina[j]<-1||isnan(sina[j])){continue;}
+			if(alpha[j]>alphathreshold||alpha[j]<-alphathreshold||isnan(alpha[j])){continue;}
 			// Mat affine_single;
-			vector<double> cosa;
-			cosa.push_back(pow(1-pow(sina[j],2),0.5f));
-			cosa.push_back(-pow(1-pow(sina[j],2),0.5f));
-			for(int r=0; r<2;r++){
+			double cosa=cos(alpha[j]);
 				double errors;
-				double tx=p2[i].x-cosa[r]*p1[i].x+sina[j]*p1[i].y;
-				double ty=p2[i].y-sina[j]*p1[i].x-cosa[r]*p1[i].y;
-				Mat affine_single(Matx33d(cosa[r],-sina[j],tx,sina[j],cosa[r],ty,0,0,1));
+				double tx=p2[i].x-cosa*p1[i].x+sin(alpha[j])*p1[i].y;
+			     
+				double ty=p2[i].y-sin(alpha[j])*p1[i].x-cosa*p1[i].y;
+				 
+				Mat affine_single(Matx33d(cosa,-sin(alpha[j]),tx,sin(alpha[j]),cosa,ty,0,0,1));
 				// affine_single.at<double>(0,1)=-sina[j];
 				// affine_single.at<double>(0,2)=tx;
 				// affine_single.at<double>(1,0)=sina[j];
@@ -223,7 +226,7 @@ void estimateTransform2D(vector<Point2d> p1, vector<Point2d> p2, Mat& best_affin
 				//cout<<"starts p"<<i<<"loop"<<j<<endl;
 				reprojectionErrors(affine_single, p1, p2, errors);
 				// cout<<"done p"<<i<<"loop"<<j<<endl;
-				// int inliers=count_if(errors.begin(),errors.end(),m_compare);
+				// int inlierscount_if(errors.begin(),errors.end(),m_compare);
 				// cout<<"inliers size"<<inliers<<endl;
 				// if (inliers>most_inliers){
 				// 	most_inliers=inliers;
@@ -236,8 +239,12 @@ void estimateTransform2D(vector<Point2d> p1, vector<Point2d> p2, Mat& best_affin
 			}
 		}
 	}
+	final_error=min_errors;
+
 }
-}
+// best_affine.at<double>(0,2)+=0.5*best_affine.at<double>(1,0);
+// best_affine.at<double>(1,2)-=0.5*best_affine.at<double>(0,0);
+
 		
 	 
 
@@ -251,7 +258,8 @@ void reconstruct(//初始化
 	vector<DMatch>& matches,
 	vector<Vec3b>& c1,
 	vector<Point3d>& p2,
-	Mat& affine_tmp
+	Mat& affine_tmp,
+	double& final_error
 	)
 {   
 	vector<Point3d> p1;
@@ -266,8 +274,7 @@ void reconstruct(//初始化
 		p3.push_back(Point2d(p1[i].x,p1[i].y));
 		p4.push_back(Point2d(p2[i].x,p2[i].y));
 	}
-	
-	estimateTransform2D(p3, p4, affine_tmp);
+	estimateTransform2D(p3, p4, affine_tmp,final_error);
 	cout << "affine: " << affine_tmp << endl;
 	// affine_tmp = estimateRigidTransform(p3, p4, false);
 	if (affine_tmp.rows == 0){
@@ -280,18 +287,45 @@ void reconstruct(//初始化
 void init_structure(//初始化
 	vector<vector<KP>>& keypoints_for_all,
 	vector<vector<Vec3b>>& colors_for_all,
-	vector<vector<DMatch>>& matches_for_all,
+	//vector<vector<DMatch>>& matches_for_all,
 	vector<Point3d>& structure,
 	vector<Vec3b>& colors,
 	vector<vector<int>>& correspond_struct_idx,
-	vector<Mat>& affines
+	vector<Mat>& affines,
+	double& init_last_img
 	)
-{
-	Mat affine(Matx33d(0,0,0,0,0,0,0,0,1));
+{   
+	vector<DMatch> matched,matched1,matched2;
+	Mat affine;
+	vector<Vec3b> colors1, colors2;
 	vector<Point3d> p2;
+	double final_error1,final_error2;
+	double affine_threshold=0.8;
 	//reconstruct(keypoints_for_all[0], keypoints_for_all[1], colors_for_all[0], colors_for_all[1], matches_for_all[0], colors, p2);
     // matchFeaturesAffine(affine, keypoints_for_all[0], keypoints_for_all[1], matches_for_all[0]);
-    reconstruct(keypoints_for_all[0], keypoints_for_all[1], colors_for_all[0], colors_for_all[1], matches_for_all[0], colors, p2, affine);
+    matchFeatures(keypoints_for_all[0],keypoints_for_all[1], matched1);
+    reconstruct(keypoints_for_all[0], keypoints_for_all[1], colors_for_all[0], colors_for_all[1], matched1, colors, p2, affine, final_error1);
+    
+    //cout<<"res 2"<<" "<<final_error2<<endl;
+    if (final_error1>affine_threshold){
+    	matchFeatures(keypoints_for_all[0],keypoints_for_all[2], matched2);
+    	reconstruct(keypoints_for_all[0], keypoints_for_all[2], colors_for_all[0], colors_for_all[2], matched2, colors, p2, affine, final_error2);
+    	if (final_error2>final_error1){
+    		matched=matched1;
+    		init_last_img=1;
+    		//system ("pause");
+    		//return 0; 
+    	}
+    	else{
+    		matched=matched2;
+    		init_last_img=2;
+    	}
+    }
+    else{
+    	matched=matched1;
+    	init_last_img=1;
+    }
+    
 
     affine = affine*affines.back();
 	affines.push_back(affine);
@@ -309,14 +343,14 @@ void init_structure(//初始化
 
 	//��дͷ����ͼ���Ľṹ����
 	int idx = 0;
-	vector<DMatch>& matches = matches_for_all[0];//将matches_for_all的第一个值赋给matches
+	vector<DMatch>& matches = matched;//将matches_for_all的第一个值赋给matches
 	for (int i = 0; i < matches.size(); ++i)
 	{
 		// if (mask.at<uchar>(i) == 0)//如果这一对match是outlier
 		// 	continue;//如果mask的值等于0的话，继续从头开始循环，否则往下继续
 
 		correspond_struct_idx[0][matches[i].queryIdx] = idx;//将第idx个match,即idx，存入correspond_struct_idx中，存的位置为：如果是前一张，则是第一行，后一张则是第二行，纵坐标对应点在图重视第几个feature point
-		correspond_struct_idx[1][matches[i].trainIdx] = idx;
+		correspond_struct_idx[init_last_img][matches[i].trainIdx] = idx;
 		++idx;
 	}	
 }
@@ -363,7 +397,7 @@ int main( int argc, char** argv )
 	
 	vector<vector<KP>> keypoints_for_all;
 	vector<vector<Vec3b>> colors_for_all;
-	vector<vector<DMatch>> matches_for_all;
+	//vector<vector<DMatch>> matches_for_all;
 	vector<Mat> affines;
 	Mat affine = Mat::eye(3,3,CV_64F);
 	affines.push_back(affine);
@@ -390,7 +424,7 @@ int main( int argc, char** argv )
 	        
 	        // circle(img, Point (stoi(x),stoi(y)), 3, Scalar (0,0,0), CV_FILLED);
 	        // cout << stod(Z) << endl;
-	        if(stod(Z)<2){
+	        if(stod(Z)<5){
 	        	if(label == "blue"){
 		            id = 0;
 		            colors.push_back(blue);
@@ -415,43 +449,75 @@ int main( int argc, char** argv )
     	}
 		keypoints_for_all.push_back(keypoints);
 		colors_for_all.push_back(colors);
-		if (imgId > 0){
-			vector<DMatch> matched;
-			matchFeatures(keypoints_for_all[imgId-1], keypoints_for_all[imgId], matched);
-			matches_for_all.push_back(matched);
+		// if (imgId > 0){
+		// 	vector<DMatch> matched;
+		// 	matchFeatures(keypoints_for_all[imgId-1], keypoints_for_all[imgId], matched);
+		// 	matches_for_all.push_back(matched);
 
-			// imgLast = imread("result/"+to_string(imgId-1)+".png");
-			// imgNext = imread("result/"+to_string(imgId)+".png");
-			// resize(imgLast, imgLast, Size(320, 180));
-			// resize(imgNext, imgNext, Size(320, 180));
-			// drawMatches(imgLast, keypoints_for_all[imgId-1], imgNext, keypoints_for_all[imgId], matched, outImg);
-			// namedWindow("MatchSIFT", WINDOW_NORMAL);
-			// imshow("MatchSIFT",outImg);
-			// waitKey(0);
-		}
+		// 	// imgLast = imread("result/"+to_string(imgId-1)+".png");
+		// 	// imgNext = imread("result/"+to_string(imgId)+".png");
+		// 	// resize(imgLast, imgLast, Size(320, 180));
+		// 	// resize(imgNext, imgNext, Size(320, 180));
+		// 	// drawMatches(imgLast, keypoints_for_all[imgId-1], imgNext, keypoints_for_all[imgId], matched, outImg);
+		// 	// namedWindow("MatchSIFT", WINDOW_NORMAL);
+		// 	// imshow("MatchSIFT",outImg);
+		// 	// waitKey(0);
+		// }
 		imgId++;
 	}
 
 	vector<Point3d> structure;
 	vector<Vec3b> colors;
 	vector<vector<int>> correspond_struct_idx;
+	double init_last_img;
 
 	init_structure(//此时已做完第一张图和第二张图的重建，rotations和motions里放了两张图的R和T
 		keypoints_for_all,
 		colors_for_all,
-		matches_for_all,
+		//matches_for_all,
 		structure,
 		colors,
 		correspond_struct_idx,
-		affines
+		affines,
+		init_last_img
 		);
 
-	for (int i = 1; i < matches_for_all.size(); ++i)//遍历，从第二张图和第三张图开始，每次两张图的match
+	for (int i = init_last_img; i < keypoints_for_all.size(); ++i)//遍历，从第二张图和第三张图开始，每次两张图的match
 	{
-		Mat affine(Matx33d(0,0,0,0,0,0,0,0,1));
+	//int i=3;
+		//Mat affine(Matx33d(0,0,0,0,0,0,0,0,1));
 		vector<Point3d> p2;
 		vector<Vec3b> c1;
-		reconstruct(keypoints_for_all[i], keypoints_for_all[i+1], colors_for_all[i], colors_for_all[i+1], matches_for_all[i], c1, p2, affine);
+		vector<DMatch>matched1,matched2,matched;
+		double next_img;
+		double affine_threshold=0.85;
+		vector<Vec3b> c, c2;
+		double final_error1, final_error2;
+		matchFeatures(keypoints_for_all[i], keypoints_for_all[i+1], matched1);
+		reconstruct(keypoints_for_all[i], keypoints_for_all[i+1], colors_for_all[i], colors_for_all[i+1], matched1, c, p2, affine, final_error1);
+		if (final_error1>affine_threshold){
+    	matchFeatures(keypoints_for_all[i],keypoints_for_all[i+2], matched2);
+    	reconstruct(keypoints_for_all[i], keypoints_for_all[i+2], colors_for_all[i], colors_for_all[i+2], matched2, c2, p2, affine, final_error2);
+    	if (final_error2>final_error1){
+    		matched=matched1;
+    		c1=c;
+    		next_img=i+1;
+    		//system ("pause");
+    		//return 0; 
+    	}
+    	else{
+    		matched=matched2;
+    		c1=c2;
+    		next_img=i+2;
+    	}
+    }
+    else{
+    	matched=matched1;
+    	c1=c;
+    	next_img=i+1;
+    }cout<<"res 1"<<" "<<final_error1<<endl;
+
+
 
 	    // matchFeaturesAffine(affine, keypoints_for_all[i], keypoints_for_all[i+1], matches_for_all[i]);
 	    // reconstruct(keypoints_for_all[i], keypoints_for_all[i+1], colors_for_all[i], colors_for_all[i+1], matches_for_all[i], c1, p2, affine);
@@ -465,14 +531,15 @@ int main( int argc, char** argv )
 		}
 
 		fusion_structure(
-			matches_for_all[i],
+			matched1,
 			correspond_struct_idx[i],
-			correspond_struct_idx[i+1],
+			correspond_struct_idx[next_img],
 			structure,
 			next_structure,
 			colors,
 			c1
 			);
+		cout<<"from"<<""<<i<<""<<"to"<<next_img<<endl;
 	}
 	
 	vector<int> count_same_structure;
@@ -489,7 +556,7 @@ int main( int argc, char** argv )
 	}
 
 	int resultSize = 1000;
-	double resultResize = 100;
+	double resultResize = 50;
 	Mat result = Mat::zeros(resultSize, resultSize, CV_8UC3);
 	vector<Point2d> path;
 	
@@ -509,9 +576,10 @@ int main( int argc, char** argv )
 	cout << "Number of structure: " << count << endl;
 
 	for(int i = 0; i < affines.size(); i++){
-		Mat camera_cor(Matx31d(0,0,1));
+		Mat camera_cor(Matx31d(0,0.5,1));
 		camera_cor = affines[i].inv() * camera_cor;
-		cout << camera_cor << endl;
+		if(i>0)
+			cout << acos(affines[i].at<double>(0,0))-acos(affines[i-1].at<double>(0,0)) << endl;
 		int x = int(camera_cor.at<double>(0,0) * resultResize + resultSize/4);
 		int y = int(camera_cor.at<double>(1,0) * resultResize + resultSize/4);
 		if (x >= 0 && x <= resultSize && y >= 0 && y <= resultSize){
