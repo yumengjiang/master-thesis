@@ -1,4 +1,4 @@
-# Install script for directory: /home/yumeng/project/master-thesis
+# Install script for directory: /media/weiming/Ny volym/ubuntu-project/master-thesis
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -40,5 +40,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/yumeng/project/master-thesis/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/media/weiming/Ny volym/ubuntu-project/master-thesis/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

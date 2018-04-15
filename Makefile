@@ -48,10 +48,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/yumeng/project/master-thesis
+CMAKE_SOURCE_DIR = "/media/weiming/Ny volym/ubuntu-project/master-thesis"
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/yumeng/project/master-thesis
+CMAKE_BINARY_DIR = "/media/weiming/Ny volym/ubuntu-project/master-thesis"
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -80,9 +80,9 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/yumeng/project/master-thesis/CMakeFiles /home/yumeng/project/master-thesis/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start "/media/weiming/Ny volym/ubuntu-project/master-thesis/CMakeFiles" "/media/weiming/Ny volym/ubuntu-project/master-thesis/CMakeFiles/progress.marks"
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/yumeng/project/master-thesis/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start "/media/weiming/Ny volym/ubuntu-project/master-thesis/CMakeFiles" 0
 .PHONY : all
 
 # The main clean target
@@ -109,19 +109,6 @@ preinstall/fast:
 depend:
 	$(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
-
-#=============================================================================
-# Target rules for targets named affine_2d_iteration
-
-# Build rule for target.
-affine_2d_iteration: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 affine_2d_iteration
-.PHONY : affine_2d_iteration
-
-# fast build rule for target.
-affine_2d_iteration/fast:
-	$(MAKE) -f CMakeFiles/affine_2d_iteration.dir/build.make CMakeFiles/affine_2d_iteration.dir/build
-.PHONY : affine_2d_iteration/fast
 
 #=============================================================================
 # Target rules for targets named affine_2d
@@ -163,33 +150,6 @@ affine_2d.cpp.s:
 	$(MAKE) -f CMakeFiles/affine_2d.dir/build.make CMakeFiles/affine_2d.dir/affine_2d.cpp.s
 .PHONY : affine_2d.cpp.s
 
-affine_2d_iteration.o: affine_2d_iteration.cpp.o
-
-.PHONY : affine_2d_iteration.o
-
-# target to build an object file
-affine_2d_iteration.cpp.o:
-	$(MAKE) -f CMakeFiles/affine_2d_iteration.dir/build.make CMakeFiles/affine_2d_iteration.dir/affine_2d_iteration.cpp.o
-.PHONY : affine_2d_iteration.cpp.o
-
-affine_2d_iteration.i: affine_2d_iteration.cpp.i
-
-.PHONY : affine_2d_iteration.i
-
-# target to preprocess a source file
-affine_2d_iteration.cpp.i:
-	$(MAKE) -f CMakeFiles/affine_2d_iteration.dir/build.make CMakeFiles/affine_2d_iteration.dir/affine_2d_iteration.cpp.i
-.PHONY : affine_2d_iteration.cpp.i
-
-affine_2d_iteration.s: affine_2d_iteration.cpp.s
-
-.PHONY : affine_2d_iteration.s
-
-# target to generate assembly for a file
-affine_2d_iteration.cpp.s:
-	$(MAKE) -f CMakeFiles/affine_2d_iteration.dir/build.make CMakeFiles/affine_2d_iteration.dir/affine_2d_iteration.cpp.s
-.PHONY : affine_2d_iteration.cpp.s
-
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -197,15 +157,11 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... rebuild_cache"
-	@echo "... affine_2d_iteration"
 	@echo "... edit_cache"
 	@echo "... affine_2d"
 	@echo "... affine_2d.o"
 	@echo "... affine_2d.i"
 	@echo "... affine_2d.s"
-	@echo "... affine_2d_iteration.o"
-	@echo "... affine_2d_iteration.i"
-	@echo "... affine_2d_iteration.s"
 .PHONY : help
 
 

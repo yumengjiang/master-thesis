@@ -4,7 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/home/yumeng/project/master-thesis/affine_2d_iteration.cpp" "/home/yumeng/project/master-thesis/CMakeFiles/affine_2d_iteration.dir/affine_2d_iteration.cpp.o"
+  "/media/weiming/Ny volym/ubuntu-project/master-thesis/affine_2d_iteration.cpp" "/media/weiming/Ny volym/ubuntu-project/master-thesis/CMakeFiles/affine_2d_iteration.dir/affine_2d_iteration.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 

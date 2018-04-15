@@ -10,8 +10,6 @@ file(GLOB CURRENT_SOURCES  src/*.c src/*.cpp)
 source_group("Include" FILES ${CURRENT_HEADERS}) 
 source_group("Source" FILES ${CURRENT_SOURCES})
 add_executable(affine_2d affine_2d.cpp)
-add_executable(affine_2d_iteration affine_2d_iteration.cpp)
 # target_link_libraries(${CERES)
 target_link_libraries( affine_2d ${CERES_LIBRARIES} ${OpenCV_LIBS} gflags )
-target_link_libraries( affine_2d_iteration ${CERES_LIBRARIES} ${OpenCV_LIBS} gflags )
 
