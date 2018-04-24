@@ -52,11 +52,363 @@ ceres/rotation.h
 ceres/problem.h
 -
 
+/usr/include/eigen3/Eigen/Core
+src/Core/util/DisableStupidWarnings.h
+/usr/include/eigen3/Eigen/src/Core/util/DisableStupidWarnings.h
+new
+-
+src/Core/util/Macros.h
+/usr/include/eigen3/Eigen/src/Core/util/Macros.h
+complex
+-
+src/Core/util/MKL_support.h
+/usr/include/eigen3/Eigen/src/Core/util/MKL_support.h
+malloc.h
+-
+immintrin.h
+-
+emmintrin.h
+-
+xmmintrin.h
+-
+pmmintrin.h
+-
+tmmintrin.h
+-
+smmintrin.h
+-
+nmmintrin.h
+-
+immintrin.h
+-
+altivec.h
+-
+altivec.h
+-
+arm_neon.h
+-
+vector_types.h
+-
+omp.h
+-
+cerrno
+-
+cstddef
+-
+cstdlib
+-
+cmath
+-
+cassert
+-
+functional
+-
+iosfwd
+-
+cstring
+-
+string
+-
+limits
+-
+climits
+-
+algorithm
+-
+iostream
+-
+intrin.h
+-
+src/Core/util/Constants.h
+/usr/include/eigen3/Eigen/src/Core/util/Constants.h
+src/Core/util/Meta.h
+/usr/include/eigen3/Eigen/src/Core/util/Meta.h
+src/Core/util/ForwardDeclarations.h
+/usr/include/eigen3/Eigen/src/Core/util/ForwardDeclarations.h
+src/Core/util/StaticAssert.h
+/usr/include/eigen3/Eigen/src/Core/util/StaticAssert.h
+src/Core/util/XprHelper.h
+/usr/include/eigen3/Eigen/src/Core/util/XprHelper.h
+src/Core/util/Memory.h
+/usr/include/eigen3/Eigen/src/Core/util/Memory.h
+src/Core/NumTraits.h
+/usr/include/eigen3/Eigen/src/Core/NumTraits.h
+src/Core/MathFunctions.h
+/usr/include/eigen3/Eigen/src/Core/MathFunctions.h
+src/Core/SpecialFunctions.h
+/usr/include/eigen3/Eigen/src/Core/SpecialFunctions.h
+src/Core/GenericPacketMath.h
+/usr/include/eigen3/Eigen/src/Core/GenericPacketMath.h
+src/Core/arch/SSE/PacketMath.h
+/usr/include/eigen3/Eigen/src/Core/arch/SSE/PacketMath.h
+src/Core/arch/SSE/Complex.h
+/usr/include/eigen3/Eigen/src/Core/arch/SSE/Complex.h
+src/Core/arch/SSE/MathFunctions.h
+/usr/include/eigen3/Eigen/src/Core/arch/SSE/MathFunctions.h
+src/Core/arch/AVX/PacketMath.h
+/usr/include/eigen3/Eigen/src/Core/arch/AVX/PacketMath.h
+src/Core/arch/AVX/MathFunctions.h
+/usr/include/eigen3/Eigen/src/Core/arch/AVX/MathFunctions.h
+src/Core/arch/AVX/Complex.h
+/usr/include/eigen3/Eigen/src/Core/arch/AVX/Complex.h
+src/Core/arch/AVX/TypeCasting.h
+/usr/include/eigen3/Eigen/src/Core/arch/AVX/TypeCasting.h
+src/Core/arch/SSE/PacketMath.h
+/usr/include/eigen3/Eigen/src/Core/arch/SSE/PacketMath.h
+src/Core/arch/SSE/MathFunctions.h
+/usr/include/eigen3/Eigen/src/Core/arch/SSE/MathFunctions.h
+src/Core/arch/SSE/Complex.h
+/usr/include/eigen3/Eigen/src/Core/arch/SSE/Complex.h
+src/Core/arch/SSE/TypeCasting.h
+/usr/include/eigen3/Eigen/src/Core/arch/SSE/TypeCasting.h
+src/Core/arch/AltiVec/PacketMath.h
+/usr/include/eigen3/Eigen/src/Core/arch/AltiVec/PacketMath.h
+src/Core/arch/AltiVec/MathFunctions.h
+/usr/include/eigen3/Eigen/src/Core/arch/AltiVec/MathFunctions.h
+src/Core/arch/AltiVec/Complex.h
+/usr/include/eigen3/Eigen/src/Core/arch/AltiVec/Complex.h
+src/Core/arch/NEON/PacketMath.h
+/usr/include/eigen3/Eigen/src/Core/arch/NEON/PacketMath.h
+src/Core/arch/NEON/MathFunctions.h
+/usr/include/eigen3/Eigen/src/Core/arch/NEON/MathFunctions.h
+src/Core/arch/NEON/Complex.h
+/usr/include/eigen3/Eigen/src/Core/arch/NEON/Complex.h
+src/Core/arch/CUDA/PacketMath.h
+/usr/include/eigen3/Eigen/src/Core/arch/CUDA/PacketMath.h
+src/Core/arch/CUDA/MathFunctions.h
+/usr/include/eigen3/Eigen/src/Core/arch/CUDA/MathFunctions.h
+src/Core/arch/Default/Settings.h
+/usr/include/eigen3/Eigen/src/Core/arch/Default/Settings.h
+src/Core/functors/BinaryFunctors.h
+/usr/include/eigen3/Eigen/src/Core/functors/BinaryFunctors.h
+src/Core/functors/UnaryFunctors.h
+/usr/include/eigen3/Eigen/src/Core/functors/UnaryFunctors.h
+src/Core/functors/NullaryFunctors.h
+/usr/include/eigen3/Eigen/src/Core/functors/NullaryFunctors.h
+src/Core/functors/StlFunctors.h
+/usr/include/eigen3/Eigen/src/Core/functors/StlFunctors.h
+src/Core/functors/AssignmentFunctors.h
+/usr/include/eigen3/Eigen/src/Core/functors/AssignmentFunctors.h
+src/Core/DenseCoeffsBase.h
+/usr/include/eigen3/Eigen/src/Core/DenseCoeffsBase.h
+src/Core/DenseBase.h
+/usr/include/eigen3/Eigen/src/Core/DenseBase.h
+src/Core/MatrixBase.h
+/usr/include/eigen3/Eigen/src/Core/MatrixBase.h
+src/Core/EigenBase.h
+/usr/include/eigen3/Eigen/src/Core/EigenBase.h
+src/Core/Product.h
+/usr/include/eigen3/Eigen/src/Core/Product.h
+src/Core/CoreEvaluators.h
+/usr/include/eigen3/Eigen/src/Core/CoreEvaluators.h
+src/Core/AssignEvaluator.h
+/usr/include/eigen3/Eigen/src/Core/AssignEvaluator.h
+src/Core/Assign.h
+/usr/include/eigen3/Eigen/src/Core/Assign.h
+src/Core/ArrayBase.h
+/usr/include/eigen3/Eigen/src/Core/ArrayBase.h
+src/Core/util/BlasUtil.h
+/usr/include/eigen3/Eigen/src/Core/util/BlasUtil.h
+src/Core/DenseStorage.h
+/usr/include/eigen3/Eigen/src/Core/DenseStorage.h
+src/Core/NestByValue.h
+/usr/include/eigen3/Eigen/src/Core/NestByValue.h
+src/Core/ReturnByValue.h
+/usr/include/eigen3/Eigen/src/Core/ReturnByValue.h
+src/Core/NoAlias.h
+/usr/include/eigen3/Eigen/src/Core/NoAlias.h
+src/Core/PlainObjectBase.h
+/usr/include/eigen3/Eigen/src/Core/PlainObjectBase.h
+src/Core/Matrix.h
+/usr/include/eigen3/Eigen/src/Core/Matrix.h
+src/Core/Array.h
+/usr/include/eigen3/Eigen/src/Core/Array.h
+src/Core/CwiseBinaryOp.h
+/usr/include/eigen3/Eigen/src/Core/CwiseBinaryOp.h
+src/Core/CwiseUnaryOp.h
+/usr/include/eigen3/Eigen/src/Core/CwiseUnaryOp.h
+src/Core/CwiseNullaryOp.h
+/usr/include/eigen3/Eigen/src/Core/CwiseNullaryOp.h
+src/Core/CwiseUnaryView.h
+/usr/include/eigen3/Eigen/src/Core/CwiseUnaryView.h
+src/Core/SelfCwiseBinaryOp.h
+/usr/include/eigen3/Eigen/src/Core/SelfCwiseBinaryOp.h
+src/Core/Dot.h
+/usr/include/eigen3/Eigen/src/Core/Dot.h
+src/Core/StableNorm.h
+/usr/include/eigen3/Eigen/src/Core/StableNorm.h
+src/Core/Stride.h
+/usr/include/eigen3/Eigen/src/Core/Stride.h
+src/Core/MapBase.h
+/usr/include/eigen3/Eigen/src/Core/MapBase.h
+src/Core/Map.h
+/usr/include/eigen3/Eigen/src/Core/Map.h
+src/Core/Ref.h
+/usr/include/eigen3/Eigen/src/Core/Ref.h
+src/Core/Block.h
+/usr/include/eigen3/Eigen/src/Core/Block.h
+src/Core/VectorBlock.h
+/usr/include/eigen3/Eigen/src/Core/VectorBlock.h
+src/Core/Transpose.h
+/usr/include/eigen3/Eigen/src/Core/Transpose.h
+src/Core/DiagonalMatrix.h
+/usr/include/eigen3/Eigen/src/Core/DiagonalMatrix.h
+src/Core/Diagonal.h
+/usr/include/eigen3/Eigen/src/Core/Diagonal.h
+src/Core/DiagonalProduct.h
+/usr/include/eigen3/Eigen/src/Core/DiagonalProduct.h
+src/Core/Redux.h
+/usr/include/eigen3/Eigen/src/Core/Redux.h
+src/Core/Visitor.h
+/usr/include/eigen3/Eigen/src/Core/Visitor.h
+src/Core/Fuzzy.h
+/usr/include/eigen3/Eigen/src/Core/Fuzzy.h
+src/Core/IO.h
+/usr/include/eigen3/Eigen/src/Core/IO.h
+src/Core/Swap.h
+/usr/include/eigen3/Eigen/src/Core/Swap.h
+src/Core/CommaInitializer.h
+/usr/include/eigen3/Eigen/src/Core/CommaInitializer.h
+src/Core/GeneralProduct.h
+/usr/include/eigen3/Eigen/src/Core/GeneralProduct.h
+src/Core/Solve.h
+/usr/include/eigen3/Eigen/src/Core/Solve.h
+src/Core/Inverse.h
+/usr/include/eigen3/Eigen/src/Core/Inverse.h
+src/Core/SolverBase.h
+/usr/include/eigen3/Eigen/src/Core/SolverBase.h
+src/Core/PermutationMatrix.h
+/usr/include/eigen3/Eigen/src/Core/PermutationMatrix.h
+src/Core/Transpositions.h
+/usr/include/eigen3/Eigen/src/Core/Transpositions.h
+src/Core/TriangularMatrix.h
+/usr/include/eigen3/Eigen/src/Core/TriangularMatrix.h
+src/Core/SelfAdjointView.h
+/usr/include/eigen3/Eigen/src/Core/SelfAdjointView.h
+src/Core/products/GeneralBlockPanelKernel.h
+/usr/include/eigen3/Eigen/src/Core/products/GeneralBlockPanelKernel.h
+src/Core/products/Parallelizer.h
+/usr/include/eigen3/Eigen/src/Core/products/Parallelizer.h
+src/Core/ProductEvaluators.h
+/usr/include/eigen3/Eigen/src/Core/ProductEvaluators.h
+src/Core/products/GeneralMatrixVector.h
+/usr/include/eigen3/Eigen/src/Core/products/GeneralMatrixVector.h
+src/Core/products/GeneralMatrixMatrix.h
+/usr/include/eigen3/Eigen/src/Core/products/GeneralMatrixMatrix.h
+src/Core/SolveTriangular.h
+/usr/include/eigen3/Eigen/src/Core/SolveTriangular.h
+src/Core/products/GeneralMatrixMatrixTriangular.h
+/usr/include/eigen3/Eigen/src/Core/products/GeneralMatrixMatrixTriangular.h
+src/Core/products/SelfadjointMatrixVector.h
+/usr/include/eigen3/Eigen/src/Core/products/SelfadjointMatrixVector.h
+src/Core/products/SelfadjointMatrixMatrix.h
+/usr/include/eigen3/Eigen/src/Core/products/SelfadjointMatrixMatrix.h
+src/Core/products/SelfadjointProduct.h
+/usr/include/eigen3/Eigen/src/Core/products/SelfadjointProduct.h
+src/Core/products/SelfadjointRank2Update.h
+/usr/include/eigen3/Eigen/src/Core/products/SelfadjointRank2Update.h
+src/Core/products/TriangularMatrixVector.h
+/usr/include/eigen3/Eigen/src/Core/products/TriangularMatrixVector.h
+src/Core/products/TriangularMatrixMatrix.h
+/usr/include/eigen3/Eigen/src/Core/products/TriangularMatrixMatrix.h
+src/Core/products/TriangularSolverMatrix.h
+/usr/include/eigen3/Eigen/src/Core/products/TriangularSolverMatrix.h
+src/Core/products/TriangularSolverVector.h
+/usr/include/eigen3/Eigen/src/Core/products/TriangularSolverVector.h
+src/Core/BandMatrix.h
+/usr/include/eigen3/Eigen/src/Core/BandMatrix.h
+src/Core/CoreIterators.h
+/usr/include/eigen3/Eigen/src/Core/CoreIterators.h
+src/Core/BooleanRedux.h
+/usr/include/eigen3/Eigen/src/Core/BooleanRedux.h
+src/Core/Select.h
+/usr/include/eigen3/Eigen/src/Core/Select.h
+src/Core/VectorwiseOp.h
+/usr/include/eigen3/Eigen/src/Core/VectorwiseOp.h
+src/Core/Random.h
+/usr/include/eigen3/Eigen/src/Core/Random.h
+src/Core/Replicate.h
+/usr/include/eigen3/Eigen/src/Core/Replicate.h
+src/Core/Reverse.h
+/usr/include/eigen3/Eigen/src/Core/Reverse.h
+src/Core/ArrayWrapper.h
+/usr/include/eigen3/Eigen/src/Core/ArrayWrapper.h
+src/Core/products/GeneralMatrixMatrix_MKL.h
+/usr/include/eigen3/Eigen/src/Core/products/GeneralMatrixMatrix_MKL.h
+src/Core/products/GeneralMatrixVector_MKL.h
+/usr/include/eigen3/Eigen/src/Core/products/GeneralMatrixVector_MKL.h
+src/Core/products/GeneralMatrixMatrixTriangular_MKL.h
+/usr/include/eigen3/Eigen/src/Core/products/GeneralMatrixMatrixTriangular_MKL.h
+src/Core/products/SelfadjointMatrixMatrix_MKL.h
+/usr/include/eigen3/Eigen/src/Core/products/SelfadjointMatrixMatrix_MKL.h
+src/Core/products/SelfadjointMatrixVector_MKL.h
+/usr/include/eigen3/Eigen/src/Core/products/SelfadjointMatrixVector_MKL.h
+src/Core/products/TriangularMatrixMatrix_MKL.h
+/usr/include/eigen3/Eigen/src/Core/products/TriangularMatrixMatrix_MKL.h
+src/Core/products/TriangularMatrixVector_MKL.h
+/usr/include/eigen3/Eigen/src/Core/products/TriangularMatrixVector_MKL.h
+src/Core/products/TriangularSolverMatrix_MKL.h
+/usr/include/eigen3/Eigen/src/Core/products/TriangularSolverMatrix_MKL.h
+src/Core/Assign_MKL.h
+/usr/include/eigen3/Eigen/src/Core/Assign_MKL.h
+src/Core/GlobalFunctions.h
+/usr/include/eigen3/Eigen/src/Core/GlobalFunctions.h
+src/Core/util/ReenableStupidWarnings.h
+/usr/include/eigen3/Eigen/src/Core/util/ReenableStupidWarnings.h
+
+/usr/include/eigen3/Eigen/Dense
+Core
+/usr/include/eigen3/Eigen/Core
+LU
+/usr/include/eigen3/Eigen/LU
+Cholesky
+/usr/include/eigen3/Eigen/Cholesky
+QR
+/usr/include/eigen3/Eigen/QR
+SVD
+/usr/include/eigen3/Eigen/SVD
+Geometry
+/usr/include/eigen3/Eigen/Geometry
+Eigenvalues
+/usr/include/eigen3/Eigen/Eigenvalues
+
+/usr/include/eigen3/Eigen/StdVector
+Core
+/usr/include/eigen3/Eigen/Core
+vector
+-
+src/StlSupport/StdVector.h
+/usr/include/eigen3/Eigen/src/StlSupport/StdVector.h
+
+/usr/include/eigen3/Eigen/src/Core/SpecialFunctions.h
+
+/usr/include/eigen3/Eigen/src/Core/products/GeneralMatrixMatrixTriangular_MKL.h
+
+/usr/include/eigen3/Eigen/src/Core/products/GeneralMatrixMatrix_MKL.h
+
+/usr/include/eigen3/Eigen/src/Core/products/GeneralMatrixVector_MKL.h
+
+/usr/include/eigen3/Eigen/src/Core/products/SelfadjointMatrixMatrix_MKL.h
+
+/usr/include/eigen3/Eigen/src/Core/products/SelfadjointMatrixVector_MKL.h
+
+/usr/include/eigen3/Eigen/src/Core/products/TriangularMatrixMatrix_MKL.h
+
+/usr/include/eigen3/Eigen/src/Core/products/TriangularMatrixVector_MKL.h
+
+/usr/include/eigen3/Eigen/src/Core/products/TriangularSolverMatrix_MKL.h
+
+/usr/include/eigen3/Eigen/src/StlSupport/StdVector.h
+details.h
+/usr/include/eigen3/Eigen/src/StlSupport/details.h
+
+/usr/include/eigen3/Eigen/src/StlSupport/details.h
+
 /usr/local/include/ceres/autodiff_cost_function.h
+memory
+-
 ceres/internal/autodiff.h
 /usr/local/include/ceres/ceres/internal/autodiff.h
-ceres/internal/scoped_ptr.h
-/usr/local/include/ceres/ceres/internal/scoped_ptr.h
 ceres/sized_cost_function.h
 /usr/local/include/ceres/ceres/sized_cost_function.h
 ceres/types.h
@@ -65,12 +417,12 @@ glog/logging.h
 /usr/local/include/ceres/glog/logging.h
 
 /usr/local/include/ceres/autodiff_local_parameterization.h
+memory
+-
 ceres/local_parameterization.h
 /usr/local/include/ceres/ceres/local_parameterization.h
 ceres/internal/autodiff.h
 /usr/local/include/ceres/ceres/internal/autodiff.h
-ceres/internal/scoped_ptr.h
-/usr/local/include/ceres/ceres/internal/scoped_ptr.h
 
 /usr/local/include/ceres/ceres.h
 ceres/autodiff_cost_function.h
@@ -116,11 +468,11 @@ ceres/types.h
 ceres/version.h
 /usr/local/include/ceres/ceres/version.h
 
+/usr/local/include/ceres/context.h
+
 /usr/local/include/ceres/cost_function.h
 vector
 -
-ceres/internal/macros.h
-/usr/local/include/ceres/ceres/internal/macros.h
 ceres/internal/port.h
 /usr/local/include/ceres/ceres/internal/port.h
 ceres/types.h
@@ -143,22 +495,20 @@ ceres/internal/fixed_array.h
 /usr/local/include/ceres/ceres/internal/fixed_array.h
 ceres/internal/port.h
 /usr/local/include/ceres/ceres/internal/port.h
-ceres/internal/scoped_ptr.h
-/usr/local/include/ceres/ceres/internal/scoped_ptr.h
 
 /usr/local/include/ceres/covariance.h
+memory
+-
 utility
 -
 vector
 -
-ceres/internal/port.h
-/usr/local/include/ceres/ceres/internal/port.h
-ceres/internal/scoped_ptr.h
-/usr/local/include/ceres/ceres/internal/scoped_ptr.h
-ceres/types.h
-/usr/local/include/ceres/ceres/types.h
 ceres/internal/disable_warnings.h
 /usr/local/include/ceres/ceres/internal/disable_warnings.h
+ceres/internal/port.h
+/usr/local/include/ceres/ceres/internal/port.h
+ceres/types.h
+/usr/local/include/ceres/ceres/types.h
 ceres/internal/reenable_warnings.h
 /usr/local/include/ceres/ceres/internal/reenable_warnings.h
 
@@ -179,10 +529,10 @@ numeric
 -
 vector
 -
+memory
+-
 ceres/dynamic_cost_function.h
 /usr/local/include/ceres/ceres/dynamic_cost_function.h
-ceres/internal/scoped_ptr.h
-/usr/local/include/ceres/ceres/internal/scoped_ptr.h
 ceres/jet.h
 /usr/local/include/ceres/ceres/jet.h
 glog/logging.h
@@ -193,6 +543,8 @@ ceres/cost_function.h
 /usr/local/include/ceres/ceres/cost_function.h
 
 /usr/local/include/ceres/dynamic_cost_function_to_functor.h
+memory
+-
 numeric
 -
 vector
@@ -203,11 +555,11 @@ ceres/internal/fixed_array.h
 /usr/local/include/ceres/ceres/internal/fixed_array.h
 ceres/internal/port.h
 /usr/local/include/ceres/ceres/internal/port.h
-ceres/internal/scoped_ptr.h
-/usr/local/include/ceres/ceres/internal/scoped_ptr.h
 
 /usr/local/include/ceres/dynamic_numeric_diff_cost_function.h
 cmath
+-
+memory
 -
 numeric
 -
@@ -215,8 +567,6 @@ vector
 -
 ceres/dynamic_cost_function.h
 /usr/local/include/ceres/ceres/dynamic_cost_function.h
-ceres/internal/scoped_ptr.h
-/usr/local/include/ceres/ceres/internal/scoped_ptr.h
 ceres/internal/eigen.h
 /usr/local/include/ceres/ceres/internal/eigen.h
 ceres/internal/numeric_diff.h
@@ -226,19 +576,13 @@ ceres/numeric_diff_options.h
 glog/logging.h
 /usr/local/include/ceres/glog/logging.h
 
-/usr/local/include/ceres/fpclassify.h
-float.h
--
-limits
--
+/usr/local/include/ceres/evaluation_callback.h
 
 /usr/local/include/ceres/gradient_problem.h
-ceres/internal/macros.h
-/usr/local/include/ceres/ceres/internal/macros.h
+memory
+-
 ceres/internal/port.h
 /usr/local/include/ceres/ceres/internal/port.h
-ceres/internal/scoped_ptr.h
-/usr/local/include/ceres/ceres/internal/scoped_ptr.h
 ceres/local_parameterization.h
 /usr/local/include/ceres/ceres/local_parameterization.h
 
@@ -249,8 +593,6 @@ string
 -
 vector
 -
-ceres/internal/macros.h
-/usr/local/include/ceres/ceres/internal/macros.h
 ceres/internal/port.h
 /usr/local/include/ceres/ceres/internal/port.h
 ceres/iteration_callback.h
@@ -289,16 +631,10 @@ cstddef
 -
 Eigen/Core
 /usr/local/include/ceres/internal/Eigen/Core
-ceres/internal/macros.h
-/usr/local/include/ceres/internal/ceres/internal/macros.h
 ceres/internal/manual_constructor.h
 /usr/local/include/ceres/internal/ceres/internal/manual_constructor.h
 glog/logging.h
 /usr/local/include/ceres/internal/glog/logging.h
-
-/usr/local/include/ceres/internal/macros.h
-cstddef
--
 
 /usr/local/include/ceres/internal/manual_constructor.h
 new
@@ -315,8 +651,6 @@ ceres/cost_function.h
 /usr/local/include/ceres/internal/ceres/cost_function.h
 ceres/internal/fixed_array.h
 /usr/local/include/ceres/internal/ceres/internal/fixed_array.h
-ceres/internal/scoped_ptr.h
-/usr/local/include/ceres/internal/ceres/internal/scoped_ptr.h
 ceres/internal/variadic_evaluate.h
 /usr/local/include/ceres/internal/ceres/internal/variadic_evaluate.h
 ceres/numeric_diff_options.h
@@ -331,22 +665,8 @@ cstddef
 -
 ceres/internal/config.h
 /usr/local/include/ceres/internal/ceres/internal/config.h
-tr1/memory
--
-memory
--
 
 /usr/local/include/ceres/internal/reenable_warnings.h
-
-/usr/local/include/ceres/internal/scoped_ptr.h
-assert.h
--
-stdlib.h
--
-cstddef
--
-algorithm
--
 
 /usr/local/include/ceres/internal/variadic_evaluate.h
 stddef.h
@@ -383,8 +703,6 @@ string
 -
 Eigen/Core
 /usr/local/include/ceres/Eigen/Core
-ceres/fpclassify.h
-/usr/local/include/ceres/ceres/fpclassify.h
 ceres/internal/port.h
 /usr/local/include/ceres/ceres/internal/port.h
 
@@ -393,20 +711,16 @@ vector
 -
 ceres/internal/port.h
 /usr/local/include/ceres/ceres/internal/port.h
-ceres/internal/scoped_ptr.h
-/usr/local/include/ceres/ceres/internal/scoped_ptr.h
 ceres/internal/disable_warnings.h
 /usr/local/include/ceres/ceres/internal/disable_warnings.h
 ceres/internal/reenable_warnings.h
 /usr/local/include/ceres/ceres/internal/reenable_warnings.h
 
 /usr/local/include/ceres/loss_function.h
+memory
+-
 glog/logging.h
 /usr/local/include/ceres/glog/logging.h
-ceres/internal/macros.h
-/usr/local/include/ceres/ceres/internal/macros.h
-ceres/internal/scoped_ptr.h
-/usr/local/include/ceres/ceres/internal/scoped_ptr.h
 ceres/types.h
 /usr/local/include/ceres/ceres/types.h
 ceres/internal/disable_warnings.h
@@ -415,14 +729,14 @@ ceres/internal/reenable_warnings.h
 /usr/local/include/ceres/ceres/internal/reenable_warnings.h
 
 /usr/local/include/ceres/numeric_diff_cost_function.h
+memory
+-
 Eigen/Dense
 /usr/local/include/ceres/Eigen/Dense
 ceres/cost_function.h
 /usr/local/include/ceres/ceres/cost_function.h
 ceres/internal/numeric_diff.h
 /usr/local/include/ceres/ceres/internal/numeric_diff.h
-ceres/internal/scoped_ptr.h
-/usr/local/include/ceres/ceres/internal/scoped_ptr.h
 ceres/numeric_diff_options.h
 /usr/local/include/ceres/ceres/numeric_diff_options.h
 ceres/sized_cost_function.h
@@ -439,6 +753,8 @@ map
 -
 set
 -
+unordered_map
+-
 vector
 -
 ceres/internal/port.h
@@ -451,22 +767,22 @@ cstddef
 -
 map
 -
+memory
+-
 set
 -
 vector
 -
-glog/logging.h
-/usr/local/include/ceres/glog/logging.h
-ceres/internal/macros.h
-/usr/local/include/ceres/ceres/internal/macros.h
-ceres/internal/port.h
-/usr/local/include/ceres/ceres/internal/port.h
-ceres/internal/scoped_ptr.h
-/usr/local/include/ceres/ceres/internal/scoped_ptr.h
-ceres/types.h
-/usr/local/include/ceres/ceres/types.h
+ceres/context.h
+/usr/local/include/ceres/ceres/context.h
 ceres/internal/disable_warnings.h
 /usr/local/include/ceres/ceres/internal/disable_warnings.h
+ceres/internal/port.h
+/usr/local/include/ceres/ceres/internal/port.h
+ceres/types.h
+/usr/local/include/ceres/ceres/types.h
+glog/logging.h
+/usr/local/include/ceres/glog/logging.h
 ceres/internal/reenable_warnings.h
 /usr/local/include/ceres/ceres/internal/reenable_warnings.h
 
@@ -489,14 +805,18 @@ glog/logging.h
 /usr/local/include/ceres/solver.h
 cmath
 -
+memory
+-
 string
 -
 vector
 -
 ceres/crs_matrix.h
 /usr/local/include/ceres/ceres/crs_matrix.h
-ceres/internal/macros.h
-/usr/local/include/ceres/ceres/internal/macros.h
+ceres/evaluation_callback.h
+/usr/local/include/ceres/ceres/evaluation_callback.h
+ceres/internal/disable_warnings.h
+/usr/local/include/ceres/ceres/internal/disable_warnings.h
 ceres/internal/port.h
 /usr/local/include/ceres/ceres/internal/port.h
 ceres/iteration_callback.h
@@ -505,8 +825,6 @@ ceres/ordered_groups.h
 /usr/local/include/ceres/ceres/ordered_groups.h
 ceres/types.h
 /usr/local/include/ceres/ceres/types.h
-ceres/internal/disable_warnings.h
-/usr/local/include/ceres/ceres/internal/disable_warnings.h
 ceres/internal/reenable_warnings.h
 /usr/local/include/ceres/ceres/internal/reenable_warnings.h
 
@@ -525,12 +843,16 @@ ceres/internal/reenable_warnings.h
 /usr/local/include/eigen3/Eigen/Cholesky
 Core
 /usr/local/include/eigen3/Eigen/Core
+Jacobi
+/usr/local/include/eigen3/Eigen/Jacobi
 src/Core/util/DisableStupidWarnings.h
 /usr/local/include/eigen3/Eigen/src/Core/util/DisableStupidWarnings.h
 src/Cholesky/LLT.h
 /usr/local/include/eigen3/Eigen/src/Cholesky/LLT.h
 src/Cholesky/LDLT.h
 /usr/local/include/eigen3/Eigen/src/Cholesky/LDLT.h
+mkl_lapacke.h
+/usr/local/include/eigen3/Eigen/mkl_lapacke.h
 src/misc/lapacke.h
 /usr/local/include/eigen3/Eigen/src/misc/lapacke.h
 src/Cholesky/LLT_LAPACKE.h
@@ -541,7 +863,7 @@ src/Core/util/ReenableStupidWarnings.h
 /usr/local/include/eigen3/Eigen/Core
 src/Core/util/DisableStupidWarnings.h
 /usr/local/include/eigen3/Eigen/src/Core/util/DisableStupidWarnings.h
-math_functions.hpp
+cuda_runtime.h
 -
 new
 -
@@ -617,6 +939,8 @@ iostream
 -
 intrin.h
 -
+SYCL/sycl.hpp
+-
 src/Core/util/Constants.h
 /usr/local/include/eigen3/Eigen/src/Core/util/Constants.h
 src/Core/util/Meta.h
@@ -629,6 +953,10 @@ src/Core/util/XprHelper.h
 /usr/local/include/eigen3/Eigen/src/Core/util/XprHelper.h
 src/Core/util/Memory.h
 /usr/local/include/eigen3/Eigen/src/Core/util/Memory.h
+src/Core/util/IntegralConstant.h
+/usr/local/include/eigen3/Eigen/src/Core/util/IntegralConstant.h
+src/Core/util/SymbolicIndex.h
+/usr/local/include/eigen3/Eigen/src/Core/util/SymbolicIndex.h
 src/Core/NumTraits.h
 /usr/local/include/eigen3/Eigen/src/Core/NumTraits.h
 src/Core/MathFunctions.h
@@ -637,12 +965,18 @@ src/Core/GenericPacketMath.h
 /usr/local/include/eigen3/Eigen/src/Core/GenericPacketMath.h
 src/Core/MathFunctionsImpl.h
 /usr/local/include/eigen3/Eigen/src/Core/MathFunctionsImpl.h
+src/Core/arch/Default/ConjHelper.h
+/usr/local/include/eigen3/Eigen/src/Core/arch/Default/ConjHelper.h
 src/Core/arch/SSE/PacketMath.h
 /usr/local/include/eigen3/Eigen/src/Core/arch/SSE/PacketMath.h
 src/Core/arch/AVX/PacketMath.h
 /usr/local/include/eigen3/Eigen/src/Core/arch/AVX/PacketMath.h
 src/Core/arch/AVX512/PacketMath.h
 /usr/local/include/eigen3/Eigen/src/Core/arch/AVX512/PacketMath.h
+src/Core/arch/SSE/MathFunctions.h
+/usr/local/include/eigen3/Eigen/src/Core/arch/SSE/MathFunctions.h
+src/Core/arch/AVX/MathFunctions.h
+/usr/local/include/eigen3/Eigen/src/Core/arch/AVX/MathFunctions.h
 src/Core/arch/AVX512/MathFunctions.h
 /usr/local/include/eigen3/Eigen/src/Core/arch/AVX512/MathFunctions.h
 src/Core/arch/SSE/PacketMath.h
@@ -711,6 +1045,10 @@ src/Core/functors/AssignmentFunctors.h
 /usr/local/include/eigen3/Eigen/src/Core/functors/AssignmentFunctors.h
 src/Core/arch/CUDA/Complex.h
 /usr/local/include/eigen3/Eigen/src/Core/arch/CUDA/Complex.h
+src/Core/util/IndexedViewHelper.h
+/usr/local/include/eigen3/Eigen/src/Core/util/IndexedViewHelper.h
+src/Core/ArithmeticSequence.h
+/usr/local/include/eigen3/Eigen/src/Core/ArithmeticSequence.h
 src/Core/IO.h
 /usr/local/include/eigen3/Eigen/src/Core/IO.h
 src/Core/DenseCoeffsBase.h
@@ -775,6 +1113,8 @@ src/Core/Block.h
 /usr/local/include/eigen3/Eigen/src/Core/Block.h
 src/Core/VectorBlock.h
 /usr/local/include/eigen3/Eigen/src/Core/VectorBlock.h
+src/Core/IndexedView.h
+/usr/local/include/eigen3/Eigen/src/Core/IndexedView.h
 src/Core/Transpose.h
 /usr/local/include/eigen3/Eigen/src/Core/Transpose.h
 src/Core/DiagonalMatrix.h
@@ -937,6 +1277,8 @@ src/Eigenvalues/GeneralizedEigenSolver.h
 /usr/local/include/eigen3/Eigen/src/Eigenvalues/GeneralizedEigenSolver.h
 src/Eigenvalues/MatrixBaseEigenvalues.h
 /usr/local/include/eigen3/Eigen/src/Eigenvalues/MatrixBaseEigenvalues.h
+mkl_lapacke.h
+/usr/local/include/eigen3/Eigen/mkl_lapacke.h
 src/misc/lapacke.h
 /usr/local/include/eigen3/Eigen/src/misc/lapacke.h
 src/Eigenvalues/RealSchur_LAPACKE.h
@@ -1029,6 +1371,8 @@ src/LU/FullPivLU.h
 /usr/local/include/eigen3/Eigen/src/LU/FullPivLU.h
 src/LU/PartialPivLU.h
 /usr/local/include/eigen3/Eigen/src/LU/PartialPivLU.h
+mkl_lapacke.h
+/usr/local/include/eigen3/Eigen/mkl_lapacke.h
 src/misc/lapacke.h
 /usr/local/include/eigen3/Eigen/src/misc/lapacke.h
 src/LU/PartialPivLU_LAPACKE.h
@@ -1061,6 +1405,8 @@ src/QR/ColPivHouseholderQR.h
 /usr/local/include/eigen3/Eigen/src/QR/ColPivHouseholderQR.h
 src/QR/CompleteOrthogonalDecomposition.h
 /usr/local/include/eigen3/Eigen/src/QR/CompleteOrthogonalDecomposition.h
+mkl_lapacke.h
+/usr/local/include/eigen3/Eigen/mkl_lapacke.h
 src/misc/lapacke.h
 /usr/local/include/eigen3/Eigen/src/misc/lapacke.h
 src/QR/HouseholderQR_LAPACKE.h
@@ -1089,6 +1435,8 @@ src/SVD/JacobiSVD.h
 /usr/local/include/eigen3/Eigen/src/SVD/JacobiSVD.h
 src/SVD/BDCSVD.h
 /usr/local/include/eigen3/Eigen/src/SVD/BDCSVD.h
+mkl_lapacke.h
+/usr/local/include/eigen3/Eigen/mkl_lapacke.h
 src/misc/lapacke.h
 /usr/local/include/eigen3/Eigen/src/misc/lapacke.h
 src/SVD/JacobiSVD_LAPACKE.h
@@ -1096,25 +1444,17 @@ src/SVD/JacobiSVD_LAPACKE.h
 src/Core/util/ReenableStupidWarnings.h
 /usr/local/include/eigen3/Eigen/src/Core/util/ReenableStupidWarnings.h
 
-/usr/local/include/eigen3/Eigen/StdVector
-Core
-/usr/local/include/eigen3/Eigen/Core
-vector
--
-src/StlSupport/StdVector.h
-/usr/local/include/eigen3/Eigen/src/StlSupport/StdVector.h
-
 /usr/local/include/eigen3/Eigen/src/Cholesky/LDLT.h
 
 /usr/local/include/eigen3/Eigen/src/Cholesky/LLT.h
 
 /usr/local/include/eigen3/Eigen/src/Cholesky/LLT_LAPACKE.h
 
+/usr/local/include/eigen3/Eigen/src/Core/ArithmeticSequence.h
+
 /usr/local/include/eigen3/Eigen/src/Core/Array.h
 
 /usr/local/include/eigen3/Eigen/src/Core/ArrayBase.h
-../plugins/CommonCwiseUnaryOps.h
-/usr/local/include/eigen3/Eigen/src/plugins/CommonCwiseUnaryOps.h
 ../plugins/MatrixCwiseUnaryOps.h
 /usr/local/include/eigen3/Eigen/src/plugins/MatrixCwiseUnaryOps.h
 ../plugins/ArrayCwiseUnaryOps.h
@@ -1159,8 +1499,12 @@ src/StlSupport/StdVector.h
 /usr/local/include/eigen3/Eigen/src/Core/CwiseUnaryView.h
 
 /usr/local/include/eigen3/Eigen/src/Core/DenseBase.h
+../plugins/CommonCwiseUnaryOps.h
+/usr/local/include/eigen3/Eigen/src/plugins/CommonCwiseUnaryOps.h
 ../plugins/BlockMethods.h
 /usr/local/include/eigen3/Eigen/src/plugins/BlockMethods.h
+../plugins/IndexedViewMethods.h
+/usr/local/include/eigen3/Eigen/src/plugins/IndexedViewMethods.h
 
 /usr/local/include/eigen3/Eigen/src/Core/DenseCoeffsBase.h
 
@@ -1186,6 +1530,8 @@ src/StlSupport/StdVector.h
 
 /usr/local/include/eigen3/Eigen/src/Core/IO.h
 
+/usr/local/include/eigen3/Eigen/src/Core/IndexedView.h
+
 /usr/local/include/eigen3/Eigen/src/Core/Inverse.h
 
 /usr/local/include/eigen3/Eigen/src/Core/Map.h
@@ -1199,8 +1545,6 @@ src/StlSupport/StdVector.h
 /usr/local/include/eigen3/Eigen/src/Core/Matrix.h
 
 /usr/local/include/eigen3/Eigen/src/Core/MatrixBase.h
-../plugins/CommonCwiseUnaryOps.h
-/usr/local/include/eigen3/Eigen/src/plugins/CommonCwiseUnaryOps.h
 ../plugins/CommonCwiseBinaryOps.h
 /usr/local/include/eigen3/Eigen/src/plugins/CommonCwiseBinaryOps.h
 ../plugins/MatrixCwiseUnaryOps.h
@@ -1294,6 +1638,8 @@ src/StlSupport/StdVector.h
 
 /usr/local/include/eigen3/Eigen/src/Core/arch/CUDA/TypeCasting.h
 
+/usr/local/include/eigen3/Eigen/src/Core/arch/Default/ConjHelper.h
+
 /usr/local/include/eigen3/Eigen/src/Core/arch/Default/Settings.h
 
 /usr/local/include/eigen3/Eigen/src/Core/arch/NEON/Complex.h
@@ -1380,6 +1726,10 @@ stdint.h
 
 /usr/local/include/eigen3/Eigen/src/Core/util/ForwardDeclarations.h
 
+/usr/local/include/eigen3/Eigen/src/Core/util/IndexedViewHelper.h
+
+/usr/local/include/eigen3/Eigen/src/Core/util/IntegralConstant.h
+
 /usr/local/include/eigen3/Eigen/src/Core/util/MKL_support.h
 mkl.h
 -
@@ -1405,6 +1755,8 @@ cstdint
 /usr/local/include/eigen3/Eigen/src/Core/util/ReenableStupidWarnings.h
 
 /usr/local/include/eigen3/Eigen/src/Core/util/StaticAssert.h
+
+/usr/local/include/eigen3/Eigen/src/Core/util/SymbolicIndex.h
 
 /usr/local/include/eigen3/Eigen/src/Core/util/XprHelper.h
 
@@ -1536,12 +1888,6 @@ cstdint
 
 /usr/local/include/eigen3/Eigen/src/SVD/UpperBidiagonalization.h
 
-/usr/local/include/eigen3/Eigen/src/StlSupport/StdVector.h
-details.h
-/usr/local/include/eigen3/Eigen/src/StlSupport/details.h
-
-/usr/local/include/eigen3/Eigen/src/StlSupport/details.h
-
 /usr/local/include/eigen3/Eigen/src/misc/Image.h
 
 /usr/local/include/eigen3/Eigen/src/misc/Kernel.h
@@ -1574,13 +1920,13 @@ lapacke_mangling.h
 
 /usr/local/include/eigen3/Eigen/src/plugins/CommonCwiseUnaryOps.h
 
+/usr/local/include/eigen3/Eigen/src/plugins/IndexedViewMethods.h
+IndexedViewMethods.h
+/usr/local/include/eigen3/Eigen/src/plugins/IndexedViewMethods.h
+
 /usr/local/include/eigen3/Eigen/src/plugins/MatrixCwiseBinaryOps.h
 
 /usr/local/include/eigen3/Eigen/src/plugins/MatrixCwiseUnaryOps.h
-
-/usr/local/include/opencv/cxcore.h
-opencv2/core/core_c.h
-/usr/local/include/opencv/opencv2/core/core_c.h
 
 /usr/local/include/opencv2/calib3d.hpp
 opencv2/core.hpp
@@ -1589,12 +1935,6 @@ opencv2/features2d.hpp
 /usr/local/include/opencv2/opencv2/features2d.hpp
 opencv2/core/affine.hpp
 /usr/local/include/opencv2/opencv2/core/affine.hpp
-opencv2/calib3d/calib3d_c.h
-/usr/local/include/opencv2/opencv2/calib3d/calib3d_c.h
-
-/usr/local/include/opencv2/calib3d/calib3d_c.h
-opencv2/core/core_c.h
-/usr/local/include/opencv2/calib3d/opencv2/core/core_c.h
 
 /usr/local/include/opencv2/core.hpp
 opencv2/core/cvdef.h
@@ -1615,10 +1955,6 @@ opencv2/core/mat.hpp
 /usr/local/include/opencv2/opencv2/core/mat.hpp
 opencv2/core/persistence.hpp
 /usr/local/include/opencv2/opencv2/core/persistence.hpp
-opencv2/opencv.hpp
-/usr/local/include/opencv2/opencv2/opencv.hpp
-opencv2/xfeatures2d.hpp
-/usr/local/include/opencv2/opencv2/xfeatures2d.hpp
 opencv2/core/operations.hpp
 /usr/local/include/opencv2/opencv2/core/operations.hpp
 opencv2/core/cvstd.inl.hpp
@@ -1649,28 +1985,26 @@ opencv2/core/neon_utils.hpp
 /usr/local/include/opencv2/core/opencv2/core/neon_utils.hpp
 opencv2/core/vsx_utils.hpp
 /usr/local/include/opencv2/core/opencv2/core/vsx_utils.hpp
+opencv2/core/check.hpp
+/usr/local/include/opencv2/core/opencv2/core/check.hpp
 
 /usr/local/include/opencv2/core/bufferpool.hpp
+
+/usr/local/include/opencv2/core/check.hpp
+opencv2/core/base.hpp
+-
 
 /usr/local/include/opencv2/core/core.hpp
 opencv2/core.hpp
 /usr/local/include/opencv2/core/opencv2/core.hpp
-
-/usr/local/include/opencv2/core/core_c.h
-opencv2/core/types_c.h
-/usr/local/include/opencv2/core/opencv2/core/types_c.h
-cxcore.h
-/usr/local/include/opencv2/core/cxcore.h
-cxcore.h
-/usr/local/include/opencv2/core/cxcore.h
-opencv2/core/utility.hpp
-/usr/local/include/opencv2/core/opencv2/core/utility.hpp
 
 /usr/local/include/opencv2/core/cuda.hpp
 opencv2/core.hpp
 /usr/local/include/opencv2/core/opencv2/core.hpp
 opencv2/core/cuda_types.hpp
 /usr/local/include/opencv2/core/opencv2/core/cuda_types.hpp
+opencv2/opencv.hpp
+-
 opencv2/core/cuda.inl.hpp
 /usr/local/include/opencv2/core/opencv2/core/cuda.inl.hpp
 
@@ -1702,6 +2036,10 @@ popcntintrin.h
 immintrin.h
 -
 arm_neon.h
+-
+immintrin.h
+-
+immintrin.h
 -
 immintrin.h
 -
@@ -1743,6 +2081,10 @@ intrin.h
 -
 array
 -
+cstdint
+-
+stdint.h
+-
 
 /usr/local/include/opencv2/core/cvstd.hpp
 opencv2/core/cvdef.h
@@ -1783,8 +2125,6 @@ fastmath.h
 -
 math.h
 -
-tegra_round.hpp
-/usr/local/include/opencv2/core/tegra_round.hpp
 
 /usr/local/include/opencv2/core/hal/interface.h
 cstddef
@@ -1880,24 +2220,6 @@ opencv2/core/cvstd.hpp
 opencv2/core/matx.hpp
 /usr/local/include/opencv2/core/opencv2/core/matx.hpp
 
-/usr/local/include/opencv2/core/types_c.h
-ipl.h
--
-ipl/ipl.h
--
-opencv2/core/cvdef.h
-/usr/local/include/opencv2/core/opencv2/core/cvdef.h
-assert.h
--
-stdlib.h
--
-string.h
--
-float.h
--
-opencv2/core.hpp
-/usr/local/include/opencv2/core/opencv2/core.hpp
-
 /usr/local/include/opencv2/core/utility.hpp
 opencv2/core.hpp
 /usr/local/include/opencv2/core/opencv2/core.hpp
@@ -1905,14 +2227,50 @@ ostream
 -
 functional
 -
-opencv2/core/core_c.h
-/usr/local/include/opencv2/core/opencv2/core/core_c.h
+mutex
+-
 
 /usr/local/include/opencv2/core/version.hpp
 
 /usr/local/include/opencv2/core/vsx_utils.hpp
 opencv2/core/cvdef.h
 /usr/local/include/opencv2/core/opencv2/core/cvdef.h
+assert.h
+-
+
+/usr/local/include/opencv2/dnn.hpp
+opencv2/dnn/dnn.hpp
+-
+
+/usr/local/include/opencv2/dnn/dict.hpp
+opencv2/core.hpp
+-
+map
+-
+ostream
+-
+opencv2/dnn/dnn.hpp
+-
+
+/usr/local/include/opencv2/dnn/dnn.hpp
+vector
+-
+opencv2/core.hpp
+-
+opencv2/dnn/dict.hpp
+-
+opencv2/dnn/layer.hpp
+-
+opencv2/dnn/dnn.inl.hpp
+-
+
+/usr/local/include/opencv2/dnn/dnn.inl.hpp
+opencv2/dnn.hpp
+-
+
+/usr/local/include/opencv2/dnn/layer.hpp
+opencv2/dnn.hpp
+-
 
 /usr/local/include/opencv2/features2d.hpp
 opencv2/opencv_modules.hpp
@@ -2355,32 +2713,14 @@ opencv2/imgcodecs.hpp
 /usr/local/include/opencv2/opencv2/imgcodecs.hpp
 opencv2/videoio.hpp
 /usr/local/include/opencv2/opencv2/videoio.hpp
-opencv2/highgui/highgui_c.h
-/usr/local/include/opencv2/opencv2/highgui/highgui_c.h
 
 /usr/local/include/opencv2/highgui/highgui.hpp
 opencv2/highgui.hpp
 /usr/local/include/opencv2/highgui/opencv2/highgui.hpp
 
-/usr/local/include/opencv2/highgui/highgui_c.h
-opencv2/core/core_c.h
-/usr/local/include/opencv2/highgui/opencv2/core/core_c.h
-opencv2/imgproc/imgproc_c.h
-/usr/local/include/opencv2/highgui/opencv2/imgproc/imgproc_c.h
-opencv2/imgcodecs/imgcodecs_c.h
-/usr/local/include/opencv2/highgui/opencv2/imgcodecs/imgcodecs_c.h
-opencv2/videoio/videoio_c.h
-/usr/local/include/opencv2/highgui/opencv2/videoio/videoio_c.h
-
 /usr/local/include/opencv2/imgcodecs.hpp
 opencv2/core.hpp
 /usr/local/include/opencv2/opencv2/core.hpp
-opencv2/opencv.hpp
--
-
-/usr/local/include/opencv2/imgcodecs/imgcodecs_c.h
-opencv2/core/core_c.h
-/usr/local/include/opencv2/imgcodecs/opencv2/core/core_c.h
 
 /usr/local/include/opencv2/imgproc.hpp
 opencv2/core.hpp
@@ -2413,20 +2753,10 @@ opencv2/imgproc.hpp
 /usr/local/include/opencv2/opencv2/imgproc.hpp
 opencv2/highgui.hpp
 /usr/local/include/opencv2/opencv2/highgui.hpp
-opencv2/imgproc/imgproc_c.h
-/usr/local/include/opencv2/opencv2/imgproc/imgproc_c.h
 
 /usr/local/include/opencv2/imgproc/imgproc.hpp
 opencv2/imgproc.hpp
 /usr/local/include/opencv2/imgproc/opencv2/imgproc.hpp
-
-/usr/local/include/opencv2/imgproc/imgproc_c.h
-opencv2/imgproc/types_c.h
-/usr/local/include/opencv2/imgproc/opencv2/imgproc/types_c.h
-
-/usr/local/include/opencv2/imgproc/types_c.h
-opencv2/core/core_c.h
-/usr/local/include/opencv2/imgproc/opencv2/core/core_c.h
 
 /usr/local/include/opencv2/ml.hpp
 opencv2/core.hpp
@@ -2437,25 +2767,19 @@ map
 -
 iostream
 -
+opencv2/ml/ml.inl.hpp
+-
+
+/usr/local/include/opencv2/ml/ml.inl.hpp
 
 /usr/local/include/opencv2/objdetect.hpp
 opencv2/core.hpp
 /usr/local/include/opencv2/opencv2/core.hpp
 opencv2/objdetect/detection_based_tracker.hpp
 /usr/local/include/opencv2/opencv2/objdetect/detection_based_tracker.hpp
-opencv2/objdetect/objdetect_c.h
-/usr/local/include/opencv2/opencv2/objdetect/objdetect_c.h
 
 /usr/local/include/opencv2/objdetect/detection_based_tracker.hpp
 opencv2/core.hpp
--
-vector
--
-
-/usr/local/include/opencv2/objdetect/objdetect_c.h
-opencv2/core/core_c.h
-/usr/local/include/opencv2/objdetect/opencv2/core/core_c.h
-deque
 -
 vector
 -
@@ -2469,6 +2793,8 @@ opencv2/calib3d.hpp
 /usr/local/include/opencv2/opencv2/calib3d.hpp
 opencv2/features2d.hpp
 /usr/local/include/opencv2/opencv2/features2d.hpp
+opencv2/dnn.hpp
+/usr/local/include/opencv2/opencv2/dnn.hpp
 opencv2/flann.hpp
 /usr/local/include/opencv2/opencv2/flann.hpp
 opencv2/highgui.hpp
@@ -2525,12 +2851,6 @@ opencv2/core.hpp
 /usr/local/include/opencv2/opencv2/core.hpp
 opencv2/imgproc.hpp
 /usr/local/include/opencv2/opencv2/imgproc.hpp
-opencv2/photo/photo_c.h
-/usr/local/include/opencv2/opencv2/photo/photo_c.h
-
-/usr/local/include/opencv2/photo/photo_c.h
-opencv2/core/core_c.h
-/usr/local/include/opencv2/photo/opencv2/core/core_c.h
 
 /usr/local/include/opencv2/shape.hpp
 opencv2/shape/emdL1.hpp
@@ -2681,8 +3001,6 @@ opencv2/video/tracking.hpp
 /usr/local/include/opencv2/opencv2/video/tracking.hpp
 opencv2/video/background_segm.hpp
 /usr/local/include/opencv2/opencv2/video/background_segm.hpp
-opencv2/video/tracking_c.h
-/usr/local/include/opencv2/opencv2/video/tracking_c.h
 
 /usr/local/include/opencv2/video/background_segm.hpp
 opencv2/core.hpp
@@ -2694,17 +3012,9 @@ opencv2/core.hpp
 opencv2/imgproc.hpp
 /usr/local/include/opencv2/video/opencv2/imgproc.hpp
 
-/usr/local/include/opencv2/video/tracking_c.h
-opencv2/imgproc/types_c.h
-/usr/local/include/opencv2/video/opencv2/imgproc/types_c.h
-
 /usr/local/include/opencv2/videoio.hpp
 opencv2/core.hpp
 /usr/local/include/opencv2/opencv2/core.hpp
-
-/usr/local/include/opencv2/videoio/videoio_c.h
-opencv2/core/core_c.h
-/usr/local/include/opencv2/videoio/opencv2/core/core_c.h
 
 /usr/local/include/opencv2/videostab.hpp
 opencv2/videostab/stabilizer.hpp

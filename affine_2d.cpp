@@ -51,7 +51,7 @@ using namespace std;
 double error_threshold = 0.5;
 double match_threshold = 1;
 double alpha_threshold = 1;
-int rm_cone_threshold = 7;
+int rm_cone_threshold = 2;
 
 struct KP
 {
@@ -172,7 +172,7 @@ void estimateTransform2D(vector<Point3d> p1, vector<Point3d> p2, Mat& best_affin
 			alpha.push_back(asin((-b+pow(pow(b,2)-4*a*c,0.5f))/(2*a)));
 			alpha.push_back(asin((-b-pow(pow(b,2)-4*a*c,0.5f))/(2*a)));
 			for(int j = 0; j < 2; j++){
-				if(alpha[j]>alpha_threshold||alpha[j]<-alpha_threshold||isnan(alpha[j])){continue;}
+				if(abs(alpha[j])>alpha_threshold || isnan(alpha[j])){continue;}
 				double cosa = cos(alpha[j]);
 				double error = 0;
 				double tx = p2[i].x-cosa*p1[i].x+sin(alpha[j])*p1[i].y;
@@ -489,10 +489,10 @@ int main( int argc, char** argv )
 		// cout << structure[i] << colors[i] << endl;
 		if(count_same_structure[i] > rm_cone_threshold){
 			count++;
-			int x = int(structure[i].x * resultResize + resultSize/4);
-			int y = int(structure[i].y * resultResize + resultSize/4);
+			int x = int(structure[i].x * resultResize + resultSize/2);
+			int y = int(structure[i].y * resultResize + resultSize/2);
 			if (x >= 0 && x <= resultSize && y >= 0 && y <= resultSize){
-				circle(result, Point (x,y), 3, colors[i], CV_FILLED);
+				circle(result, Point (x,y), 3, colors[i], -1);
 			}
 		}
 	}
@@ -503,10 +503,10 @@ int main( int argc, char** argv )
 		camera_cor = affines[i].inv() * camera_cor;
 		// if(i>0)
 		// 	cout << "heading change: " << acos(affines[i].at<double>(0,0))-acos(affines[i-1].at<double>(0,0)) << endl;
-		int x = int(camera_cor.at<double>(0,0) * resultResize + resultSize/4);
-		int y = int(camera_cor.at<double>(1,0) * resultResize + resultSize/4);
+		int x = int(camera_cor.at<double>(0,0) * resultResize + resultSize/2);
+		int y = int(camera_cor.at<double>(1,0) * resultResize + resultSize/2);
 		if (x >= 0 && x <= resultSize && y >= 0 && y <= resultSize){
-			circle(result, Point (x,y), 3, Scalar (255,255,255), CV_FILLED);
+			circle(result, Point (x,y), 3, Scalar (255,255,255), -1);
 		}
 		path.push_back(Point2d(x,y));
 	}
