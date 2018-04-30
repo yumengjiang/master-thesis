@@ -48,10 +48,12 @@ using namespace cv;
 using namespace std;
 
 #define PI 3.14159265
-double error_threshold = 0.5;
-double match_threshold = 1;
+double error_threshold = 0.7;
+double match_threshold = 0.35;
 double alpha_threshold = 1;
 int rm_cone_threshold = 7;
+vector<Scalar> COLOR = {{255,0,0},{0,255,255},{0,165,255},{0,0,255}};
+
 
 struct KP
 {
@@ -63,13 +65,16 @@ double computeResidual(Point3d pt1, Point3d pt2){
 	return pow((pow ((pt1.x-pt2.x),2) + pow ((pt1.y-pt2.y),2)),0.5);
 }
 
-void matchFeatures(vector<KP> featureLast, 
-                  vector<KP> featureNext, vector<DMatch> &matched){
+
+void matchFeatures(vector<KP> featureLast, vector<KP> featureNext, vector<DMatch> &matched){
 	matched.clear();
 	double res, minRes;
 	int featureLastRow = featureLast.size();
 	int featureNextRow = featureNext.size();
 	int index;
+	int matchSize = 1000;
+	double matchResize = 100;
+	Mat match = Mat::zeros(matchSize, matchSize, CV_8UC3);
 
 	for(int i = 0; i < featureNextRow; i++){
 		minRes = match_threshold;
@@ -84,10 +89,24 @@ void matchFeatures(vector<KP> featureLast,
 		}
 		if(minRes < match_threshold){
 			matched.push_back(DMatch(index,i,minRes));
+			int x = int(featureLast[index].pt.x * matchResize + matchSize/4);
+			int y = int(featureLast[index].pt.y * matchResize + matchSize/4);
+			int x1 = int(featureNext[i].pt.x * matchResize + matchSize/4);
+			int y1 = int(featureNext[i].pt.y * matchResize + matchSize/4);
+			circle(match, Point (x,y), 5, COLOR[featureNext[i].id], CV_FILLED);
+			circle(match, Point (x1,y1), 3, COLOR[featureNext[i].id], CV_FILLED);
+			line(match, Point(x, y), Point(x1, y1), cv::Scalar(255, 255, 255), 1);
+
 			// cout << index << " " << i << " " << minRes << endl;
 		} 
 	}
+	flip(match, match, 0);
+    namedWindow("match", WINDOW_NORMAL);
+	imshow("match", match);
+	waitKey(0);
 }
+
+//void drawmatches(vector<KP> featureLast, vector<KP> featureNext, vector<DMatch> &matched, )
 
 // void matchFeaturesAffine(Mat affine, vector<KP> featureLast, 
 //                   vector<KP> featureNext, vector<DMatch> &matched){
@@ -207,8 +226,7 @@ void reconstruct(//初始化
 	vector<Vec3b>& c1,
 	vector<Point3d>& p2,
 	Mat& affine,
-	double& min_error
-	)
+	double& min_error)
 {   
 	matchFeatures(last_keypoints, next_keypoints, matched);
 	vector<Point3d> p1;
@@ -237,8 +255,7 @@ void init_structure(//初始化
 	vector<Vec3b>& colors,
 	vector<vector<int>>& correspond_struct_idx,
 	vector<Mat>& affines,
-	int& next_img_id
-	)
+	int& next_img_id)
 {   
 	vector<DMatch> matched, matched_tmp;
 	Mat affine, affine_tmp;
@@ -289,7 +306,15 @@ void init_structure(//初始化
 		++idx;
 	}	
 }
-
+// fusion_structure(
+// 				matched,
+// 				correspond_struct_idx[i],
+// 				correspond_struct_idx[next_img_id],
+// 				structure,
+// 				next_structure,
+// 				colors,
+// 				c1
+// 				);
 void fusion_structure(
 	vector<DMatch>& matched,
 	vector<int>& struct_indices,
@@ -517,4 +542,6 @@ int main( int argc, char** argv )
     namedWindow("result", WINDOW_NORMAL);
 	imshow("result", result);
 	waitKey(0);
+
+	
 }

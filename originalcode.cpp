@@ -568,7 +568,7 @@ int main( int argc, char** argv )
 	vector<string> img_names;
 	// get_file_names("images", img_names);//将images里面的数据读到img_names里面
 	for(int i = start; i < end; i++){
-		img_names.push_back("reconstruction1/"+to_string(i)+".png");
+		img_names.push_back("images3/"+to_string(i)+".png");
 	}
     cout<<"images name num"<<img_names.size()<<endl;
 	//��������
