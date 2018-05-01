@@ -56,17 +56,6 @@ CMAKE_BINARY_DIR = "/media/weiming/Ny volym/ubuntu-project/master-thesis"
 #=============================================================================
 # Targets provided globally by CMake.
 
-# Special rule for the target rebuild_cache
-rebuild_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
-	/usr/bin/cmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
-.PHONY : rebuild_cache
-
-# Special rule for the target rebuild_cache
-rebuild_cache/fast: rebuild_cache
-
-.PHONY : rebuild_cache/fast
-
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
@@ -77,6 +66,17 @@ edit_cache:
 edit_cache/fast: edit_cache
 
 .PHONY : edit_cache/fast
+
+# Special rule for the target rebuild_cache
+rebuild_cache:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
+	/usr/bin/cmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+.PHONY : rebuild_cache
+
+# Special rule for the target rebuild_cache
+rebuild_cache/fast: rebuild_cache
+
+.PHONY : rebuild_cache/fast
 
 # The main all target
 all: cmake_check_build_system
@@ -111,44 +111,44 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named affine_2d
+# Target rules for targets named sift_cnn
 
 # Build rule for target.
-affine_2d: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 affine_2d
-.PHONY : affine_2d
+sift_cnn: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 sift_cnn
+.PHONY : sift_cnn
 
 # fast build rule for target.
-affine_2d/fast:
-	$(MAKE) -f CMakeFiles/affine_2d.dir/build.make CMakeFiles/affine_2d.dir/build
-.PHONY : affine_2d/fast
+sift_cnn/fast:
+	$(MAKE) -f CMakeFiles/sift_cnn.dir/build.make CMakeFiles/sift_cnn.dir/build
+.PHONY : sift_cnn/fast
 
-affine_2d.o: affine_2d.cpp.o
+sift_cnn.o: sift_cnn.cpp.o
 
-.PHONY : affine_2d.o
+.PHONY : sift_cnn.o
 
 # target to build an object file
-affine_2d.cpp.o:
-	$(MAKE) -f CMakeFiles/affine_2d.dir/build.make CMakeFiles/affine_2d.dir/affine_2d.cpp.o
-.PHONY : affine_2d.cpp.o
+sift_cnn.cpp.o:
+	$(MAKE) -f CMakeFiles/sift_cnn.dir/build.make CMakeFiles/sift_cnn.dir/sift_cnn.cpp.o
+.PHONY : sift_cnn.cpp.o
 
-affine_2d.i: affine_2d.cpp.i
+sift_cnn.i: sift_cnn.cpp.i
 
-.PHONY : affine_2d.i
+.PHONY : sift_cnn.i
 
 # target to preprocess a source file
-affine_2d.cpp.i:
-	$(MAKE) -f CMakeFiles/affine_2d.dir/build.make CMakeFiles/affine_2d.dir/affine_2d.cpp.i
-.PHONY : affine_2d.cpp.i
+sift_cnn.cpp.i:
+	$(MAKE) -f CMakeFiles/sift_cnn.dir/build.make CMakeFiles/sift_cnn.dir/sift_cnn.cpp.i
+.PHONY : sift_cnn.cpp.i
 
-affine_2d.s: affine_2d.cpp.s
+sift_cnn.s: sift_cnn.cpp.s
 
-.PHONY : affine_2d.s
+.PHONY : sift_cnn.s
 
 # target to generate assembly for a file
-affine_2d.cpp.s:
-	$(MAKE) -f CMakeFiles/affine_2d.dir/build.make CMakeFiles/affine_2d.dir/affine_2d.cpp.s
-.PHONY : affine_2d.cpp.s
+sift_cnn.cpp.s:
+	$(MAKE) -f CMakeFiles/sift_cnn.dir/build.make CMakeFiles/sift_cnn.dir/sift_cnn.cpp.s
+.PHONY : sift_cnn.cpp.s
 
 # Help Target
 help:
@@ -156,12 +156,12 @@ help:
 	@echo "... all (the default if no target is provided)"
 	@echo "... clean"
 	@echo "... depend"
-	@echo "... rebuild_cache"
 	@echo "... edit_cache"
-	@echo "... affine_2d"
-	@echo "... affine_2d.o"
-	@echo "... affine_2d.i"
-	@echo "... affine_2d.s"
+	@echo "... rebuild_cache"
+	@echo "... sift_cnn"
+	@echo "... sift_cnn.o"
+	@echo "... sift_cnn.i"
+	@echo "... sift_cnn.s"
 .PHONY : help
 
 

@@ -25,7 +25,7 @@
 // #include "opencv2/imgproc/imgproc.hpp"
 // #include <stdio.h>
 // #include <stdlib.h>
-#include <tinydir.h>
+// #include <tinydir.h>
 //#include "bal_problem.h"
 #include "gflags/gflags.h"
 #include "glog/logging.h"
@@ -78,6 +78,11 @@ void extract_features(//存入所有照片的descriptor和key points
 		Mat descriptor;
 		//ż�������ڴ�����ʧ�ܵĴ���
 		sift->detectAndCompute(image, noArray(), key_points, descriptor);
+		cv::Mat match;
+    	cv::drawKeypoints(image, key_points, match);
+    	namedWindow("match", WINDOW_NORMAL);
+		imshow("match", match);
+		waitKey(0);
 
         //cout << typeid( key_points ).name() << endl;
 		//���������٣����ų���ͼ��
@@ -88,7 +93,7 @@ void extract_features(//存入所有照片的descriptor和key points
 
 		vector<Vec3b> colors(key_points.size());
 		for (int i = 0; i < key_points.size(); ++i)
-		{   cout<<"key point cor"<<key_points[i].pt<<endl;
+		{   
 			Point2f& p = key_points[i].pt;
 			colors[i] = image.at<Vec3b>(p.y, p.x);
 		}
@@ -599,24 +604,24 @@ void init_structure(//初始化
 //     }
 // }
 
-void get_file_names(string dir_name, vector<string> & names)//读取文件列表的库，最后得到文件列表
-{
-	names.clear();
-	tinydir_dir dir;
-	tinydir_open(&dir, dir_name.c_str());
+// void get_file_names(string dir_name, vector<string> & names)//读取文件列表的库，最后得到文件列表
+// {
+// 	names.clear();
+// 	tinydir_dir dir;
+// 	tinydir_open(&dir, dir_name.c_str());
 
-	while (dir.has_next)
-	{
-		tinydir_file file;
-		tinydir_readfile(&dir, &file);
-		if (!file.is_dir)
-		{
-			names.push_back(file.path);
-		}
-		tinydir_next(&dir);
-	}
-	tinydir_close(&dir);
-}
+// 	while (dir.has_next)
+// 	{
+// 		tinydir_file file;
+// 		tinydir_readfile(&dir, &file);
+// 		if (!file.is_dir)
+// 		{
+// 			names.push_back(file.path);
+// 		}
+// 		tinydir_next(&dir);
+// 	}
+// 	tinydir_close(&dir);
+// }
 
 int main( int argc, char** argv )
 {
@@ -676,7 +681,7 @@ int main( int argc, char** argv )
 	// 		getline(liness, y, ','); 
 	// 		getline(liness, label, ',');
 
-	// 		// circle(img, Point (stoi(x),stoi(y)), 3, Scalar (0,0,0), CV_FILLED);
+	// 		// circle(img, Point (stoi(x),stoi(y)), 3, Scalar (0,0,0), -1);
 	// 		if(label == "blue"){
 	// 			labelId = 0;
 	// 			colors.push_back(blue);
@@ -717,7 +722,10 @@ int main( int argc, char** argv )
 	// vector<Point2f> p1;
 	// vector<Point2f> p2;
 	vector<string> img_names;
-		get_file_names("images", img_names);//将images里面的数据读到img_names里面
+	for(int i = 0; i < 316; i++){
+		img_names.push_back("skidpad1/"+to_string(i)+".png");
+	}
+	// get_file_names("results_skidpad1_perfect", img_names);//将images里面的数据读到img_names里面
 
 		//��������
 	  // Mat K(Matx33d(
@@ -850,7 +858,7 @@ int main( int argc, char** argv )
 		int x = int(structure[u].x * resultResize+resultSize/2);
 		int y = int(structure[u].z * resultResize);
 		if (x >= 0 && x <= resultSize && y>= 0 && y <= resultSize){
-		circle(result, Point (x,y), 3, Scalar (colors[u]), CV_FILLED);
+		circle(result, Point (x,y), 3, Scalar (colors[u]), -1);
 		}
 	}
 	for(int u=0; u<camera_cor.size(); u++){
@@ -858,7 +866,7 @@ int main( int argc, char** argv )
 		int x = int(camera_cor[u].at<double>(0,0) * resultResize+resultSize/2);
 		int y = int(camera_cor[u].at<double>(2,0) * resultResize);
 		if (x >= 0 && x <= resultSize && y>= 0 && y <= resultSize){
-		circle(result, Point (x,y), 5, Scalar (255,255,255), CV_FILLED);
+		circle(result, Point (x,y), 5, Scalar (255,255,255), -1);
 		}
 	}
 	// result.at<Vec3b>(x, y) = colors[u];
