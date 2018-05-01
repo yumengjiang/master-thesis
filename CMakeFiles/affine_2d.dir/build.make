@@ -43,10 +43,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/yumeng/project/master-thesis
+CMAKE_SOURCE_DIR = "/media/weiming/Ny volym/ubuntu-project/master-thesis"
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/yumeng/project/master-thesis
+CMAKE_BINARY_DIR = "/media/weiming/Ny volym/ubuntu-project/master-thesis"
 
 # Include any dependencies generated for this target.
 include CMakeFiles/affine_2d.dir/depend.make
@@ -59,16 +59,16 @@ include CMakeFiles/affine_2d.dir/flags.make
 
 CMakeFiles/affine_2d.dir/affine_2d.cpp.o: CMakeFiles/affine_2d.dir/flags.make
 CMakeFiles/affine_2d.dir/affine_2d.cpp.o: affine_2d.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yumeng/project/master-thesis/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/affine_2d.dir/affine_2d.cpp.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/affine_2d.dir/affine_2d.cpp.o -c /home/yumeng/project/master-thesis/affine_2d.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir="/media/weiming/Ny volym/ubuntu-project/master-thesis/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/affine_2d.dir/affine_2d.cpp.o"
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/affine_2d.dir/affine_2d.cpp.o -c "/media/weiming/Ny volym/ubuntu-project/master-thesis/affine_2d.cpp"
 
 CMakeFiles/affine_2d.dir/affine_2d.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/affine_2d.dir/affine_2d.cpp.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/yumeng/project/master-thesis/affine_2d.cpp > CMakeFiles/affine_2d.dir/affine_2d.cpp.i
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "/media/weiming/Ny volym/ubuntu-project/master-thesis/affine_2d.cpp" > CMakeFiles/affine_2d.dir/affine_2d.cpp.i
 
 CMakeFiles/affine_2d.dir/affine_2d.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/affine_2d.dir/affine_2d.cpp.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/yumeng/project/master-thesis/affine_2d.cpp -o CMakeFiles/affine_2d.dir/affine_2d.cpp.s
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/media/weiming/Ny volym/ubuntu-project/master-thesis/affine_2d.cpp" -o CMakeFiles/affine_2d.dir/affine_2d.cpp.s
 
 CMakeFiles/affine_2d.dir/affine_2d.cpp.o.requires:
 
@@ -91,35 +91,6 @@ affine_2d_EXTERNAL_OBJECTS =
 affine_2d: CMakeFiles/affine_2d.dir/affine_2d.cpp.o
 affine_2d: CMakeFiles/affine_2d.dir/build.make
 affine_2d: /usr/local/lib/libceres.a
-<<<<<<< HEAD
-affine_2d: /usr/local/lib/libopencv_stitching.so.3.3.1
-affine_2d: /usr/local/lib/libopencv_superres.so.3.3.1
-affine_2d: /usr/local/lib/libopencv_videostab.so.3.3.1
-affine_2d: /usr/local/lib/libopencv_aruco.so.3.3.1
-affine_2d: /usr/local/lib/libopencv_bgsegm.so.3.3.1
-affine_2d: /usr/local/lib/libopencv_bioinspired.so.3.3.1
-affine_2d: /usr/local/lib/libopencv_ccalib.so.3.3.1
-affine_2d: /usr/local/lib/libopencv_dpm.so.3.3.1
-affine_2d: /usr/local/lib/libopencv_face.so.3.3.1
-affine_2d: /usr/local/lib/libopencv_freetype.so.3.3.1
-affine_2d: /usr/local/lib/libopencv_fuzzy.so.3.3.1
-affine_2d: /usr/local/lib/libopencv_hdf.so.3.3.1
-affine_2d: /usr/local/lib/libopencv_img_hash.so.3.3.1
-affine_2d: /usr/local/lib/libopencv_line_descriptor.so.3.3.1
-affine_2d: /usr/local/lib/libopencv_optflow.so.3.3.1
-affine_2d: /usr/local/lib/libopencv_reg.so.3.3.1
-affine_2d: /usr/local/lib/libopencv_rgbd.so.3.3.1
-affine_2d: /usr/local/lib/libopencv_saliency.so.3.3.1
-affine_2d: /usr/local/lib/libopencv_sfm.so.3.3.1
-affine_2d: /usr/local/lib/libopencv_stereo.so.3.3.1
-affine_2d: /usr/local/lib/libopencv_structured_light.so.3.3.1
-affine_2d: /usr/local/lib/libopencv_surface_matching.so.3.3.1
-affine_2d: /usr/local/lib/libopencv_tracking.so.3.3.1
-affine_2d: /usr/local/lib/libopencv_xfeatures2d.so.3.3.1
-affine_2d: /usr/local/lib/libopencv_ximgproc.so.3.3.1
-affine_2d: /usr/local/lib/libopencv_xobjdetect.so.3.3.1
-affine_2d: /usr/local/lib/libopencv_xphoto.so.3.3.1
-=======
 affine_2d: /usr/local/lib/libopencv_videostab.so.4.0.0
 affine_2d: /usr/local/lib/libopencv_superres.so.4.0.0
 affine_2d: /usr/local/lib/libopencv_stitching.so.4.0.0
@@ -146,7 +117,6 @@ affine_2d: /usr/local/lib/libopencv_img_hash.so.4.0.0
 affine_2d: /usr/local/lib/libopencv_saliency.so.4.0.0
 affine_2d: /usr/local/lib/libopencv_reg.so.4.0.0
 affine_2d: /usr/local/lib/libopencv_optflow.so.4.0.0
->>>>>>> 2c0492f9462589f0109826a0f047b0ee47c37355
 affine_2d: /usr/lib/x86_64-linux-gnu/libglog.so
 affine_2d: /usr/lib/x86_64-linux-gnu/libgflags.so
 affine_2d: /usr/lib/x86_64-linux-gnu/libspqr.so
@@ -177,26 +147,6 @@ affine_2d: /usr/lib/libatlas.so
 affine_2d: /usr/lib/x86_64-linux-gnu/libsuitesparseconfig.so
 affine_2d: /usr/lib/x86_64-linux-gnu/librt.so
 affine_2d: /usr/lib/x86_64-linux-gnu/libcxsparse.so
-<<<<<<< HEAD
-affine_2d: /usr/local/lib/libopencv_photo.so.3.3.1
-affine_2d: /usr/local/lib/libopencv_shape.so.3.3.1
-affine_2d: /usr/local/lib/libopencv_calib3d.so.3.3.1
-affine_2d: /usr/local/lib/libopencv_phase_unwrapping.so.3.3.1
-affine_2d: /usr/local/lib/libopencv_video.so.3.3.1
-affine_2d: /usr/local/lib/libopencv_datasets.so.3.3.1
-affine_2d: /usr/local/lib/libopencv_plot.so.3.3.1
-affine_2d: /usr/local/lib/libopencv_text.so.3.3.1
-affine_2d: /usr/local/lib/libopencv_dnn.so.3.3.1
-affine_2d: /usr/local/lib/libopencv_features2d.so.3.3.1
-affine_2d: /usr/local/lib/libopencv_flann.so.3.3.1
-affine_2d: /usr/local/lib/libopencv_highgui.so.3.3.1
-affine_2d: /usr/local/lib/libopencv_ml.so.3.3.1
-affine_2d: /usr/local/lib/libopencv_videoio.so.3.3.1
-affine_2d: /usr/local/lib/libopencv_imgcodecs.so.3.3.1
-affine_2d: /usr/local/lib/libopencv_objdetect.so.3.3.1
-affine_2d: /usr/local/lib/libopencv_imgproc.so.3.3.1
-affine_2d: /usr/local/lib/libopencv_core.so.3.3.1
-=======
 affine_2d: /usr/local/lib/libopencv_shape.so.4.0.0
 affine_2d: /usr/local/lib/libopencv_plot.so.4.0.0
 affine_2d: /usr/local/lib/libopencv_datasets.so.4.0.0
@@ -216,9 +166,8 @@ affine_2d: /usr/local/lib/libopencv_videoio.so.4.0.0
 affine_2d: /usr/local/lib/libopencv_imgcodecs.so.4.0.0
 affine_2d: /usr/local/lib/libopencv_imgproc.so.4.0.0
 affine_2d: /usr/local/lib/libopencv_core.so.4.0.0
->>>>>>> 2c0492f9462589f0109826a0f047b0ee47c37355
 affine_2d: CMakeFiles/affine_2d.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/yumeng/project/master-thesis/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable affine_2d"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir="/media/weiming/Ny volym/ubuntu-project/master-thesis/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable affine_2d"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/affine_2d.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -235,6 +184,6 @@ CMakeFiles/affine_2d.dir/clean:
 .PHONY : CMakeFiles/affine_2d.dir/clean
 
 CMakeFiles/affine_2d.dir/depend:
-	cd /home/yumeng/project/master-thesis && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/yumeng/project/master-thesis /home/yumeng/project/master-thesis /home/yumeng/project/master-thesis /home/yumeng/project/master-thesis /home/yumeng/project/master-thesis/CMakeFiles/affine_2d.dir/DependInfo.cmake --color=$(COLOR)
+	cd "/media/weiming/Ny volym/ubuntu-project/master-thesis" && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" "/media/weiming/Ny volym/ubuntu-project/master-thesis" "/media/weiming/Ny volym/ubuntu-project/master-thesis" "/media/weiming/Ny volym/ubuntu-project/master-thesis" "/media/weiming/Ny volym/ubuntu-project/master-thesis" "/media/weiming/Ny volym/ubuntu-project/master-thesis/CMakeFiles/affine_2d.dir/DependInfo.cmake" --color=$(COLOR)
 .PHONY : CMakeFiles/affine_2d.dir/depend
 

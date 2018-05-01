@@ -51,7 +51,7 @@ using namespace std;
 double error_threshold = 0.7;
 double match_threshold = 0.35;
 double alpha_threshold = 1;
-int rm_cone_threshold = 7;
+int rm_cone_threshold = 2;
 vector<Scalar> COLOR = {{255,0,0},{0,255,255},{0,165,255},{0,0,255}};
 
 
@@ -93,17 +93,17 @@ void matchFeatures(vector<KP> featureLast, vector<KP> featureNext, vector<DMatch
 			int y = int(featureLast[index].pt.y * matchResize + matchSize/4);
 			int x1 = int(featureNext[i].pt.x * matchResize + matchSize/4);
 			int y1 = int(featureNext[i].pt.y * matchResize + matchSize/4);
-			circle(match, Point (x,y), 5, COLOR[featureNext[i].id], CV_FILLED);
-			circle(match, Point (x1,y1), 3, COLOR[featureNext[i].id], CV_FILLED);
-			line(match, Point(x, y), Point(x1, y1), cv::Scalar(255, 255, 255), 1);
+			circle(match, Point (x,y), 5, COLOR[featureNext[i].id], -1);
+			circle(match, Point (x1,y1), 3, COLOR[featureNext[i].id], -1);
+			line(match, Point(x, y), Point(x1, y1), Scalar(255, 255, 255), 1);
 
 			// cout << index << " " << i << " " << minRes << endl;
 		} 
 	}
-	flip(match, match, 0);
-    namedWindow("match", WINDOW_NORMAL);
-	imshow("match", match);
-	waitKey(0);
+	// flip(match, match, 0);
+ //    namedWindow("match", WINDOW_NORMAL);
+	// imshow("match", match);
+	// waitKey(0);
 }
 
 //void drawmatches(vector<KP> featureLast, vector<KP> featureNext, vector<DMatch> &matched, )
@@ -193,10 +193,11 @@ void estimateTransform2D(vector<Point3d> p1, vector<Point3d> p2, Mat& best_affin
 			for(int j = 0; j < 2; j++){
 				if(alpha[j]>alpha_threshold||alpha[j]<-alpha_threshold||isnan(alpha[j])){continue;}
 				double cosa = cos(alpha[j]);
+				double sina = sin(alpha[j]);
 				double error = 0;
-				double tx = p2[i].x-cosa*p1[i].x+sin(alpha[j])*p1[i].y;
-				double ty = p2[i].y-sin(alpha[j])*p1[i].x-cosa*p1[i].y;
-				Mat affine_tmp(Matx33d(cosa,-sin(alpha[j]),tx,sin(alpha[j]),cosa,ty,0,0,1));
+				double tx = p2[i].x-cosa*p1[i].x+sina*p1[i].y;
+				double ty = p2[i].y-sina*p1[i].x-cosa*p1[i].y;
+				Mat affine_tmp(Matx33d(cosa,-sina,tx,sina,cosa,ty,0,0,1));
 
 				//cout<<"starts p"<<i<<"loop"<<j<<endl;
 				reprojectionErrors(affine_tmp, p1, p2, error);
@@ -268,16 +269,18 @@ void init_structure(//初始化
     reconstruct(keypoints_for_all[0], keypoints_for_all[1], colors_for_all[0], colors_for_all[1], matched, colors, p2, affine, min_error1);
     
 	next_img_id = 1;
-    if (min_error1 > error_threshold){
-    	reconstruct(keypoints_for_all[0], keypoints_for_all[2], colors_for_all[0], colors_for_all[2], matched_tmp, colors_tmp, p2_tmp, affine_tmp, min_error2);
-    	if (min_error2 < min_error1){
-    		matched = matched_tmp;
-    		colors = colors_tmp;
-    		p2 = p2_tmp;
-    		affine = affine_tmp;
-    		next_img_id = 2;
-    	}
-    }
+
+	// skip frames
+    // if (min_error1 > error_threshold){
+    // 	reconstruct(keypoints_for_all[0], keypoints_for_all[2], colors_for_all[0], colors_for_all[2], matched_tmp, colors_tmp, p2_tmp, affine_tmp, min_error2);
+    // 	if (min_error2 < min_error1){
+    // 		matched = matched_tmp;
+    // 		colors = colors_tmp;
+    // 		p2 = p2_tmp;
+    // 		affine = affine_tmp;
+    // 		next_img_id = 2;
+    // 	}
+    // }
     
 
     affine = affine*affines.back();
@@ -343,6 +346,114 @@ void fusion_structure(
 }
 
 
+
+
+//定义代价函数
+struct ReprojectCost
+{
+    Point2d observation;
+
+    ReprojectCost(Point2d& observation)
+        : observation(observation)
+    {
+    }
+   //使用模板的目的就是能够让程序员编写与类型无关的代码
+  //AutoDiffCostFunction<ReprojectCost, 2, 4, 6, 3>
+    template <typename T>
+    bool operator()(const T* const extrinsic, const T* const structure, T* residuals) const//pos3d:对应的3D点；observation:相应的图片的坐标，
+   //通过对3D点来计算2D坐标值与实际值比较，检查R，T的正确性
+    {
+        residuals[0] = cos(extrinsic[0])*structure[0]-sin(extrinsic[0])*structure[1]+extrinsic[1] - T(observation.x);//反向投影误差
+        residuals[1] = sin(extrinsic[0])*structure[0]+cos(extrinsic[0])*structure[1]+extrinsic[2] - T(observation.y);
+
+        return true;
+    }
+};
+//使用
+ //Solver求解BA，其中使用了Ceres提供的Huber函数作为损失函数
+void bundle_adjustment(
+    vector<Mat>& extrinsics,
+    vector<vector<int> >& correspond_struct_idx,
+    vector<vector<KP> >& keypoints_for_all,
+    vector<Point3d>& structure
+)
+{
+	vector<Point2d> structure_2d;
+	convertPointsHomogeneous(structure, structure_2d);
+    ceres::Problem problem;
+
+    // load extrinsics (rotations and motions)
+    for (size_t i = 0; i < extrinsics.size(); ++i)
+    {
+        problem.AddParameterBlock(extrinsics[i].ptr<double>(), 3);//Add a parameter block with appropriate size and parameterization to the problem.
+       //Repeated calls with the same arguments are ignored. Repeated calls with the same double pointer but a different size results in undefined behavior.
+    }
+    // fix the first camera.
+    problem.SetParameterBlockConstant(extrinsics[0].ptr<double>());//Hold the indicated parameter block constant during optimization.保持第一个外惨矩阵不变
+
+    // load points
+    ceres::LossFunction* loss_function = new ceres::HuberLoss(4);   // loss function make bundle adjustment robuster.
+    for (size_t img_idx = 0; img_idx < correspond_struct_idx.size(); ++img_idx)
+    {
+        vector<int>& point3d_ids = correspond_struct_idx[img_idx];
+        vector<KP>& keypoints = keypoints_for_all[img_idx];
+        for (size_t point_idx = 0; point_idx < point3d_ids.size(); ++point_idx)
+        {
+            int point3d_id = point3d_ids[point_idx];
+            if (point3d_id < 0)
+                continue;
+
+            Point2d observed;
+            observed.x = keypoints[point_idx].pt.x;
+            observed.y = keypoints[point_idx].pt.y;//corresponding 2D points coordinates with feasible 3D point
+            
+            // 模板参数中，第一个为代价函数的类型，第二个为代价的维度，剩下三个分别为代价函数第一第二还有第三个参数的维度
+            ceres::CostFunction* cost_function = new ceres::AutoDiffCostFunction<ReprojectCost, 2, 3, 2>(new ReprojectCost(observed));
+            //向问题中添加误差项
+            problem.AddResidualBlock(//adds a residual block to the problem,implicitly adds the parameter blocks(This causes additional correctness checking) if they are not present
+                cost_function,
+                loss_function,
+                extrinsics[img_idx].ptr<double>(),  // View Rotation and Translation
+                &(structure_2d[point3d_id].x)          // Point in 3D space
+            );
+        }
+    }
+
+    // Solve BA
+    ceres::Solver::Options ceres_config_options;
+    ceres_config_options.minimizer_progress_to_stdout = false;
+    ceres_config_options.logging_type = ceres::SILENT;
+    ceres_config_options.num_threads = 1;//Number of threads to be used for evaluating the Jacobian and estimation of covariance.
+    ceres_config_options.preconditioner_type = ceres::JACOBI;
+    ceres_config_options.linear_solver_type = ceres::DENSE_SCHUR;
+    // ceres_config_options.linear_solver_type = ceres::SPARSE_SCHUR;//ype of linear solver used to compute the solution to the linear least squares problem in each iteration of the Levenberg-Marquardt algorithm
+    // ceres_config_options.sparse_linear_algebra_library_type = ceres::EIGEN_SPARSE;
+
+    ceres::Solver::Summary summary;
+    ceres::Solve(ceres_config_options, &problem, &summary);
+
+    if (!summary.IsSolutionUsable())
+    {
+        cout << "Bundle Adjustment failed." << endl;
+    }
+    else
+    {
+        // Display statistics about the minimization
+        cout << endl
+            << "Bundle Adjustment statistics (approximated RMSE):\n"
+            << " #views: " << extrinsics.size() << "\n"
+            << " #residuals: " << summary.num_residuals << "\n"
+            << " Initial RMSE: " << sqrt(summary.initial_cost / summary.num_residuals) << "\n"
+            << " Final RMSE: " << sqrt(summary.final_cost / summary.num_residuals) << "\n"
+            << " Time (s): " << summary.total_time_in_seconds << "\n"
+            << endl;
+    }
+    convertPointsHomogeneous(structure_2d, structure);
+}
+
+
+
+
 int main( int argc, char** argv )
 {
 	string data_path = argv[1];
@@ -383,7 +494,7 @@ int main( int argc, char** argv )
 	        getline(liness, Y, ','); 
 	        getline(liness, Z, ','); 
 	        
-	        // circle(img, Point (stoi(x),stoi(y)), 3, Scalar (0,0,0), CV_FILLED);
+	        // circle(img, Point (stoi(x),stoi(y)), 3, Scalar (0,0,0), -1);
 	        // cout << stod(Z) << endl;
 	        if(stod(Z)<5){
 	        	if(label == "blue"){
@@ -453,19 +564,21 @@ int main( int argc, char** argv )
 			int next_img_id;
 			double min_error1, min_error2;
 			reconstruct(keypoints_for_all[i], keypoints_for_all[i+1], colors_for_all[i], colors_for_all[i+1], matched, c1, p2, affine, min_error1);
+	    	
 	    	next_img_id = i+1;
 
-			if (min_error1 > error_threshold){
-		    	reconstruct(keypoints_for_all[i], keypoints_for_all[i+2], colors_for_all[i], colors_for_all[i+2], matched_tmp, c1_tmp, p2_tmp, affine_tmp, min_error2);
-		    	if (min_error2 < min_error1){
-		    		matched = matched_tmp;
-		    		c1 = c1_tmp;
-		    		p2 = p2_tmp;
-		    		affine = affine_tmp;
-		    		next_img_id = i+2;
-		    	}
-		    }
-	    	cout << "min_error1: " << min_error1 << ", min_error2: " << min_error2 << endl;
+	  //   	//skip frames
+			// if (min_error1 > error_threshold){
+		 //    	reconstruct(keypoints_for_all[i], keypoints_for_all[i+2], colors_for_all[i], colors_for_all[i+2], matched_tmp, c1_tmp, p2_tmp, affine_tmp, min_error2);
+		 //    	if (min_error2 < min_error1){
+		 //    		matched = matched_tmp;
+		 //    		c1 = c1_tmp;
+		 //    		p2 = p2_tmp;
+		 //    		affine = affine_tmp;
+		 //    		next_img_id = i+2;
+		 //    	}
+		 //    }
+	  //   	cout << "min_error1: " << min_error1 << ", min_error2: " << min_error2 << endl;
 
 		    // matchFeaturesAffine(affine, keypoints_for_all[i], keypoints_for_all[i+1], matched_for_all[i]);
 		    // reconstruct(keypoints_for_all[i], keypoints_for_all[i+1], colors_for_all[i], colors_for_all[i+1], matched_for_all[i], c1, p2, affine);
@@ -503,6 +616,27 @@ int main( int argc, char** argv )
 		cout << "\n";
 	}
 
+
+	// bundle_adjustment
+	google::InitGoogleLogging(argv[0]);
+	vector<Mat> extrinsics;
+	for (size_t i = 0; i < affines.size(); ++i)
+	{
+	  Mat extrinsic(Matx31d(asin(affines[i].at<double>(1,0)), affines[i].at<double>(0,2), affines[i].at<double>(1,2)));
+	  extrinsics.push_back(extrinsic);
+	}
+	bundle_adjustment(extrinsics, correspond_struct_idx, keypoints_for_all, structure);
+
+	for (size_t i = 0; i < affines.size(); ++i)
+	{
+		double alpha = extrinsics[i].at<double>(0,0);
+		double tx = extrinsics[i].at<double>(1,0);
+		double ty = extrinsics[i].at<double>(2,0);
+		affines[i] = (Mat_<double>(3, 3) << cos(alpha), -sin(alpha), tx, sin(alpha), cos(alpha), ty, 0, 0, 1);
+	}
+
+
+
 	int resultSize = 1000;
 	double resultResize = 50;
 	Mat result = Mat::zeros(resultSize, resultSize, CV_8UC3);
@@ -517,7 +651,8 @@ int main( int argc, char** argv )
 			int x = int(structure[i].x * resultResize + resultSize/4);
 			int y = int(structure[i].y * resultResize + resultSize/4);
 			if (x >= 0 && x <= resultSize && y >= 0 && y <= resultSize){
-				circle(result, Point (x,y), 3, colors[i], CV_FILLED);
+				circle(result, Point (x,y), 3, colors[i], -1);
+				// putText(result, to_string(i), Point(x,y), 1, 0.5, Scalar(255, 255, 255));
 			}
 		}
 	}
@@ -531,7 +666,7 @@ int main( int argc, char** argv )
 		int x = int(camera_cor.at<double>(0,0) * resultResize + resultSize/4);
 		int y = int(camera_cor.at<double>(1,0) * resultResize + resultSize/4);
 		if (x >= 0 && x <= resultSize && y >= 0 && y <= resultSize){
-			circle(result, Point (x,y), 3, Scalar (255,255,255), CV_FILLED);
+			circle(result, Point (x,y), 3, Scalar (255,255,255), -1);
 		}
 		path.push_back(Point2d(x,y));
 	}

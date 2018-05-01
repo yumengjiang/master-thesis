@@ -48,10 +48,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/yumeng/project/master-thesis
+CMAKE_SOURCE_DIR = "/media/weiming/Ny volym/ubuntu-project/master-thesis"
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/yumeng/project/master-thesis
+CMAKE_BINARY_DIR = "/media/weiming/Ny volym/ubuntu-project/master-thesis"
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -80,9 +80,9 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/yumeng/project/master-thesis/CMakeFiles /home/yumeng/project/master-thesis/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start "/media/weiming/Ny volym/ubuntu-project/master-thesis/CMakeFiles" "/media/weiming/Ny volym/ubuntu-project/master-thesis/CMakeFiles/progress.marks"
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/yumeng/project/master-thesis/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start "/media/weiming/Ny volym/ubuntu-project/master-thesis/CMakeFiles" 0
 .PHONY : all
 
 # The main clean target
