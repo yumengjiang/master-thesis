@@ -48,10 +48,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/yumeng/project/master-thesis
+CMAKE_SOURCE_DIR = /home/yumeng/project/master-thesis/kdtree
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/yumeng/project/master-thesis
+CMAKE_BINARY_DIR = /home/yumeng/project/master-thesis/kdtree
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -80,9 +80,9 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/yumeng/project/master-thesis/CMakeFiles /home/yumeng/project/master-thesis/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/yumeng/project/master-thesis/kdtree/CMakeFiles /home/yumeng/project/master-thesis/kdtree/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/yumeng/project/master-thesis/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/yumeng/project/master-thesis/kdtree/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -111,44 +111,44 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named gatherpoints
+# Target rules for targets named main
 
 # Build rule for target.
-gatherpoints: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 gatherpoints
-.PHONY : gatherpoints
+main: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 main
+.PHONY : main
 
 # fast build rule for target.
-gatherpoints/fast:
-	$(MAKE) -f CMakeFiles/gatherpoints.dir/build.make CMakeFiles/gatherpoints.dir/build
-.PHONY : gatherpoints/fast
+main/fast:
+	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/build
+.PHONY : main/fast
 
-gatherpoints.o: gatherpoints.cpp.o
+main.o: main.cpp.o
 
-.PHONY : gatherpoints.o
+.PHONY : main.o
 
 # target to build an object file
-gatherpoints.cpp.o:
-	$(MAKE) -f CMakeFiles/gatherpoints.dir/build.make CMakeFiles/gatherpoints.dir/gatherpoints.cpp.o
-.PHONY : gatherpoints.cpp.o
+main.cpp.o:
+	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/main.cpp.o
+.PHONY : main.cpp.o
 
-gatherpoints.i: gatherpoints.cpp.i
+main.i: main.cpp.i
 
-.PHONY : gatherpoints.i
+.PHONY : main.i
 
 # target to preprocess a source file
-gatherpoints.cpp.i:
-	$(MAKE) -f CMakeFiles/gatherpoints.dir/build.make CMakeFiles/gatherpoints.dir/gatherpoints.cpp.i
-.PHONY : gatherpoints.cpp.i
+main.cpp.i:
+	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/main.cpp.i
+.PHONY : main.cpp.i
 
-gatherpoints.s: gatherpoints.cpp.s
+main.s: main.cpp.s
 
-.PHONY : gatherpoints.s
+.PHONY : main.s
 
 # target to generate assembly for a file
-gatherpoints.cpp.s:
-	$(MAKE) -f CMakeFiles/gatherpoints.dir/build.make CMakeFiles/gatherpoints.dir/gatherpoints.cpp.s
-.PHONY : gatherpoints.cpp.s
+main.cpp.s:
+	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/main.cpp.s
+.PHONY : main.cpp.s
 
 # Help Target
 help:
@@ -158,10 +158,10 @@ help:
 	@echo "... depend"
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
-	@echo "... gatherpoints"
-	@echo "... gatherpoints.o"
-	@echo "... gatherpoints.i"
-	@echo "... gatherpoints.s"
+	@echo "... main"
+	@echo "... main.o"
+	@echo "... main.i"
+	@echo "... main.s"
 .PHONY : help
 
 

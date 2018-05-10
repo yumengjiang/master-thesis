@@ -1764,3 +1764,50 @@ Source file was:
        google::ParseCommandLineFlags(&argc, &argv, true);
        return 0;
      }
+Determining if the include file pthread.h exists passed with the following output:
+Change Dir: /home/yumeng/project/master-thesis/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_c43f1/fast"
+/usr/bin/make -f CMakeFiles/cmTC_c43f1.dir/build.make CMakeFiles/cmTC_c43f1.dir/build
+make[1]: Entering directory '/home/yumeng/project/master-thesis/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_c43f1.dir/CheckIncludeFile.c.o
+/usr/bin/cc     -o CMakeFiles/cmTC_c43f1.dir/CheckIncludeFile.c.o   -c /home/yumeng/project/master-thesis/CMakeFiles/CMakeTmp/CheckIncludeFile.c
+Linking C executable cmTC_c43f1
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_c43f1.dir/link.txt --verbose=1
+/usr/bin/cc       CMakeFiles/cmTC_c43f1.dir/CheckIncludeFile.c.o  -o cmTC_c43f1 -rdynamic 
+make[1]: Leaving directory '/home/yumeng/project/master-thesis/CMakeFiles/CMakeTmp'
+
+
+Determining if the function pthread_create exists in the pthread passed with the following output:
+Change Dir: /home/yumeng/project/master-thesis/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_1774d/fast"
+/usr/bin/make -f CMakeFiles/cmTC_1774d.dir/build.make CMakeFiles/cmTC_1774d.dir/build
+make[1]: Entering directory '/home/yumeng/project/master-thesis/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_1774d.dir/CheckFunctionExists.c.o
+/usr/bin/cc    -DCHECK_FUNCTION_EXISTS=pthread_create   -o CMakeFiles/cmTC_1774d.dir/CheckFunctionExists.c.o   -c /usr/share/cmake-3.5/Modules/CheckFunctionExists.c
+Linking C executable cmTC_1774d
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_1774d.dir/link.txt --verbose=1
+/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=pthread_create    CMakeFiles/cmTC_1774d.dir/CheckFunctionExists.c.o  -o cmTC_1774d -rdynamic -lpthread 
+make[1]: Leaving directory '/home/yumeng/project/master-thesis/CMakeFiles/CMakeTmp'
+
+
+Performing C++ SOURCE FILE Test GFLAGS_IN_GOOGLE_NAMESPACE succeeded with the following output:
+Change Dir: /home/yumeng/project/master-thesis/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_967ec/fast"
+/usr/bin/make -f CMakeFiles/cmTC_967ec.dir/build.make CMakeFiles/cmTC_967ec.dir/build
+make[1]: Entering directory '/home/yumeng/project/master-thesis/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_967ec.dir/src.cxx.o
+/usr/bin/c++     -std=c++11 -DGFLAGS_IN_GOOGLE_NAMESPACE   -o CMakeFiles/cmTC_967ec.dir/src.cxx.o -c /home/yumeng/project/master-thesis/CMakeFiles/CMakeTmp/src.cxx
+Linking CXX executable cmTC_967ec
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_967ec.dir/link.txt --verbose=1
+/usr/bin/c++   -std=c++11 -DGFLAGS_IN_GOOGLE_NAMESPACE    CMakeFiles/cmTC_967ec.dir/src.cxx.o  -o cmTC_967ec -rdynamic /usr/lib/x86_64-linux-gnu/libgflags.so -lpthread 
+make[1]: Leaving directory '/home/yumeng/project/master-thesis/CMakeFiles/CMakeTmp'
+
+Source file was:
+#include <gflags/gflags.h>
+     int main(int argc, char * argv[]) {
+       google::ParseCommandLineFlags(&argc, &argv, true);
+       return 0;
+     }
