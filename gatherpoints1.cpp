@@ -226,7 +226,7 @@ int main( int argc, char** argv )
 		  	flag++;
 		  Scalar color1=Scalar(rng.uniform(0,255),rng.uniform(0,255),rng.uniform(0,255));
 		  cout<<"here1"<<endl;
-		  int indexcount=0;
+		  // int indexcount=0;
 		  for (int k=0; k<filteredindex.size(); k++)
 		  { 
 		  	cout<<"here2"<<endl;
@@ -242,14 +242,14 @@ int main( int argc, char** argv )
 		  	draw=draw+1;
 		  	finaltemp_x=finaltemp_x + data1[vecIndex[k]].pt.x;
 		  	finaltemp_y=finaltemp_y + data1[vecIndex[k]].pt.y;
-		  	indexcount++;
+		  	// indexcount++;
 
 
 		   }
 
 		  }
-		  finaltemp_points.x = finaltemp_x / indexcount;
-		  finaltemp_points.y = finaltemp_y / indexcount;
+		  finaltemp_points.x = finaltemp_x / nogroup;
+		  finaltemp_points.y = finaltemp_y / nogroup;
 		  Points finaltemp{finaltemp_points, j, flag};
 		  finaldata.push_back(finaltemp);
 		  float X2 = finaltemp_points.x;
