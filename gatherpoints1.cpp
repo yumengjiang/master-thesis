@@ -50,8 +50,8 @@
 using namespace cv;
 using namespace std;
 using namespace nanoflann;
-double radius=800;
-unsigned int max_neighbours = 15;
+double radius=0.5;
+unsigned int max_neighbours = 8;
 
 struct Points
 {
@@ -125,10 +125,11 @@ float getPositionOfMax(vector<float> vec, float max) {
 int main( int argc, char** argv )
 // {   template <typename num_t>
 {   //read pixels
+	double t = (double)getTickCount();  
 	string data_path = argv[1]; 
 	cout<<"one"<<endl;
-	ifstream csvPath ( data_path+"/86.csv" );
-	Mat img=imread ( data_path+"/86.png" );
+	ifstream csvPath ( data_path+"/88.csv" );
+	Mat img=imread ( data_path+"/88.png" );
 	cout<<"two"<<endl;
 	vector<Points> data1;
 	vector<Point2f> data;
@@ -147,7 +148,7 @@ int main( int argc, char** argv )
 		getline(liness, z, ',');  
 		getline(liness, y, ',');
 		
-		Point2d ptl(stod(X),stod(Y));
+		Point2d ptl(stod(x),stod(y));
 		Points ptll{ptl,i,-1};
 		data1.push_back(ptll);
 		data.push_back(ptl);
@@ -200,7 +201,7 @@ int main( int argc, char** argv )
 			float X1 = data1[j].pt.x;
 			float Y1 = data1[j].pt.y;
 			finaldata.push_back(data1[j]);
-			circle(img, Point(X1,Y1), 2, Scalar(rng.uniform(0,255),rng.uniform(0,255),rng.uniform(0,255)), -1);
+			circle(result, Point(200*(X1+3),100*Y1), 3, Scalar(0, 255, 255), -1);
 			draw=draw+1;
 		  }
 //(200*(X+5),100*Y)
@@ -225,8 +226,9 @@ int main( int argc, char** argv )
 		  	flag++;
 		  Scalar color1=Scalar(rng.uniform(0,255),rng.uniform(0,255),rng.uniform(0,255));
 		  cout<<"here1"<<endl;
+		  int indexcount=0;
 		  for (int k=0; k<filteredindex.size(); k++)
-		  {
+		  { 
 		  	cout<<"here2"<<endl;
 		   if (data1[filteredindex[k]].group == -1)
 		   { 
@@ -235,20 +237,24 @@ int main( int argc, char** argv )
 		  	float X1 = data1[filteredindex[k]].pt.x;
             float Y1 = data1[filteredindex[k]].pt.y;
 		  	cout<<k<<" type 2"<<" "<<data1[vecIndex[k]].pt.x<<","<<data1[vecIndex[k]].pt.y<<" group "<< data1[vecIndex[k]].group<<endl;
-		  	circle(img, Point(X1,Y1), 2, color1, -1);
+		  	circle(result, Point(200*(X1+3),100*Y1), 2, color1, -1);
 		  	//(200*(X+3),100*Y)
 		  	draw=draw+1;
 		  	finaltemp_x=finaltemp_x + data1[vecIndex[k]].pt.x;
 		  	finaltemp_y=finaltemp_y + data1[vecIndex[k]].pt.y;
+		  	indexcount++;
 
 
 		   }
 
 		  }
-		  finaltemp_points.x = finaltemp_x / filteredindex.size();
-		  finaltemp_points.y = finaltemp_y / filteredindex.size();
+		  finaltemp_points.x = finaltemp_x / indexcount;
+		  finaltemp_points.y = finaltemp_y / indexcount;
 		  Points finaltemp{finaltemp_points, j, flag};
 		  finaldata.push_back(finaltemp);
+		  float X2 = finaltemp_points.x;
+		  float Y2 = finaltemp_points.y;
+		  circle(result, Point(200*(X2+3),100*Y2), 3, Scalar(0, 255, 255) , -1);
 
 
           
@@ -286,11 +292,22 @@ int main( int argc, char** argv )
 	for (int p=0; p<data1.size(); p++){
 		cout<<p<<" "<<data1[p].pt.x<<" "<<data1[p].pt.y<<" group "<<data1[p].group<<endl;
 	}
+    cout<<"center datas"<<endl;
+	for (int r=0; r<finaldata.size(); r++){
+        cout<<"NO."<<r<<" "<<finaldata[r].pt.x<<","<<finaldata[r].pt.y<<endl;
+
+
+	}
+	t = ((double)getTickCount() - t)/getTickFrequency(); 
 	cout<<"draw"<<draw<<endl;
-	flip(img, img, 0);
+	flip(result, result, 0);
     namedWindow("result", WINDOW_NORMAL);
-	imshow("result", img);
+	imshow("result", result);
 	waitKey(0);
+
+	
+	cout << "total time"<<t<<" sec"<<endl;
+	// cout << “time:”<< t << “sec” << endl; //输出运行时间
 
 	//std::vector<double>::iterator biggest = std::min_element(std::begin(datax), std::end(datax));
 

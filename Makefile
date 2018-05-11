@@ -111,85 +111,44 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-<<<<<<< HEAD
-# Target rules for targets named gatherpoints
+# Target rules for targets named gatherpoints1
 
 # Build rule for target.
-gatherpoints: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 gatherpoints
-.PHONY : gatherpoints
+gatherpoints1: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 gatherpoints1
+.PHONY : gatherpoints1
 
 # fast build rule for target.
-gatherpoints/fast:
-	$(MAKE) -f CMakeFiles/gatherpoints.dir/build.make CMakeFiles/gatherpoints.dir/build
-.PHONY : gatherpoints/fast
+gatherpoints1/fast:
+	$(MAKE) -f CMakeFiles/gatherpoints1.dir/build.make CMakeFiles/gatherpoints1.dir/build
+.PHONY : gatherpoints1/fast
 
-gatherpoints.o: gatherpoints.cpp.o
+gatherpoints1.o: gatherpoints1.cpp.o
 
-.PHONY : gatherpoints.o
-
-# target to build an object file
-gatherpoints.cpp.o:
-	$(MAKE) -f CMakeFiles/gatherpoints.dir/build.make CMakeFiles/gatherpoints.dir/gatherpoints.cpp.o
-.PHONY : gatherpoints.cpp.o
-
-gatherpoints.i: gatherpoints.cpp.i
-
-.PHONY : gatherpoints.i
-
-# target to preprocess a source file
-gatherpoints.cpp.i:
-	$(MAKE) -f CMakeFiles/gatherpoints.dir/build.make CMakeFiles/gatherpoints.dir/gatherpoints.cpp.i
-.PHONY : gatherpoints.cpp.i
-
-gatherpoints.s: gatherpoints.cpp.s
-
-.PHONY : gatherpoints.s
-
-# target to generate assembly for a file
-gatherpoints.cpp.s:
-	$(MAKE) -f CMakeFiles/gatherpoints.dir/build.make CMakeFiles/gatherpoints.dir/gatherpoints.cpp.s
-.PHONY : gatherpoints.cpp.s
-=======
-# Target rules for targets named sift_cnn
-
-# Build rule for target.
-sift_cnn: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 sift_cnn
-.PHONY : sift_cnn
-
-# fast build rule for target.
-sift_cnn/fast:
-	$(MAKE) -f CMakeFiles/sift_cnn.dir/build.make CMakeFiles/sift_cnn.dir/build
-.PHONY : sift_cnn/fast
-
-sift_cnn.o: sift_cnn.cpp.o
-
-.PHONY : sift_cnn.o
+.PHONY : gatherpoints1.o
 
 # target to build an object file
-sift_cnn.cpp.o:
-	$(MAKE) -f CMakeFiles/sift_cnn.dir/build.make CMakeFiles/sift_cnn.dir/sift_cnn.cpp.o
-.PHONY : sift_cnn.cpp.o
+gatherpoints1.cpp.o:
+	$(MAKE) -f CMakeFiles/gatherpoints1.dir/build.make CMakeFiles/gatherpoints1.dir/gatherpoints1.cpp.o
+.PHONY : gatherpoints1.cpp.o
 
-sift_cnn.i: sift_cnn.cpp.i
+gatherpoints1.i: gatherpoints1.cpp.i
 
-.PHONY : sift_cnn.i
+.PHONY : gatherpoints1.i
 
 # target to preprocess a source file
-sift_cnn.cpp.i:
-	$(MAKE) -f CMakeFiles/sift_cnn.dir/build.make CMakeFiles/sift_cnn.dir/sift_cnn.cpp.i
-.PHONY : sift_cnn.cpp.i
+gatherpoints1.cpp.i:
+	$(MAKE) -f CMakeFiles/gatherpoints1.dir/build.make CMakeFiles/gatherpoints1.dir/gatherpoints1.cpp.i
+.PHONY : gatherpoints1.cpp.i
 
-sift_cnn.s: sift_cnn.cpp.s
+gatherpoints1.s: gatherpoints1.cpp.s
 
-.PHONY : sift_cnn.s
+.PHONY : gatherpoints1.s
 
 # target to generate assembly for a file
-sift_cnn.cpp.s:
-	$(MAKE) -f CMakeFiles/sift_cnn.dir/build.make CMakeFiles/sift_cnn.dir/sift_cnn.cpp.s
-.PHONY : sift_cnn.cpp.s
->>>>>>> 64494008deeb3605855504907b9870f0ea2e2c38
+gatherpoints1.cpp.s:
+	$(MAKE) -f CMakeFiles/gatherpoints1.dir/build.make CMakeFiles/gatherpoints1.dir/gatherpoints1.cpp.s
+.PHONY : gatherpoints1.cpp.s
 
 # Help Target
 help:
@@ -198,18 +157,11 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... edit_cache"
-<<<<<<< HEAD
-	@echo "... gatherpoints"
-	@echo "... gatherpoints.o"
-	@echo "... gatherpoints.i"
-	@echo "... gatherpoints.s"
-=======
 	@echo "... rebuild_cache"
-	@echo "... sift_cnn"
-	@echo "... sift_cnn.o"
-	@echo "... sift_cnn.i"
-	@echo "... sift_cnn.s"
->>>>>>> 64494008deeb3605855504907b9870f0ea2e2c38
+	@echo "... gatherpoints1"
+	@echo "... gatherpoints1.o"
+	@echo "... gatherpoints1.i"
+	@echo "... gatherpoints1.s"
 .PHONY : help
 
 

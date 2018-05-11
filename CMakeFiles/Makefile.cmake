@@ -62,9 +62,5 @@ set(CMAKE_MAKEFILE_PRODUCTS
 
 # Dependency information for all targets:
 set(CMAKE_DEPEND_INFO_FILES
-<<<<<<< HEAD
-  "CMakeFiles/gatherpoints.dir/DependInfo.cmake"
-=======
-  "CMakeFiles/sift_cnn.dir/DependInfo.cmake"
->>>>>>> 64494008deeb3605855504907b9870f0ea2e2c38
+  "CMakeFiles/gatherpoints1.dir/DependInfo.cmake"
   )
