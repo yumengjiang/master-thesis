@@ -93,7 +93,11 @@ CMAKE_MODULE_LINKER_FLAGS_RELEASE:STRING=
 CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO:STRING=
 
 //Value Computed by CMake
+<<<<<<< HEAD
 CMAKE_PROJECT_NAME:STATIC=gatherpoints
+=======
+CMAKE_PROJECT_NAME:STATIC=sift_cnn
+>>>>>>> 64494008deeb3605855504907b9870f0ea2e2c38
 
 //Flags used by the linker during the creation of dll's.
 CMAKE_SHARED_LINKER_FLAGS:STRING=
@@ -167,6 +171,24 @@ gatherpoints_BINARY_DIR:STATIC=/home/yumeng/project/master-thesis
 
 //Value Computed by CMake
 gatherpoints_SOURCE_DIR:STATIC=/home/yumeng/project/master-thesis
+
+//Value Computed by CMake
+main444_BINARY_DIR:STATIC=/media/weiming/Ny volym/ubuntu-project/master-thesis
+
+//Value Computed by CMake
+main444_SOURCE_DIR:STATIC=/media/weiming/Ny volym/ubuntu-project/master-thesis
+
+//Value Computed by CMake
+main_444_BINARY_DIR:STATIC=/media/weiming/Ny volym/ubuntu-project/master-thesis
+
+//Value Computed by CMake
+main_444_SOURCE_DIR:STATIC=/media/weiming/Ny volym/ubuntu-project/master-thesis
+
+//Value Computed by CMake
+sift_cnn_BINARY_DIR:STATIC=/media/weiming/Ny volym/ubuntu-project/master-thesis
+
+//Value Computed by CMake
+sift_cnn_SOURCE_DIR:STATIC=/media/weiming/Ny volym/ubuntu-project/master-thesis
 
 
 ########################

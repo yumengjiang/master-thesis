@@ -1,3 +1,9 @@
+<<<<<<< HEAD
 /home/yumeng/project/master-thesis/CMakeFiles/rebuild_cache.dir
 /home/yumeng/project/master-thesis/CMakeFiles/edit_cache.dir
 /home/yumeng/project/master-thesis/CMakeFiles/gatherpoints.dir
+=======
+/media/weiming/Ny volym/ubuntu-project/master-thesis/CMakeFiles/edit_cache.dir
+/media/weiming/Ny volym/ubuntu-project/master-thesis/CMakeFiles/rebuild_cache.dir
+/media/weiming/Ny volym/ubuntu-project/master-thesis/CMakeFiles/sift_cnn.dir
+>>>>>>> 64494008deeb3605855504907b9870f0ea2e2c38

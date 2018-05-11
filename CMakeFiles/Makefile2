@@ -60,6 +60,7 @@ CMAKE_SOURCE_DIR = /home/yumeng/project/master-thesis
 CMAKE_BINARY_DIR = /home/yumeng/project/master-thesis
 
 #=============================================================================
+<<<<<<< HEAD
 # Target rules for target CMakeFiles/gatherpoints.dir
 
 # All Build rule for target.
@@ -71,10 +72,24 @@ CMakeFiles/gatherpoints.dir/all:
 
 # Include target in all.
 all: CMakeFiles/gatherpoints.dir/all
+=======
+# Target rules for target CMakeFiles/sift_cnn.dir
+
+# All Build rule for target.
+CMakeFiles/sift_cnn.dir/all:
+	$(MAKE) -f CMakeFiles/sift_cnn.dir/build.make CMakeFiles/sift_cnn.dir/depend
+	$(MAKE) -f CMakeFiles/sift_cnn.dir/build.make CMakeFiles/sift_cnn.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir="/media/weiming/Ny volym/ubuntu-project/master-thesis/CMakeFiles" --progress-num=1,2 "Built target sift_cnn"
+.PHONY : CMakeFiles/sift_cnn.dir/all
+
+# Include target in all.
+all: CMakeFiles/sift_cnn.dir/all
+>>>>>>> 64494008deeb3605855504907b9870f0ea2e2c38
 
 .PHONY : all
 
 # Build rule for subdir invocation for target.
+<<<<<<< HEAD
 CMakeFiles/gatherpoints.dir/rule: cmake_check_build_system
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/yumeng/project/master-thesis/CMakeFiles 2
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/gatherpoints.dir/all
@@ -93,6 +108,26 @@ CMakeFiles/gatherpoints.dir/clean:
 
 # clean rule for target.
 clean: CMakeFiles/gatherpoints.dir/clean
+=======
+CMakeFiles/sift_cnn.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start "/media/weiming/Ny volym/ubuntu-project/master-thesis/CMakeFiles" 2
+	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/sift_cnn.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start "/media/weiming/Ny volym/ubuntu-project/master-thesis/CMakeFiles" 0
+.PHONY : CMakeFiles/sift_cnn.dir/rule
+
+# Convenience name for target.
+sift_cnn: CMakeFiles/sift_cnn.dir/rule
+
+.PHONY : sift_cnn
+
+# clean rule for target.
+CMakeFiles/sift_cnn.dir/clean:
+	$(MAKE) -f CMakeFiles/sift_cnn.dir/build.make CMakeFiles/sift_cnn.dir/clean
+.PHONY : CMakeFiles/sift_cnn.dir/clean
+
+# clean rule for target.
+clean: CMakeFiles/sift_cnn.dir/clean
+>>>>>>> 64494008deeb3605855504907b9870f0ea2e2c38
 
 .PHONY : clean
 

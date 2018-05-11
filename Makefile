@@ -56,17 +56,6 @@ CMAKE_BINARY_DIR = /home/yumeng/project/master-thesis
 #=============================================================================
 # Targets provided globally by CMake.
 
-# Special rule for the target rebuild_cache
-rebuild_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
-	/usr/bin/cmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
-.PHONY : rebuild_cache
-
-# Special rule for the target rebuild_cache
-rebuild_cache/fast: rebuild_cache
-
-.PHONY : rebuild_cache/fast
-
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
@@ -77,6 +66,17 @@ edit_cache:
 edit_cache/fast: edit_cache
 
 .PHONY : edit_cache/fast
+
+# Special rule for the target rebuild_cache
+rebuild_cache:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
+	/usr/bin/cmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+.PHONY : rebuild_cache
+
+# Special rule for the target rebuild_cache
+rebuild_cache/fast: rebuild_cache
+
+.PHONY : rebuild_cache/fast
 
 # The main all target
 all: cmake_check_build_system
@@ -111,6 +111,7 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+<<<<<<< HEAD
 # Target rules for targets named gatherpoints
 
 # Build rule for target.
@@ -149,6 +150,46 @@ gatherpoints.s: gatherpoints.cpp.s
 gatherpoints.cpp.s:
 	$(MAKE) -f CMakeFiles/gatherpoints.dir/build.make CMakeFiles/gatherpoints.dir/gatherpoints.cpp.s
 .PHONY : gatherpoints.cpp.s
+=======
+# Target rules for targets named sift_cnn
+
+# Build rule for target.
+sift_cnn: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 sift_cnn
+.PHONY : sift_cnn
+
+# fast build rule for target.
+sift_cnn/fast:
+	$(MAKE) -f CMakeFiles/sift_cnn.dir/build.make CMakeFiles/sift_cnn.dir/build
+.PHONY : sift_cnn/fast
+
+sift_cnn.o: sift_cnn.cpp.o
+
+.PHONY : sift_cnn.o
+
+# target to build an object file
+sift_cnn.cpp.o:
+	$(MAKE) -f CMakeFiles/sift_cnn.dir/build.make CMakeFiles/sift_cnn.dir/sift_cnn.cpp.o
+.PHONY : sift_cnn.cpp.o
+
+sift_cnn.i: sift_cnn.cpp.i
+
+.PHONY : sift_cnn.i
+
+# target to preprocess a source file
+sift_cnn.cpp.i:
+	$(MAKE) -f CMakeFiles/sift_cnn.dir/build.make CMakeFiles/sift_cnn.dir/sift_cnn.cpp.i
+.PHONY : sift_cnn.cpp.i
+
+sift_cnn.s: sift_cnn.cpp.s
+
+.PHONY : sift_cnn.s
+
+# target to generate assembly for a file
+sift_cnn.cpp.s:
+	$(MAKE) -f CMakeFiles/sift_cnn.dir/build.make CMakeFiles/sift_cnn.dir/sift_cnn.cpp.s
+.PHONY : sift_cnn.cpp.s
+>>>>>>> 64494008deeb3605855504907b9870f0ea2e2c38
 
 # Help Target
 help:
@@ -156,12 +197,19 @@ help:
 	@echo "... all (the default if no target is provided)"
 	@echo "... clean"
 	@echo "... depend"
-	@echo "... rebuild_cache"
 	@echo "... edit_cache"
+<<<<<<< HEAD
 	@echo "... gatherpoints"
 	@echo "... gatherpoints.o"
 	@echo "... gatherpoints.i"
 	@echo "... gatherpoints.s"
+=======
+	@echo "... rebuild_cache"
+	@echo "... sift_cnn"
+	@echo "... sift_cnn.o"
+	@echo "... sift_cnn.i"
+	@echo "... sift_cnn.s"
+>>>>>>> 64494008deeb3605855504907b9870f0ea2e2c38
 .PHONY : help
 
 
