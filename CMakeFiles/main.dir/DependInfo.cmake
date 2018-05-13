@@ -4,15 +4,21 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/home/yumeng/project/master-thesis/main.cpp" "/home/yumeng/project/master-thesis/CMakeFiles/main.dir/main.cpp.o"
+  "/media/weiming/Ny volym/ubuntu-project/master-thesis/main.cpp" "/media/weiming/Ny volym/ubuntu-project/master-thesis/CMakeFiles/main.dir/main.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
+
+# Preprocessor definitions for this target.
+set(CMAKE_TARGET_DEFINITIONS_CXX
+  "CNN_NO_SERIALIZATION"
+  )
 
 # The include file search paths:
 set(CMAKE_CXX_TARGET_INCLUDE_PATH
   "/usr/local/include"
-  "/usr/local/include/eigen3"
+  "/usr/include/eigen3"
   "/usr/local/include/opencv"
+  "../tiny-dnn"
   )
 
 # Targets to which this target links.

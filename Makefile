@@ -48,24 +48,13 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/yumeng/project/master-thesis
+CMAKE_SOURCE_DIR = "/media/weiming/Ny volym/ubuntu-project/master-thesis"
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/yumeng/project/master-thesis
+CMAKE_BINARY_DIR = "/media/weiming/Ny volym/ubuntu-project/master-thesis"
 
 #=============================================================================
 # Targets provided globally by CMake.
-
-# Special rule for the target edit_cache
-edit_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
-	/usr/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
-.PHONY : edit_cache
-
-# Special rule for the target edit_cache
-edit_cache/fast: edit_cache
-
-.PHONY : edit_cache/fast
 
 # Special rule for the target rebuild_cache
 rebuild_cache:
@@ -78,11 +67,22 @@ rebuild_cache/fast: rebuild_cache
 
 .PHONY : rebuild_cache/fast
 
+# Special rule for the target edit_cache
+edit_cache:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
+	/usr/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
+.PHONY : edit_cache
+
+# Special rule for the target edit_cache
+edit_cache/fast: edit_cache
+
+.PHONY : edit_cache/fast
+
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/yumeng/project/master-thesis/CMakeFiles /home/yumeng/project/master-thesis/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start "/media/weiming/Ny volym/ubuntu-project/master-thesis/CMakeFiles" "/media/weiming/Ny volym/ubuntu-project/master-thesis/CMakeFiles/progress.marks"
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/yumeng/project/master-thesis/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start "/media/weiming/Ny volym/ubuntu-project/master-thesis/CMakeFiles" 0
 .PHONY : all
 
 # The main clean target
@@ -111,44 +111,44 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named gatherpoints1
+# Target rules for targets named affine_2d
 
 # Build rule for target.
-gatherpoints1: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 gatherpoints1
-.PHONY : gatherpoints1
+affine_2d: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 affine_2d
+.PHONY : affine_2d
 
 # fast build rule for target.
-gatherpoints1/fast:
-	$(MAKE) -f CMakeFiles/gatherpoints1.dir/build.make CMakeFiles/gatherpoints1.dir/build
-.PHONY : gatherpoints1/fast
+affine_2d/fast:
+	$(MAKE) -f CMakeFiles/affine_2d.dir/build.make CMakeFiles/affine_2d.dir/build
+.PHONY : affine_2d/fast
 
-gatherpoints1.o: gatherpoints1.cpp.o
+affine_2d.o: affine_2d.cpp.o
 
-.PHONY : gatherpoints1.o
+.PHONY : affine_2d.o
 
 # target to build an object file
-gatherpoints1.cpp.o:
-	$(MAKE) -f CMakeFiles/gatherpoints1.dir/build.make CMakeFiles/gatherpoints1.dir/gatherpoints1.cpp.o
-.PHONY : gatherpoints1.cpp.o
+affine_2d.cpp.o:
+	$(MAKE) -f CMakeFiles/affine_2d.dir/build.make CMakeFiles/affine_2d.dir/affine_2d.cpp.o
+.PHONY : affine_2d.cpp.o
 
-gatherpoints1.i: gatherpoints1.cpp.i
+affine_2d.i: affine_2d.cpp.i
 
-.PHONY : gatherpoints1.i
+.PHONY : affine_2d.i
 
 # target to preprocess a source file
-gatherpoints1.cpp.i:
-	$(MAKE) -f CMakeFiles/gatherpoints1.dir/build.make CMakeFiles/gatherpoints1.dir/gatherpoints1.cpp.i
-.PHONY : gatherpoints1.cpp.i
+affine_2d.cpp.i:
+	$(MAKE) -f CMakeFiles/affine_2d.dir/build.make CMakeFiles/affine_2d.dir/affine_2d.cpp.i
+.PHONY : affine_2d.cpp.i
 
-gatherpoints1.s: gatherpoints1.cpp.s
+affine_2d.s: affine_2d.cpp.s
 
-.PHONY : gatherpoints1.s
+.PHONY : affine_2d.s
 
 # target to generate assembly for a file
-gatherpoints1.cpp.s:
-	$(MAKE) -f CMakeFiles/gatherpoints1.dir/build.make CMakeFiles/gatherpoints1.dir/gatherpoints1.cpp.s
-.PHONY : gatherpoints1.cpp.s
+affine_2d.cpp.s:
+	$(MAKE) -f CMakeFiles/affine_2d.dir/build.make CMakeFiles/affine_2d.dir/affine_2d.cpp.s
+.PHONY : affine_2d.cpp.s
 
 # Help Target
 help:
@@ -156,12 +156,12 @@ help:
 	@echo "... all (the default if no target is provided)"
 	@echo "... clean"
 	@echo "... depend"
-	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... gatherpoints1"
-	@echo "... gatherpoints1.o"
-	@echo "... gatherpoints1.i"
-	@echo "... gatherpoints1.s"
+	@echo "... edit_cache"
+	@echo "... affine_2d"
+	@echo "... affine_2d.o"
+	@echo "... affine_2d.i"
+	@echo "... affine_2d.s"
 .PHONY : help
 
 

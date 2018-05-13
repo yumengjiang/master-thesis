@@ -37,11 +37,15 @@ opencv2/opencv.hpp
 -
 opencv2/xfeatures2d.hpp
 /media/weiming/Ny volym/ubuntu-project/master-thesis/opencv2/xfeatures2d.hpp
+opencv2/core/core.hpp
+/media/weiming/Ny volym/ubuntu-project/master-thesis/opencv2/core/core.hpp
 gflags/gflags.h
 /media/weiming/Ny volym/ubuntu-project/master-thesis/gflags/gflags.h
 glog/logging.h
 /media/weiming/Ny volym/ubuntu-project/master-thesis/glog/logging.h
 ceres/ceres.h
+-
+string
 -
 ceres/rotation.h
 -

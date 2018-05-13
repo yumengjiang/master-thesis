@@ -399,6 +399,6 @@ int main( int argc, char** argv )
 	motions.push_back(T);
 	maskout_colors(c1, mask);
 	//save_structure("\\Viewer\\structure.yml", rotations, motions, structure, c1);
-  save_structure("structure.yml", rotations, motions, structure, c1);
+  save_structure("structure444.yml", rotations, motions, structure, c1);
 	// //system(".\\Viewer\\SfMViewer.exe");
 }

@@ -1,3 +1,0 @@
-/home/yumeng/project/master-thesis/kdtree/CMakeFiles/rebuild_cache.dir
-/home/yumeng/project/master-thesis/kdtree/CMakeFiles/edit_cache.dir
-/home/yumeng/project/master-thesis/kdtree/CMakeFiles/main.dir

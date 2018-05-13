@@ -36,9 +36,11 @@
 #include "opencv2/highgui/highgui.hpp"
 #include <opencv2/opencv.hpp>
 #include "opencv2/xfeatures2d.hpp"
+#include "opencv2/core/core.hpp"
 #include "gflags/gflags.h"
 #include "glog/logging.h"
 #include <ceres/ceres.h>
+#include <string>
 #include <ceres/rotation.h>
 #include <ceres/problem.h>
 
@@ -46,12 +48,14 @@ using namespace cv;
 using namespace std;
 
 #define PI 3.14159265
-double error_threshold = 0.7;
-double match_threshold = 0.35;
+double error_threshold = 0.2;
+double match_threshold = 0.2;
 double alpha_threshold = 1;
-int rm_cone_threshold = 7;
+int rm_cone_threshold = 0;
 vector<Scalar> COLOR = {{255,0,0},{0,255,255},{0,165,255},{0,0,255}};
 
+int global_i;
+bool skip_frame = 0;
 
 struct KP
 {
@@ -63,64 +67,15 @@ double computeResidual(Point3d pt1, Point3d pt2){
 	return pow((pow ((pt1.x-pt2.x),2) + pow ((pt1.y-pt2.y),2)),0.5);
 }
 
-void matchFeatures(vector<KP> featureLast, vector<KP> featureNext, Mat& query, Mat& train, vector<DMatch>& matches)
-{
-	int matchSize = 1000;
-	double matchResize = 100;
-	Mat match = Mat::zeros(matchSize, matchSize, CV_8UC3);
 
-	vector<vector<DMatch>> knn_matches;
-	BFMatcher matcher(NORM_L2);
-	matcher.knnMatch(query, train, knn_matches, 2);
-
-	//��ȡ����Ratio Test����Сƥ���ľ���
-	float min_dist = FLT_MAX;
-	for (int r = 0; r < knn_matches.size(); ++r)
-	{
-		//Ratio Test
-		if (knn_matches[r][0].distance > 0.6*knn_matches[r][1].distance)
-			continue;
-
-		float dist = knn_matches[r][0].distance;
-		if (dist < min_dist) min_dist = dist;
-	}
-
-	matches.clear();
-	for (size_t r = 0; r < knn_matches.size(); ++r)
-	{
-		//�ų�������Ratio Test�ĵ���ƥ�����������ĵ�
-		if (
-			knn_matches[r][0].distance > 0.6*knn_matches[r][1].distance ||
-			knn_matches[r][0].distance > 5 * max(min_dist, 10.0f)
-			)
-			continue;
-
-		//����ƥ����
-		matches.push_back(knn_matches[r][0]);
-		int last_index = knn_matches[r][0].queryIdx;
-		int next_index = knn_matches[r][0].trainIdx;
-		int x = int(featureLast[last_index].pt.x * matchResize + matchSize/2);
-		int y = int(featureLast[last_index].pt.y * matchResize + matchSize/4);
-		int x1 = int(featureNext[next_index].pt.x * matchResize + matchSize/2);
-		int y1 = int(featureNext[next_index].pt.y * matchResize + matchSize/4);
-		circle(match, Point (x,y), 5, COLOR[featureNext[next_index].id], -1);
-		circle(match, Point (x1,y1), 3, COLOR[featureNext[next_index].id], -1);
-		line(match, Point(x, y), Point(x1, y1), Scalar(255, 255, 255), 1);
-	}
-	// flip(match, match, 0);
- //    namedWindow("match", WINDOW_NORMAL);
-	// imshow("match", match);
-	// waitKey(0);
-}
-
-void matchFeatures2(vector<KP> featureLast, vector<KP> featureNext, vector<DMatch> &matched){
+void matchFeatures(vector<KP> featureLast, vector<KP> featureNext, vector<DMatch> &matched){
 	matched.clear();
 	double res, minRes;
 	int featureLastRow = featureLast.size();
 	int featureNextRow = featureNext.size();
 	int index;
 	int matchSize = 1000;
-	double matchResize = 100;
+	double matchResize = 300;
 	Mat match = Mat::zeros(matchSize, matchSize, CV_8UC3);
 
 	for(int i = 0; i < featureNextRow; i++){
@@ -136,23 +91,25 @@ void matchFeatures2(vector<KP> featureLast, vector<KP> featureNext, vector<DMatc
 		}
 		if(minRes < match_threshold){
 			matched.push_back(DMatch(index,i,minRes));
-			int x = int(featureLast[index].pt.x * matchResize + matchSize/4);
+			int x = int(featureLast[index].pt.x * matchResize + matchSize/2);
 			int y = int(featureLast[index].pt.y * matchResize + matchSize/4);
-			int x1 = int(featureNext[i].pt.x * matchResize + matchSize/4);
+			int x1 = int(featureNext[i].pt.x * matchResize + matchSize/2);
 			int y1 = int(featureNext[i].pt.y * matchResize + matchSize/4);
 			circle(match, Point (x,y), 5, COLOR[featureNext[i].id], -1);
 			circle(match, Point (x1,y1), 3, COLOR[featureNext[i].id], -1);
 			line(match, Point(x, y), Point(x1, y1), Scalar(255, 255, 255), 1);
 
-			// cout << index << " " << i << " " << minRes << endl;
+			cout << global_i << ": " << index << " " << i << " " << minRes << endl;
 		} 
 	}
+
 	// flip(match, match, 0);
  //    namedWindow("match", WINDOW_NORMAL);
 	// imshow("match", match);
 	// waitKey(0);
 }
 
+//void drawmatches(vector<KP> featureLast, vector<KP> featureNext, vector<DMatch> &matched, )
 
 // void matchFeaturesAffine(Mat affine, vector<KP> featureLast, 
 //                   vector<KP> featureNext, vector<DMatch> &matched){
@@ -214,14 +171,9 @@ void reprojectionErrors(Mat affine_tmp, vector<Point3d> p1, vector<Point3d> p2, 
 	}
 }
 
-// bool m_compare(double error)
-// {
-//     return error<0.08;
-// }
-
 void estimateTransform2D(vector<Point3d> p1, vector<Point3d> p2, Mat& best_affine, double& min_error){
 	if(p1.size()<2){
-		cout << "Too few points to estimate transformation!" << endl;
+		cout << global_i << ": too few points to estimate transformation!" << endl;
 		return;
 	}
 	best_affine.release();
@@ -267,8 +219,6 @@ void estimateTransform2D(vector<Point3d> p1, vector<Point3d> p2, Mat& best_affin
 void reconstruct(//初始化
 	vector<KP>& last_keypoints,
 	vector<KP>& next_keypoints,
-	Mat& last_descriptor,
-	Mat& next_descriptor,
 	vector<Vec3b>& last_colors,
 	vector<Vec3b>& next_colors,
 	vector<DMatch>& matched,
@@ -277,7 +227,7 @@ void reconstruct(//初始化
 	Mat& affine,
 	double& min_error)
 {   
-	matchFeatures(last_keypoints, next_keypoints, last_descriptor, next_descriptor, matched);
+	matchFeatures(last_keypoints, next_keypoints, matched);
 	vector<Point3d> p1;
 	vector<Vec3b> c2;
 	get_matched_points(last_keypoints, next_keypoints, last_colors, next_colors, matched, p1, p2, c1, c2);
@@ -297,9 +247,8 @@ void reconstruct(//初始化
 }
 
 void init_structure(//初始化
-	vector<vector<KP>>& KPs_for_all,
+	vector<vector<KP>>& keypoints_for_all,
 	vector<vector<Vec3b>>& colors_for_all,
-	vector<Mat>& descriptors_for_all,
 	//vector<vector<DMatch>>& matched_for_all,
 	vector<Point3d>& structure,
 	vector<Vec3b>& colors,
@@ -315,21 +264,23 @@ void init_structure(//初始化
 	//reconstruct(keypoints_for_all[0], keypoints_for_all[1], colors_for_all[0], colors_for_all[1], matched_for_all[0], colors, p2);
     // matchFeaturesAffine(affine, keypoints_for_all[0], keypoints_for_all[1], matched_for_all[0]);
     
-    reconstruct(KPs_for_all[0], KPs_for_all[1], descriptors_for_all[0], descriptors_for_all[1], colors_for_all[0], colors_for_all[1], matched, colors, p2, affine, min_error1);
+    reconstruct(keypoints_for_all[0], keypoints_for_all[1], colors_for_all[0], colors_for_all[1], matched, colors, p2, affine, min_error1);
     
 	next_img_id = 1;
 
 	// skip frames
-    if (min_error1 > error_threshold){
-    	reconstruct(KPs_for_all[0], KPs_for_all[2], descriptors_for_all[0], descriptors_for_all[2], colors_for_all[0], colors_for_all[2], matched_tmp, colors_tmp, p2_tmp, affine_tmp, min_error2);
-    	if (min_error2 < min_error1){
-    		matched = matched_tmp;
-    		colors = colors_tmp;
-    		p2 = p2_tmp;
-    		affine = affine_tmp;
-    		next_img_id = 2;
-    	}
-    }
+	if(skip_frame == 1){
+		if (min_error1 > error_threshold){
+	    	reconstruct(keypoints_for_all[0], keypoints_for_all[2], colors_for_all[0], colors_for_all[2], matched_tmp, colors_tmp, p2_tmp, affine_tmp, min_error2);
+	    	if (min_error2 < min_error1){
+	    		matched = matched_tmp;
+	    		colors = colors_tmp;
+	    		p2 = p2_tmp;
+	    		affine = affine_tmp;
+	    		next_img_id = 2;
+	    	}
+	    }
+	}
     
 
     affine = affine*affines.back();
@@ -340,10 +291,10 @@ void init_structure(//初始化
 	}
 
     correspond_struct_idx.clear();
-	correspond_struct_idx.resize(KPs_for_all.size());
-	for (int i = 0; i < KPs_for_all.size(); ++i)
+	correspond_struct_idx.resize(keypoints_for_all.size());
+	for (int i = 0; i < keypoints_for_all.size(); ++i)
 	{
-		correspond_struct_idx[i].resize(KPs_for_all[i].size(), -1);//与key points的size保持一致。为什么要加-1？
+		correspond_struct_idx[i].resize(keypoints_for_all[i].size(), -1);//与key points的size保持一致。为什么要加-1？
 	}
 
 	//��дͷ����ͼ���Ľṹ����
@@ -514,31 +465,26 @@ int main( int argc, char** argv )
 		0, 0, 1));
 	Vec3b blue(255,0,0);
 	Vec3b yellow(0,255,255);
-	Vec3b orange(0,0,255);
+	Vec3b orange(0,165,255);
+	Vec3b orange2(0,0,255);
 	
-	vector<vector<KP>> KPs_for_all;
-	vector<vector<KeyPoint>> keypoints_for_all;
-	vector<Mat> descriptors_for_all;
+	vector<vector<KP>> keypoints_for_all;
 	vector<vector<Vec3b>> colors_for_all;
-	vector<vector<DMatch>> matched_for_all;
+	//vector<vector<DMatch>> matched_for_all;
 	vector<Mat> affines;
 	Mat affine = Mat::eye(3,3,CV_64F);
 	affines.push_back(affine);
 
-	int keyframe_id = 64;
-	Ptr<Feature2D> sift = xfeatures2d::SIFT::create(0, 3, 0.04, 10);
-
 	int imgId = 0;
 	for(int i = start; i <= end; i++)
 	{
-		vector<KP> KPs;
-		vector<KeyPoint> keypoints;
+		vector<KP> keypoints;
 		vector<Vec3b> colors;
-		ifstream csvPath ( data_path+"/"+to_string(i)+".csv" );
+		ifstream csvPath ( data_path+"/"+to_string(i)+"_3d.csv" );
 		string line, x, y, label, X, Y, Z; 
 		int id;
 		// Mat imgLast, imgNext, outImg;
-	    Mat img = imread(data_path+"/"+to_string(i)+".png"); 
+	    // Mat img = imread("result/"+to_string(i)+".png"); 
 	    while (getline(csvPath, line)) 
 	    {  
 	        stringstream liness(line);  
@@ -551,7 +497,7 @@ int main( int argc, char** argv )
 	        
 	        // circle(img, Point (stoi(x),stoi(y)), 3, Scalar (0,0,0), -1);
 	        // cout << stod(Z) << endl;
-	        if(stod(Z)<5){
+	        if(stod(Z)<1 && stod(Z)>0){
 	        	if(label == "blue"){
 		            id = 0;
 		            colors.push_back(blue);
@@ -564,48 +510,38 @@ int main( int argc, char** argv )
 		            id = 2;
 		            colors.push_back(orange);
 		        }
+		        if(label == "orange2"){
+		            id = 3;
+		            colors.push_back(orange2);
+		        }
 	            Point3d pt(stod(X),stod(Z),1);
-	            KP kp = {pt, id};
-	        	KPs.push_back(kp);
-	        	KeyPoint keypoint = {stof(x),stof(y),3,-1,0,0,id};
+	        	KP keypoint = {pt, id};
 	        	keypoints.push_back(keypoint);
 	        }
 	        
     	}
     	if(keypoints.size()<2){
-    		cout << "Too few keypoint!" << endl;
-    		return 0;
+    		cout << i << ": too few keypoint!" << endl;
+    		continue;
     	}
-    	Mat descriptors;
-    	sift->compute(img, keypoints, descriptors);
-
 		keypoints_for_all.push_back(keypoints);
-		KPs_for_all.push_back(KPs);
-		descriptors_for_all.push_back(descriptors);
 		colors_for_all.push_back(colors);
+		// if (imgId > 0){
+		// 	vector<DMatch> matched;
+		// 	matchFeatures(keypoints_for_all[imgId-1], keypoints_for_all[imgId], matched);
+		// 	matched_for_all.push_back(matched);
 
-		if (imgId > 0){
-			vector<DMatch> matched;
-			// matchFeatures(keypoints_for_all[imgId-1], keypoints_for_all[imgId], matched);
-			matchFeatures(KPs_for_all[imgId-1], KPs_for_all[imgId], descriptors_for_all[imgId-1], descriptors_for_all[imgId], matched);
-			matched_for_all.push_back(matched);
-
-			// Mat imgLast = imread(data_path+"/"+to_string(imgId-1)+".png");
-			// Mat imgNext = imread(data_path+"/"+to_string(imgId)+".png");
-			// Mat outImg;
-			// resize(imgLast, imgLast, Size(320, 180));
-			// resize(imgNext, imgNext, Size(320, 180));
-			// drawMatches(imgLast, keypoints_for_all[imgId-1], imgNext, keypoints_for_all[imgId], matched, outImg);
-			// namedWindow("MatchSIFT", WINDOW_NORMAL);
-			// imshow("MatchSIFT",outImg);
-			// waitKey(0);
-		}
+		// 	// imgLast = imread("result/"+to_string(imgId-1)+".png");
+		// 	// imgNext = imread("result/"+to_string(imgId)+".png");
+		// 	// resize(imgLast, imgLast, Size(320, 180));
+		// 	// resize(imgNext, imgNext, Size(320, 180));
+		// 	// drawMatches(imgLast, keypoints_for_all[imgId-1], imgNext, keypoints_for_all[imgId], matched, outImg);
+		// 	// namedWindow("MatchSIFT", WINDOW_NORMAL);
+		// 	// imshow("MatchSIFT",outImg);
+		// 	// waitKey(0);
+		// }
 		imgId++;
 	}
-
-	// vector<DMatch> matched;
-	// matchFeatures(KPs_for_all[64], KPs_for_all[236], descriptors_for_all[64], descriptors_for_all[236], matched);
-	// matchFeatures2(KPs_for_all[64], KPs_for_all[236], matched);
 
 	vector<Point3d> structure;
 	vector<Vec3b> colors;
@@ -613,9 +549,8 @@ int main( int argc, char** argv )
 	int first_next_img_id;
 
 	init_structure(//此时已做完第一张图和第二张图的重建，rotations和motions里放了两张图的R和T
-		KPs_for_all,
+		keypoints_for_all,
 		colors_for_all,
-		descriptors_for_all,
 		//matched_for_all,
 		structure,
 		colors,
@@ -625,7 +560,7 @@ int main( int argc, char** argv )
 		);
 
 	if(keypoints_for_all.size()-2 > first_next_img_id)
-		for (int i = first_next_img_id; i < keypoints_for_all.size()-2; ++i)//遍历，从第二张图和第三张图开始，每次两张图的match
+		for (global_i = first_next_img_id; global_i < keypoints_for_all.size()-2; ++global_i)//遍历，从第二张图和第三张图开始，每次两张图的match
 		{
 			Mat affine, affine_tmp;
 			vector<Point3d> p2, p2_tmp;
@@ -633,22 +568,25 @@ int main( int argc, char** argv )
 			vector<DMatch> matched, matched_tmp;
 			int next_img_id;
 			double min_error1, min_error2;
-			reconstruct(KPs_for_all[i], KPs_for_all[i+1], descriptors_for_all[i], descriptors_for_all[i+1], colors_for_all[i], colors_for_all[i+1], matched, c1, p2, affine, min_error1);
+			reconstruct(keypoints_for_all[global_i], keypoints_for_all[global_i+1], colors_for_all[global_i], colors_for_all[global_i+1], matched, c1, p2, affine, min_error1);
 	    	
-	    	next_img_id = i+1;
+	    	next_img_id = global_i+1;
 
 	    	//skip frames
-			if (min_error1 > error_threshold){
-		    	reconstruct(KPs_for_all[i], KPs_for_all[i+2], descriptors_for_all[i], descriptors_for_all[i+2], colors_for_all[i], colors_for_all[i+2], matched_tmp, c1_tmp, p2_tmp, affine_tmp, min_error2);
-		    	if (min_error2 < min_error1){
-		    		matched = matched_tmp;
-		    		c1 = c1_tmp;
-		    		p2 = p2_tmp;
-		    		affine = affine_tmp;
-		    		next_img_id = i+2;
-		    	}
-		    }
-	    	cout << "min_error1: " << min_error1 << ", min_error2: " << min_error2 << endl;
+	    	if(skip_frame == 1){
+	    		if (min_error1 > error_threshold){
+			    	reconstruct(keypoints_for_all[global_i], keypoints_for_all[global_i+2], colors_for_all[global_i], colors_for_all[global_i+2], matched_tmp, c1_tmp, p2_tmp, affine_tmp, min_error2);
+			    	if (min_error2 < min_error1){
+			    		matched = matched_tmp;
+			    		c1 = c1_tmp;
+			    		p2 = p2_tmp;
+			    		affine = affine_tmp;
+			    		next_img_id = global_i+2;
+			    	}
+			    }
+	    	}
+			
+	    	// cout << "min_error1: " << min_error1 << ", min_error2: " << min_error2 << endl;
 
 		    // matchFeaturesAffine(affine, keypoints_for_all[i], keypoints_for_all[i+1], matched_for_all[i]);
 		    // reconstruct(keypoints_for_all[i], keypoints_for_all[i+1], colors_for_all[i], colors_for_all[i+1], matched_for_all[i], c1, p2, affine);
@@ -663,14 +601,14 @@ int main( int argc, char** argv )
 
 			fusion_structure(
 				matched,
-				correspond_struct_idx[i],
+				correspond_struct_idx[global_i],
 				correspond_struct_idx[next_img_id],
 				structure,
 				next_structure,
 				colors,
 				c1
 				);
-			cout << "from "<< i << " to " << next_img_id << endl;
+			// cout << "from "<< i << " to " << next_img_id << endl;
 		}
 	
 	vector<int> count_same_structure;
@@ -695,7 +633,7 @@ int main( int argc, char** argv )
 	//   Mat extrinsic(Matx31d(asin(affines[i].at<double>(1,0)), affines[i].at<double>(0,2), affines[i].at<double>(1,2)));
 	//   extrinsics.push_back(extrinsic);
 	// }
-	// bundle_adjustment(extrinsics, correspond_struct_idx, KPs_for_all, structure);
+	// bundle_adjustment(extrinsics, correspond_struct_idx, keypoints_for_all, structure);
 
 	// for (size_t i = 0; i < affines.size(); ++i)
 	// {
@@ -708,7 +646,7 @@ int main( int argc, char** argv )
 
 
 	int resultSize = 1000;
-	double resultResize = 50;
+	double resultResize = 100;
 	Mat result = Mat::zeros(resultSize, resultSize, CV_8UC3);
 	vector<Point2d> path;
 	
@@ -718,8 +656,8 @@ int main( int argc, char** argv )
 		// cout << structure[i] << colors[i] << endl;
 		if(count_same_structure[i] > rm_cone_threshold){
 			count++;
-			int x = int(structure[i].x * resultResize + resultSize/4);
-			int y = int(structure[i].y * resultResize + resultSize/4);
+			int x = int(structure[i].x * resultResize + resultSize/2);
+			int y = int(structure[i].y * resultResize + resultSize/2);
 			if (x >= 0 && x <= resultSize && y >= 0 && y <= resultSize){
 				circle(result, Point (x,y), 3, colors[i], -1);
 				// putText(result, to_string(i), Point(x,y), 1, 0.5, Scalar(255, 255, 255));
@@ -733,8 +671,8 @@ int main( int argc, char** argv )
 		camera_cor = affines[i].inv() * camera_cor;
 		// if(i>0)
 		// 	cout << "heading change: " << acos(affines[i].at<double>(0,0))-acos(affines[i-1].at<double>(0,0)) << endl;
-		int x = int(camera_cor.at<double>(0,0) * resultResize + resultSize/4);
-		int y = int(camera_cor.at<double>(1,0) * resultResize + resultSize/4);
+		int x = int(camera_cor.at<double>(0,0) * resultResize + resultSize/2);
+		int y = int(camera_cor.at<double>(1,0) * resultResize + resultSize/2);
 		if (x >= 0 && x <= resultSize && y >= 0 && y <= resultSize){
 			circle(result, Point (x,y), 3, Scalar (255,255,255), -1);
 		}

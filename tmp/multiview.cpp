@@ -576,7 +576,7 @@ int main( int argc, char** argv )
 {
 	//google::InitGoogleLogging(argv[0]);
 	vector<string> img_names;
-	get_file_names("images", img_names);//将images里面的数据读到img_names里面
+	get_file_names("images3", img_names);//将images里面的数据读到img_names里面
 
 	//��������
   // Mat K(Matx33d(
