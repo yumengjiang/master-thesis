@@ -451,240 +451,273 @@ void bundle_adjustment(
     convertPointsHomogeneous(structure_2d, structure);
 }
 
-
-
-
-int main( int argc, char** argv )
-{
-	string data_path = argv[1];
-	int start = stoi(argv[2]);
-	int end = stoi(argv[3]);
-	Mat K(Matx33d(
-		350.6847, 0, 332.4661,
-		0, 350.0606, 163.7461,
-		0, 0, 1));
-	Vec3b blue(255,0,0);
-	Vec3b yellow(0,255,255);
-	Vec3b orange(0,165,255);
-	Vec3b orange2(0,0,255);
-	
-	vector<vector<KP>> keypoints_for_all;
-	vector<vector<Vec3b>> colors_for_all;
-	//vector<vector<DMatch>> matched_for_all;
-	vector<Mat> affines;
-	Mat affine = Mat::eye(3,3,CV_64F);
-	affines.push_back(affine);
-
-	int imgId = 0;
-	for(int i = start; i <= end; i++)
-	{
-		vector<KP> keypoints;
-		vector<Vec3b> colors;
-		ifstream csvPath ( data_path+"/"+to_string(i)+"_3d.csv" );
-		string line, x, y, label, X, Y, Z; 
-		int id;
-		// Mat imgLast, imgNext, outImg;
-	    // Mat img = imread("result/"+to_string(i)+".png"); 
-	    while (getline(csvPath, line)) 
-	    {  
-	        stringstream liness(line);  
-	        getline(liness, x, ',');  
-	        getline(liness, y, ','); 
-	        getline(liness, label, ',');
-	        getline(liness, X, ','); 
-	        getline(liness, Y, ','); 
-	        getline(liness, Z, ','); 
-	        
-	        // circle(img, Point (stoi(x),stoi(y)), 3, Scalar (0,0,0), -1);
-	        // cout << stod(Z) << endl;
-	        if(stod(Z)<1 && stod(Z)>0){
-	        	if(label == "blue"){
-		            id = 0;
-		            colors.push_back(blue);
-		        }
-		        if(label == "yellow"){
-		            id = 1;
-		            colors.push_back(yellow);
-		        }
-		        if(label == "orange"){
-		            id = 2;
-		            colors.push_back(orange);
-		        }
-		        if(label == "orange2"){
-		            id = 3;
-		            colors.push_back(orange2);
-		        }
-	            Point3d pt(stod(X),stod(Z),1);
-	        	KP keypoint = {pt, id};
-	        	keypoints.push_back(keypoint);
-	        }
-	        
-    	}
-    	if(keypoints.size()<2){
-    		cout << i << ": too few keypoint!" << endl;
-    		continue;
-    	}
-		keypoints_for_all.push_back(keypoints);
-		colors_for_all.push_back(colors);
-		// if (imgId > 0){
-		// 	vector<DMatch> matched;
-		// 	matchFeatures(keypoints_for_all[imgId-1], keypoints_for_all[imgId], matched);
-		// 	matched_for_all.push_back(matched);
-
-		// 	// imgLast = imread("result/"+to_string(imgId-1)+".png");
-		// 	// imgNext = imread("result/"+to_string(imgId)+".png");
-		// 	// resize(imgLast, imgLast, Size(320, 180));
-		// 	// resize(imgNext, imgNext, Size(320, 180));
-		// 	// drawMatches(imgLast, keypoints_for_all[imgId-1], imgNext, keypoints_for_all[imgId], matched, outImg);
-		// 	// namedWindow("MatchSIFT", WINDOW_NORMAL);
-		// 	// imshow("MatchSIFT",outImg);
-		// 	// waitKey(0);
-		// }
-		imgId++;
-	}
-
-	vector<Point3d> structure;
-	vector<Vec3b> colors;
-	vector<vector<int>> correspond_struct_idx;
-	int first_next_img_id;
-
-	init_structure(//此时已做完第一张图和第二张图的重建，rotations和motions里放了两张图的R和T
-		keypoints_for_all,
-		colors_for_all,
-		//matched_for_all,
-		structure,
-		colors,
-		correspond_struct_idx,
-		affines,
-		first_next_img_id
-		);
-
-	if(keypoints_for_all.size()-2 > first_next_img_id)
-		for (global_i = first_next_img_id; global_i < keypoints_for_all.size()-2; ++global_i)//遍历，从第二张图和第三张图开始，每次两张图的match
-		{
-			Mat affine, affine_tmp;
-			vector<Point3d> p2, p2_tmp;
-			vector<Vec3b> c1, c1_tmp;
-			vector<DMatch> matched, matched_tmp;
-			int next_img_id;
-			double min_error1, min_error2;
-			reconstruct(keypoints_for_all[global_i], keypoints_for_all[global_i+1], colors_for_all[global_i], colors_for_all[global_i+1], matched, c1, p2, affine, min_error1);
-	    	
-	    	next_img_id = global_i+1;
-
-	    	//skip frames
-	    	if(skip_frame == 1){
-	    		if (min_error1 > error_threshold){
-			    	reconstruct(keypoints_for_all[global_i], keypoints_for_all[global_i+2], colors_for_all[global_i], colors_for_all[global_i+2], matched_tmp, c1_tmp, p2_tmp, affine_tmp, min_error2);
-			    	if (min_error2 < min_error1){
-			    		matched = matched_tmp;
-			    		c1 = c1_tmp;
-			    		p2 = p2_tmp;
-			    		affine = affine_tmp;
-			    		next_img_id = global_i+2;
-			    	}
-			    }
-	    	}
-			
-	    	// cout << "min_error1: " << min_error1 << ", min_error2: " << min_error2 << endl;
-
-		    // matchFeaturesAffine(affine, keypoints_for_all[i], keypoints_for_all[i+1], matched_for_all[i]);
-		    // reconstruct(keypoints_for_all[i], keypoints_for_all[i+1], colors_for_all[i], colors_for_all[i+1], matched_for_all[i], c1, p2, affine);
-
-		    affine = affine*affines.back();
-			affines.push_back(affine);
-
-			vector<Point3d> next_structure;
-			for(int i = 0; i < p2.size(); i++){
-				next_structure.push_back(Point3d(Mat(affine.inv()*Mat(p2[i]))));
-			}
-
-			fusion_structure(
-				matched,
-				correspond_struct_idx[global_i],
-				correspond_struct_idx[next_img_id],
-				structure,
-				next_structure,
-				colors,
-				c1
-				);
-			// cout << "from "<< i << " to " << next_img_id << endl;
-		}
-	
-	vector<int> count_same_structure;
-	count_same_structure.resize(structure.size());
-	for (int i = 0; i < correspond_struct_idx.size(); ++i){
-		for (int j = 0; j < correspond_struct_idx[i].size(); ++j){
-			cout << correspond_struct_idx[i][j] << " ";
-			for(int k = 0; k < structure.size(); k++){
-				if(correspond_struct_idx[i][j] == k)
-					count_same_structure[k]++;
-			}
-		}
-		cout << "\n";
-	}
-
-
-	// // bundle_adjustment
-	// google::InitGoogleLogging(argv[0]);
-	// vector<Mat> extrinsics;
-	// for (size_t i = 0; i < affines.size(); ++i)
-	// {
-	//   Mat extrinsic(Matx31d(asin(affines[i].at<double>(1,0)), affines[i].at<double>(0,2), affines[i].at<double>(1,2)));
-	//   extrinsics.push_back(extrinsic);
-	// }
-	// bundle_adjustment(extrinsics, correspond_struct_idx, keypoints_for_all, structure);
-
-	// for (size_t i = 0; i < affines.size(); ++i)
-	// {
-	// 	double alpha = extrinsics[i].at<double>(0,0);
-	// 	double tx = extrinsics[i].at<double>(1,0);
-	// 	double ty = extrinsics[i].at<double>(2,0);
-	// 	affines[i] = (Mat_<double>(3, 3) << cos(alpha), -sin(alpha), tx, sin(alpha), cos(alpha), ty, 0, 0, 1);
-	// }
-
-
-
+void ground_truth(const string path){
+	ifstream csvPath (path);
+	string line, sx, sy;
+	double x, y;
+	double x0 = 57.71386186, y0 = 11.94886661, dx = 30.9, dy = 30.9*cos(x0/180*3.1415);
 	int resultSize = 1000;
-	double resultResize = 100;
+	double resultResize = 10;
 	Mat result = Mat::zeros(resultSize, resultSize, CV_8UC3);
-	vector<Point2d> path;
-	
-	int count = 0;
-	for(int i = 0; i < structure.size(); i++){
-		// cout << count_same_structure[i] << endl;
-		// cout << structure[i] << colors[i] << endl;
-		if(count_same_structure[i] > rm_cone_threshold){
-			count++;
-			int x = int(structure[i].x * resultResize + resultSize/2);
-			int y = int(structure[i].y * resultResize + resultSize/2);
-			if (x >= 0 && x <= resultSize && y >= 0 && y <= resultSize){
-				circle(result, Point (x,y), 3, colors[i], -1);
-				// putText(result, to_string(i), Point(x,y), 1, 0.5, Scalar(255, 255, 255));
-			}
-		}
-	}
-	cout << "Number of structure: " << count << endl;
 
-	for(int i = 0; i < affines.size(); i++){
-		Mat camera_cor(Matx31d(0,0.5,1));
-		camera_cor = affines[i].inv() * camera_cor;
-		// if(i>0)
-		// 	cout << "heading change: " << acos(affines[i].at<double>(0,0))-acos(affines[i-1].at<double>(0,0)) << endl;
-		int x = int(camera_cor.at<double>(0,0) * resultResize + resultSize/2);
-		int y = int(camera_cor.at<double>(1,0) * resultResize + resultSize/2);
-		if (x >= 0 && x <= resultSize && y >= 0 && y <= resultSize){
-			circle(result, Point (x,y), 3, Scalar (255,255,255), -1);
+    while (getline(csvPath, line)) 
+    {  
+        stringstream liness(line);  
+        getline(liness, sx, ' ');  
+        getline(liness, sy, ' '); 
+
+        x = (stod(sx)-x0)*3600*dx;
+        y = (stod(sy)-y0)*3600*dy;
+
+        cout << x << " " << y << endl;
+        int xt = int(x * resultResize + resultSize/2);
+		int yt = int(y * resultResize + resultSize/2);
+		if (xt >= 0 && xt <= resultSize && yt >= 0 && yt <= resultSize){
+			circle(result, Point (xt,yt), 3, Scalar (255,255,255), -1);
 		}
-		path.push_back(Point2d(x,y));
-	}
-	for(int i=0; i<path.size()-1; i++){
-		line(result, path[i], path[i+1], Scalar (255,255,255), 1, 1, 0);
-	}
-	flip(result, result, 0);
+    }
+    // flip(result, result, 0	);
     namedWindow("result", WINDOW_NORMAL);
 	imshow("result", result);
 	waitKey(0);
+}
+
+int main( int argc, char** argv )
+{
+	ground_truth("ground_truth.txt");
+}
+
+// int main( int argc, char** argv )
+// {
+// 	string data_path = argv[1];
+// 	int start = stoi(argv[2]);
+// 	int end = stoi(argv[3]);
+// 	Mat K(Matx33d(
+// 		350.6847, 0, 332.4661,
+// 		0, 350.0606, 163.7461,
+// 		0, 0, 1));
+// 	Vec3b blue(255,0,0);
+// 	Vec3b yellow(0,255,255);
+// 	Vec3b orange(0,165,255);
+// 	Vec3b orange2(0,0,255);
+	
+// 	vector<vector<KP>> keypoints_for_all;
+// 	vector<vector<Vec3b>> colors_for_all;
+// 	//vector<vector<DMatch>> matched_for_all;
+// 	vector<Mat> affines;
+// 	Mat affine = Mat::eye(3,3,CV_64F);
+// 	affines.push_back(affine);
+
+// 	int imgId = 0;
+// 	for(int i = start; i <= end; i++)
+// 	{
+// 		vector<KP> keypoints;
+// 		vector<Vec3b> colors;
+// 		ifstream csvPath ( data_path+"/"+to_string(i)+"_3d.csv" );
+// 		string line, x, y, label, X, Y, Z; 
+// 		int id;
+// 		// Mat imgLast, imgNext, outImg;
+// 	    // Mat img = imread("result/"+to_string(i)+".png"); 
+// 	    while (getline(csvPath, line)) 
+// 	    {  
+// 	        stringstream liness(line);  
+// 	        getline(liness, x, ',');  
+// 	        getline(liness, y, ','); 
+// 	        getline(liness, label, ',');
+// 	        getline(liness, X, ','); 
+// 	        getline(liness, Y, ','); 
+// 	        getline(liness, Z, ','); 
+	        
+// 	        // circle(img, Point (stoi(x),stoi(y)), 3, Scalar (0,0,0), -1);
+// 	        // cout << stod(Z) << endl;
+// 	        if(stod(Z)<1 && stod(Z)>0){
+// 	        	if(label == "blue"){
+// 		            id = 0;
+// 		            colors.push_back(blue);
+// 		        }
+// 		        if(label == "yellow"){
+// 		            id = 1;
+// 		            colors.push_back(yellow);
+// 		        }
+// 		        if(label == "orange"){
+// 		            id = 2;
+// 		            colors.push_back(orange);
+// 		        }
+// 		        if(label == "orange2"){
+// 		            id = 3;
+// 		            colors.push_back(orange2);
+// 		        }
+// 	            Point3d pt(stod(X),stod(Z),1);
+// 	        	KP keypoint = {pt, id};
+// 	        	keypoints.push_back(keypoint);
+// 	        }
+	        
+//     	}
+//     	if(keypoints.size()<2){
+//     		cout << i << ": too few keypoint!" << endl;
+//     		continue;
+//     	}
+// 		keypoints_for_all.push_back(keypoints);
+// 		colors_for_all.push_back(colors);
+// 		// if (imgId > 0){
+// 		// 	vector<DMatch> matched;
+// 		// 	matchFeatures(keypoints_for_all[imgId-1], keypoints_for_all[imgId], matched);
+// 		// 	matched_for_all.push_back(matched);
+
+// 		// 	// imgLast = imread("result/"+to_string(imgId-1)+".png");
+// 		// 	// imgNext = imread("result/"+to_string(imgId)+".png");
+// 		// 	// resize(imgLast, imgLast, Size(320, 180));
+// 		// 	// resize(imgNext, imgNext, Size(320, 180));
+// 		// 	// drawMatches(imgLast, keypoints_for_all[imgId-1], imgNext, keypoints_for_all[imgId], matched, outImg);
+// 		// 	// namedWindow("MatchSIFT", WINDOW_NORMAL);
+// 		// 	// imshow("MatchSIFT",outImg);
+// 		// 	// waitKey(0);
+// 		// }
+// 		imgId++;
+// 	}
+
+// 	vector<Point3d> structure;
+// 	vector<Vec3b> colors;
+// 	vector<vector<int>> correspond_struct_idx;
+// 	int first_next_img_id;
+
+// 	init_structure(//此时已做完第一张图和第二张图的重建，rotations和motions里放了两张图的R和T
+// 		keypoints_for_all,
+// 		colors_for_all,
+// 		//matched_for_all,
+// 		structure,
+// 		colors,
+// 		correspond_struct_idx,
+// 		affines,
+// 		first_next_img_id
+// 		);
+
+// 	if(keypoints_for_all.size()-2 > first_next_img_id)
+// 		for (global_i = first_next_img_id; global_i < keypoints_for_all.size()-2; ++global_i)//遍历，从第二张图和第三张图开始，每次两张图的match
+// 		{
+// 			Mat affine, affine_tmp;
+// 			vector<Point3d> p2, p2_tmp;
+// 			vector<Vec3b> c1, c1_tmp;
+// 			vector<DMatch> matched, matched_tmp;
+// 			int next_img_id;
+// 			double min_error1, min_error2;
+// 			reconstruct(keypoints_for_all[global_i], keypoints_for_all[global_i+1], colors_for_all[global_i], colors_for_all[global_i+1], matched, c1, p2, affine, min_error1);
+	    	
+// 	    	next_img_id = global_i+1;
+
+// 	    	//skip frames
+// 	    	if(skip_frame == 1){
+// 	    		if (min_error1 > error_threshold){
+// 			    	reconstruct(keypoints_for_all[global_i], keypoints_for_all[global_i+2], colors_for_all[global_i], colors_for_all[global_i+2], matched_tmp, c1_tmp, p2_tmp, affine_tmp, min_error2);
+// 			    	if (min_error2 < min_error1){
+// 			    		matched = matched_tmp;
+// 			    		c1 = c1_tmp;
+// 			    		p2 = p2_tmp;
+// 			    		affine = affine_tmp;
+// 			    		next_img_id = global_i+2;
+// 			    	}
+// 			    }
+// 	    	}
+			
+// 	    	// cout << "min_error1: " << min_error1 << ", min_error2: " << min_error2 << endl;
+
+// 		    // matchFeaturesAffine(affine, keypoints_for_all[i], keypoints_for_all[i+1], matched_for_all[i]);
+// 		    // reconstruct(keypoints_for_all[i], keypoints_for_all[i+1], colors_for_all[i], colors_for_all[i+1], matched_for_all[i], c1, p2, affine);
+
+// 		    affine = affine*affines.back();
+// 			affines.push_back(affine);
+
+// 			vector<Point3d> next_structure;
+// 			for(int i = 0; i < p2.size(); i++){
+// 				next_structure.push_back(Point3d(Mat(affine.inv()*Mat(p2[i]))));
+// 			}
+
+// 			fusion_structure(
+// 				matched,
+// 				correspond_struct_idx[global_i],
+// 				correspond_struct_idx[next_img_id],
+// 				structure,
+// 				next_structure,
+// 				colors,
+// 				c1
+// 				);
+// 			// cout << "from "<< i << " to " << next_img_id << endl;
+// 		}
+	
+// 	vector<int> count_same_structure;
+// 	count_same_structure.resize(structure.size());
+// 	for (int i = 0; i < correspond_struct_idx.size(); ++i){
+// 		for (int j = 0; j < correspond_struct_idx[i].size(); ++j){
+// 			cout << correspond_struct_idx[i][j] << " ";
+// 			for(int k = 0; k < structure.size(); k++){
+// 				if(correspond_struct_idx[i][j] == k)
+// 					count_same_structure[k]++;
+// 			}
+// 		}
+// 		cout << "\n";
+// 	}
+
+
+// 	// // bundle_adjustment
+// 	// google::InitGoogleLogging(argv[0]);
+// 	// vector<Mat> extrinsics;
+// 	// for (size_t i = 0; i < affines.size(); ++i)
+// 	// {
+// 	//   Mat extrinsic(Matx31d(asin(affines[i].at<double>(1,0)), affines[i].at<double>(0,2), affines[i].at<double>(1,2)));
+// 	//   extrinsics.push_back(extrinsic);
+// 	// }
+// 	// bundle_adjustment(extrinsics, correspond_struct_idx, keypoints_for_all, structure);
+
+// 	// for (size_t i = 0; i < affines.size(); ++i)
+// 	// {
+// 	// 	double alpha = extrinsics[i].at<double>(0,0);
+// 	// 	double tx = extrinsics[i].at<double>(1,0);
+// 	// 	double ty = extrinsics[i].at<double>(2,0);
+// 	// 	affines[i] = (Mat_<double>(3, 3) << cos(alpha), -sin(alpha), tx, sin(alpha), cos(alpha), ty, 0, 0, 1);
+// 	// }
+
+
+
+// 	int resultSize = 1000;
+// 	double resultResize = 100;
+// 	Mat result = Mat::zeros(resultSize, resultSize, CV_8UC3);
+// 	vector<Point2d> path;
+	
+// 	int count = 0;
+// 	for(int i = 0; i < structure.size(); i++){
+// 		// cout << count_same_structure[i] << endl;
+// 		// cout << structure[i] << colors[i] << endl;
+// 		if(count_same_structure[i] > rm_cone_threshold){
+// 			count++;
+// 			int x = int(structure[i].x * resultResize + resultSize/2);
+// 			int y = int(structure[i].y * resultResize + resultSize/2);
+// 			if (x >= 0 && x <= resultSize && y >= 0 && y <= resultSize){
+// 				circle(result, Point (x,y), 3, colors[i], -1);
+// 				// putText(result, to_string(i), Point(x,y), 1, 0.5, Scalar(255, 255, 255));
+// 			}
+// 		}
+// 	}
+// 	cout << "Number of structure: " << count << endl;
+
+// 	for(int i = 0; i < affines.size(); i++){
+// 		Mat camera_cor(Matx31d(0,0.5,1));
+// 		camera_cor = affines[i].inv() * camera_cor;
+// 		// if(i>0)
+// 		// 	cout << "heading change: " << acos(affines[i].at<double>(0,0))-acos(affines[i-1].at<double>(0,0)) << endl;
+// 		int x = int(camera_cor.at<double>(0,0) * resultResize + resultSize/2);
+// 		int y = int(camera_cor.at<double>(1,0) * resultResize + resultSize/2);
+// 		if (x >= 0 && x <= resultSize && y >= 0 && y <= resultSize){
+// 			circle(result, Point (x,y), 3, Scalar (255,255,255), -1);
+// 		}
+// 		path.push_back(Point2d(x,y));
+// 	}
+// 	for(int i=0; i<path.size()-1; i++){
+// 		line(result, path[i], path[i+1], Scalar (255,255,255), 1, 1, 0);
+// 	}
+// 	flip(result, result, 0);
+//     namedWindow("result", WINDOW_NORMAL);
+// 	imshow("result", result);
+// 	waitKey(0);
 
 	
-}
+// }
