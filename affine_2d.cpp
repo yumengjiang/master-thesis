@@ -728,4 +728,6 @@ int main( int argc, char** argv )
     namedWindow("result", WINDOW_NORMAL);
 	imshow("result", result);
 	waitKey(0);
+
+	imwrite("result.png", result);
 }
